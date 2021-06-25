@@ -1,0 +1,9 @@
+package com.example.pocketmoney.mlm.model
+
+enum class RechargeEnum {
+
+    ADD_MONEY,PAYMENT_HISTORY,WALLET,SHOPPING,
+    PREPAID,POSTPAID,DTH,LANDLINE,
+    ELECTRICITY,WATER,GAS,BROADBAND,
+    LOAN,DMT,LIFE_INSURANCE,FASTAG
+}

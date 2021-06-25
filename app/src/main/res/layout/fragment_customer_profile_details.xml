@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout24"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".mlm.ui.dashboard.CustomerProfileDetails">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/username"
+            layout="@layout/template_label_with_edittext"/>
+        <include
+            android:id="@+id/sponsor_id"
+            layout="@layout/template_label_with_edittext"/>
+        <include
+            android:id="@+id/sponsor_name"
+            layout="@layout/template_label_with_edittext"/>
+        <include
+            android:id="@+id/business_role"
+            layout="@layout/template_label_with_edittext"/>
+        <include
+            android:id="@+id/registered_on"
+            layout="@layout/template_label_with_edittext"/>
+        <include
+            android:id="@+id/location"
+            layout="@layout/template_label_with_edittext"/>
+
+        <include
+            android:id="@+id/email_address"
+            layout="@layout/template_label_with_edittext"/>
+        <include
+            android:id="@+id/phone_number"
+            layout="@layout/template_label_with_edittext"/>
+        <include
+            android:id="@+id/birthday"
+            layout="@layout/template_label_with_edittext"/>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

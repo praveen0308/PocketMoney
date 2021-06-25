@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout4"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".mlm.ui.dashboard.pages.PaymentHistory"
+    android:background="@color/colorWhiteSmoke">
+
+    <include
+        android:id="@+id/layout_payment_history"
+        layout="@layout/toolbar_payment_history"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/linearLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:weightSum="2"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/layout_payment_history">-->
+
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/btn_all_transaction"-->
+<!--            style="@style/Widget.MaterialComponents.Button.OutlinedButton"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginHorizontal="5dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:drawableEnd="@drawable/ic_expand_more"-->
+<!--            android:drawableTint="@color/colorPrimaryDark"-->
+<!--            android:text="@string/all_transactions"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="@color/colorTextSecondary"-->
+<!--            app:strokeWidth="2dp" />-->
+
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/btn_all_categories"-->
+<!--            style="@style/Widget.MaterialComponents.Button.OutlinedButton"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginHorizontal="5dp"-->
+<!--            android:layout_weight="1"-->
+<!--            android:drawableEnd="@drawable/ic_expand_more"-->
+<!--            android:drawableTint="@color/colorPrimaryDark"-->
+<!--            android:text="@string/all_categories"-->
+<!--            android:textAllCaps="false"-->
+<!--            android:textColor="@color/colorTextSecondary"-->
+<!--            app:strokeWidth="2dp" />-->
+<!--    </LinearLayout>-->
+
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        android:id="@+id/btn_time_interval"-->
+<!--        style="@style/Widget.MaterialComponents.Button.TextButton"-->
+<!--        android:layout_width="93dp"-->
+<!--        android:layout_height="44dp"-->
+<!--        android:drawableLeft="@drawable/ic_calendar"-->
+<!--        android:text="@string/all"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />-->
+
+    <com.example.pocketmoney.utils.EditTextWithClear
+        android:id="@+id/et_search_view"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_edit_text_rect_5dp_light_grey"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="10dp"
+        android:focusable="true"
+        android:hint="@string/search"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="12dp"
+        android:textSize="14sp"
+        app:drawableTint="@color/colorBlack"
+        app:layout_constraintEnd_toStartOf="@+id/img_filter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_payment_history" />
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_search_view">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_transaction_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/template_payment_history_type_2" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <include
+        android:id="@+id/template_no_records"
+        layout="@layout/template_no_records"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_search_view" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/img_filter"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_baseline_filter_list_24"
+        app:layout_constraintBottom_toBottomOf="@+id/et_search_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/et_search_view" />
+</androidx.constraintlayout.widget.ConstraintLayout>

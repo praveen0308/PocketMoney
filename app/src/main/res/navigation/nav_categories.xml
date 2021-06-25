@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_categories"
+    app:startDestination="@id/productMainCategories">
+    <fragment
+        android:id="@+id/productMainCategories"
+        android:name="com.example.pocketmoney.shopping.ui.ProductMainCategories"
+        android:label="ProductMainCategories" >
+        <action
+            android:id="@+id/action_productMainCategories_to_productCategories"
+            app:destination="@id/productCategories" />
+    </fragment>
+    <fragment
+        android:id="@+id/productCategories"
+        android:name="com.example.pocketmoney.shopping.ui.ProductCategories"
+        android:label="fragment_product_categories"
+        tools:layout="@layout/fragment_product_categories" >
+        <argument
+            android:name="mainCategoryId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="mainCategoryName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_productCategories_to_searchResult2"
+            app:destination="@id/searchResult2" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchResult2"
+        android:name="com.example.pocketmoney.shopping.ui.SearchResult"
+        android:label="fragment_search_result"
+        tools:layout="@layout/fragment_search_result" />
+</navigation>

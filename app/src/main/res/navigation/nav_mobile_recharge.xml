@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_mobile_recharge"
+    app:startDestination="@id/selectContact">
+
+    <fragment
+        android:id="@+id/selectContact"
+        android:name="com.example.pocketmoney.mlm.ui.mobilerecharge.SelectContact"
+        android:label="fragment_select_contact"
+        tools:layout="@layout/fragment_select_contact" >
+        <action
+            android:id="@+id/action_selectContact_to_selectRechargePlan"
+            app:destination="@id/selectRechargePlan" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectRechargePlan"
+        android:name="com.example.pocketmoney.mlm.ui.mobilerecharge.SelectRechargePlan"
+        android:label="fragment_select_recharge_plan"
+        tools:layout="@layout/fragment_select_recharge_plan" >
+        <action
+            android:id="@+id/action_selectRechargePlan_to_confirmRecharge"
+            app:destination="@id/confirmRecharge" />
+        <action
+            android:id="@+id/action_selectRechargePlan_to_selectCircle2"
+            app:destination="@id/selectCircle2" />
+        <action
+            android:id="@+id/action_selectRechargePlan_to_operatorList2"
+            app:destination="@id/operatorList2" />
+        <argument
+            android:name="mobile_number"
+            app:argType="string" />
+        <argument
+            android:name="contact_name"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/confirmRecharge"
+        android:name="com.example.pocketmoney.mlm.ui.mobilerecharge.ConfirmRecharge"
+        android:label="fragment_confirm_recharge"
+        tools:layout="@layout/fragment_confirm_recharge" >
+        <action
+            android:id="@+id/action_confirmRecharge_to_operatorList2"
+            app:destination="@id/operatorList2" />
+        <action
+            android:id="@+id/action_confirmRecharge_to_selectCircle2"
+            app:destination="@id/selectCircle2" />
+        <argument
+            android:name="mobile_number"
+            app:argType="string" />
+        <argument
+            android:name="contact_name"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectCircle2"
+        android:name="com.example.pocketmoney.mlm.ui.recharge.SelectCircle"
+        android:label="fragment_select_circle"
+        tools:layout="@layout/fragment_select_circle" />
+    <fragment
+        android:id="@+id/operatorList2"
+        android:name="com.example.pocketmoney.mlm.ui.recharge.OperatorList"
+        android:label="fragment_operator_list"
+        tools:layout="@layout/fragment_operator_list" />
+</navigation>

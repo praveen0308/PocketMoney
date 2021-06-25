@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorPrimaryLight">#BBDEFB</color>
+    <color name="colorAccent">#03A9F4</color>
+    <color name="colorTextPrimary">#212121</color>
+    <color name="colorTextSecondary">#757575</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorErrorRed">#B00020</color>
+    <color name="colorBackground">#F0F7F9</color>
+
+
+
+    <color name="colorWhiteSmoke">#FCFCFC</color>
+    <color name="colorLightGrey">#D8EEEEF1</color>
+    <color name="colorGrey">#929293</color>
+    <color name="colorPrimary50">#8080AACC</color>
+    <color name="colorTransparent">#00FCFEFF</color>
+    <color name="green_20">#3754B948</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background">#FF0000 </color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
+
+    <color name="Red">#FF0000</color>
+    <color name="Cyan">#00FFFF</color>
+    <color name="Blue">#0000FF</color>
+    <color name="DarkBlue">#0000A0</color>
+    <color name="LightBlue">#ADD8E6</color>
+    <color name="Purple">#800080</color>
+    <color name="Yellow">#FFFF00</color>
+    <color name="Lime">#00FF00</color>
+    <color name="Magenta">#FF00FF</color>
+    <color name="Silver">#C0C0C0</color>
+    <color name="Grey">#808080</color>
+    <color name="Orange">#FFA500</color>
+    <color name="Brown">#A52A2A</color>
+    <color name="Maroon">#800000</color>
+    <color name="Green">#008000</color>
+    <color name="LightGreen">#00FF00</color>
+    <color name="Olive">#808000</color>
+    <color name="CreamyRed">#DB3022</color>
+
+
+
+</resources>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:id="@+id/frame_data"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="@dimen/dimen_16dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_icon"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="@color/LightBlue"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:layout_margin="8dp"
+                app:srcCompat="@drawable/ic_round_call_received_24"
+                app:tint="@color/colorPrimaryDark" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/tv_sub_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/tv_main_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_main_title"
+            tools:text="Direct Commission" />
+
+        <TextView
+            android:id="@+id/tv_main_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            app:layout_constraintEnd_toStartOf="@+id/tv_secondary_title"
+            app:layout_constraintStart_toEndOf="@+id/cv_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Received from" />
+
+        <TextView
+            android:id="@+id/tv_secondary_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/colorTextPrimary"
+            android:textStyle="bold"
+            android:textSize="@dimen/dimen_16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="₹1,000" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="@dimen/dimen_12sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/cv_icon"
+            app:layout_constraintTop_toBottomOf="@+id/cv_icon"
+            tools:text="21 Aug 2021" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</FrameLayout>

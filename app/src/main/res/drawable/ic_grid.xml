@@ -1,0 +1,33 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="359"
+    android:viewportHeight="359">
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M96,0H13C7.5,0 3,4.5 3,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10V10C106,4.5 101.5,0 96,0zM87,84H23V20h64V84z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M221,0h-83c-5.5,0 -10,4.5 -10,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10V10C231,4.5 226.5,0 221,0zM212,84h-64V20h64V84z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M96,126H13c-5.5,0 -10,4.5 -10,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10v-83C106,130.5 101.5,126 96,126zM87,209H23v-63h64V209z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M221,126h-83c-5.5,0 -10,4.5 -10,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10v-83C231,130.5 226.5,126 221,126zM212,209h-64v-63h64V209z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M346,0h-83c-5.5,0 -10,4.5 -10,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10V10C356,4.5 351.5,0 346,0zM337,84h-64V20h64V84z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M346,126h-83c-5.5,0 -10,4.5 -10,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10v-83C356,130.5 351.5,126 346,126zM337,209h-64v-63h64V209z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M96,256H13c-5.5,0 -10,4.5 -10,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10v-83C106,260.5 101.5,256 96,256zM87,340H23v-64h64V340z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M221,256h-83c-5.5,0 -10,4.5 -10,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10v-83C231,260.5 226.5,256 221,256zM212,340h-64v-64h64V340z"/>
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M346,256h-83c-5.5,0 -10,4.5 -10,10v83c0,5.5 4.5,10 10,10h83c5.5,0 10,-4.5 10,-10v-83C356,260.5 351.5,256 346,256zM337,340h-64v-64h64V340z"/>
+</vector>

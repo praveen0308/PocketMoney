@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_electricity"
+    app:startDestination="@id/payForElectricity">
+
+    <fragment
+        android:id="@+id/payForElectricity"
+        android:name="com.example.pocketmoney.mlm.ui.electricity.PayForElectricity"
+        android:label="fragment_pay_for_electricity"
+        tools:layout="@layout/fragment_pay_for_electricity" >
+        <action
+            android:id="@+id/action_payForElectricity_to_selectState"
+            app:destination="@id/selectState" />
+        <action
+            android:id="@+id/action_payForElectricity_to_selectBoard"
+            app:destination="@id/selectBoard" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectBoard"
+        android:name="com.example.pocketmoney.mlm.ui.electricity.SelectBoard"
+        android:label="fragment_select_board"
+        tools:layout="@layout/fragment_select_board" />
+    <fragment
+        android:id="@+id/selectState"
+        android:name="com.example.pocketmoney.mlm.ui.electricity.SelectState"
+        android:label="fragment_select_state"
+        tools:layout="@layout/fragment_select_state" />
+</navigation>
