@@ -5,6 +5,7 @@ import com.example.pocketmoney.mlm.model.UserModel
 import com.example.pocketmoney.mlm.model.mlmModels.*
 import com.example.pocketmoney.mlm.repository.AccountRepository
 import com.example.pocketmoney.mlm.repository.CustomerRepository
+import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Resource
 import com.example.pocketmoney.utils.myEnums.FilterEnum
@@ -18,15 +19,16 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomerGrowthNCommissionViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
-    private val customerRepository: CustomerRepository
+    private val customerRepository: CustomerRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ):ViewModel(){
 
     private val _userModel: MutableLiveData<DataState<UserModel?>> = MutableLiveData()
     val userModel: LiveData<DataState<UserModel?>>
         get() = _userModel
 
-    val userID = accountRepository.userID.asLiveData()
-    val roleID = accountRepository.roleID.asLiveData()
+    val userID = userPreferencesRepository.userId.asLiveData()
+    val roleID = userPreferencesRepository.userRoleId.asLiveData()
 
 
     private val _customerGrowth = MutableLiveData<Resource<CustomerGrowthResponse>>()

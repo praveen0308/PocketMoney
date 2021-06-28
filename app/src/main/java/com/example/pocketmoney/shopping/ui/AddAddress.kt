@@ -9,12 +9,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.pocketmoney.databinding.FragmentAddAddressBinding
-import com.example.pocketmoney.shopping.model.ModelACTV
-import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.model.ModelCity
 import com.example.pocketmoney.shopping.model.ModelState
 import com.example.pocketmoney.shopping.viewmodel.AddressViewModel
-import com.example.pocketmoney.shopping.viewmodel.ShoppingAuthViewModel
 import com.example.pocketmoney.utils.ApplicationToolbar
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Status
@@ -35,8 +32,7 @@ class AddAddress : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
     private val binding get() = _binding!!
 
     //ViewModels
-    private val shoppingAuthViewModel:ShoppingAuthViewModel by viewModels()
-    private val addressViewModel: AddressViewModel by viewModels()
+    private val viewModel: AddressViewModel by viewModels()
 
     // Adapters
 //    private lateinit var stateArrayAdapter: ArrayAdapter()
@@ -73,7 +69,7 @@ class AddAddress : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
         super.onViewCreated(view, savedInstanceState)
 
         subscribeObservers()
-        addressViewModel.getAllStates()
+        viewModel.getAllStates()
         binding.toolbar.setApplicationToolbarListener(this)
         binding.btnSaveAddress.setOnClickListener {
 
@@ -108,7 +104,7 @@ class AddAddress : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
 
         binding.actvState.setOnItemClickListener { parent, view, position, id ->
             val state = parent.getItemAtPosition(position) as ModelState
-            addressViewModel.getCitiesByStateCode(state.StateCode)
+            viewModel.getCitiesByStateCode(state.StateCode)
 //            Toast.makeText(context, "Selected State Id".plus(modelACTV.itemId), Toast.LENGTH_SHORT).show()
         }
     }
@@ -129,11 +125,11 @@ class AddAddress : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
 
     private fun subscribeObservers() {
 
-        shoppingAuthViewModel.userID.observe(viewLifecycleOwner, {
+        viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
         })
 
-        addressViewModel.stateList.observe(viewLifecycleOwner, { _result ->
+        viewModel.stateList.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -153,7 +149,7 @@ class AddAddress : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
             }
         })
 
-        addressViewModel.citiesList.observe(viewLifecycleOwner, { _result ->
+        viewModel.citiesList.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -174,39 +170,6 @@ class AddAddress : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
         })
 
 
-        addressViewModel.isSuccessFullyAdded.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<Boolean> -> {
-                    displayLoading(false)
-
-                }
-                is DataState.Loading -> {
-                    displayLoading(true)
-
-                }
-                is DataState.Error -> {
-                    displayLoading(false)
-                    displayError(dataState.exception.message)
-                }
-            }
-        })
-
-        addressViewModel.isSuccessfullyUpdated.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<Boolean> -> {
-                    displayLoading(false)
-
-                }
-                is DataState.Loading -> {
-                    displayLoading(true)
-
-                }
-                is DataState.Error -> {
-                    displayLoading(false)
-                    displayError(dataState.exception.message)
-                }
-            }
-        })
     }
 
     private fun displayLoading(state: Boolean) {

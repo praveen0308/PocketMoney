@@ -15,35 +15,62 @@ import javax.inject.Inject
 class AddressRepository @Inject constructor(
     private val shoppingApiService: ShoppingApiService
 ) {
+//
+//    suspend fun getCustomerAddressByUserId(userId:String): Flow<DataState<List<ModelAddress>>> = flow{
+//        emit(DataState.Loading)
+//        try {
+//            val result = shoppingApiService.getCustomerAddressByUserID(userId)
+//            emit(DataState.Success(result))
+//        }catch (e: Exception){
+//            (DataState.Error(e))
+//        }
+//    }
 
-    suspend fun getCustomerAddressByUserId(userId:String): Flow<DataState<List<ModelAddress>>> = flow{
-        emit(DataState.Loading)
-        try {
-            val result = shoppingApiService.getCustomerAddressByUserID(userId)
-            emit(DataState.Success(result))
-        }catch (e: Exception){
-            (DataState.Error(e))
-        }
+    suspend fun getCustomerAddressByUserId(userId:String): Flow<List<ModelAddress>> {
+        return flow {
+            val response = shoppingApiService.getCustomerAddressByUserID(userId)
+
+            emit(response)
+        }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun addNewAddress(modelAddress: ModelAddress): Flow<DataState<Boolean>> = flow{
-        emit(DataState.Loading)
-        try {
-            val result = shoppingApiService.addAddress(modelAddress)
-            emit(DataState.Success(result))
-        }catch (e: Exception){
-            (DataState.Error(e))
-        }
+
+//    suspend fun addNewAddress(modelAddress: ModelAddress): Flow<DataState<Boolean>> = flow{
+//        emit(DataState.Loading)
+//        try {
+//            val result = shoppingApiService.addAddress(modelAddress)
+//            emit(DataState.Success(result))
+//        }catch (e: Exception){
+//            (DataState.Error(e))
+//        }
+//    }
+
+    suspend fun addNewAddress(modelAddress: ModelAddress): Flow<Boolean> {
+        return flow {
+            val response = shoppingApiService.addAddress(modelAddress)
+
+            emit(response)
+        }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun updateAddress(modelAddress: ModelAddress): Flow<DataState<Boolean>> = flow{
-        emit(DataState.Loading)
-        try {
-            val result = shoppingApiService.updateAddress(modelAddress)
-            emit(DataState.Success(result))
-        }catch (e: Exception){
-            (DataState.Error(e))
-        }
+//
+//    suspend fun updateAddress(modelAddress: ModelAddress): Flow<DataState<Boolean>> = flow{
+//        emit(DataState.Loading)
+//        try {
+//            val result = shoppingApiService.updateAddress(modelAddress)
+//            emit(DataState.Success(result))
+//        }catch (e: Exception){
+//            (DataState.Error(e))
+//        }
+//    }
+
+
+    suspend fun updateAddress(modelAddress: ModelAddress): Flow<Boolean> {
+        return flow {
+            val response = shoppingApiService.updateAddress(modelAddress)
+
+            emit(response)
+        }.flowOn(Dispatchers.IO)
     }
 
 

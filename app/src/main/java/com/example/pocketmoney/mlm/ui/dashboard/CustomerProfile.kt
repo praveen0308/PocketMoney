@@ -1,34 +1,25 @@
 package com.example.pocketmoney.mlm.ui.dashboard
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.pocketmoney.databinding.ActivityCustomerProfileBinding
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerProfileModel
-import com.example.pocketmoney.mlm.viewmodel.CustomerViewModel
-import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
+import com.example.pocketmoney.mlm.viewmodel.CustomerProfileViewModel
 import com.example.pocketmoney.utils.*
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class CustomerProfile : AppCompatActivity(), ApplicationToolbar.ApplicationToolbarListener {
+class CustomerProfile : BaseActivity<ActivityCustomerProfileBinding>(ActivityCustomerProfileBinding::inflate), ApplicationToolbar.ApplicationToolbarListener {
 
-
-    //UI
-    private lateinit var binding: ActivityCustomerProfileBinding
-    private lateinit var progressBarHandler: ProgressBarHandler
 
     // ViewModels
-    private val customerViewModel by viewModels<CustomerViewModel>()
-    private val userAuthenticationViewModel by viewModels<AccountViewModel>()
-
+    private val viewModel by viewModels<CustomerProfileViewModel>()
 
     // Adapters
 
@@ -43,12 +34,6 @@ class CustomerProfile : AppCompatActivity(), ApplicationToolbar.ApplicationToolb
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityCustomerProfileBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        progressBarHandler = ProgressBarHandler(this)
-
-        subscribeObservers()
         binding.apply {
             toolbarUserProfile.setApplicationToolbarListener(this@CustomerProfile)
         }
@@ -56,13 +41,13 @@ class CustomerProfile : AppCompatActivity(), ApplicationToolbar.ApplicationToolb
 
     }
 
-    private fun subscribeObservers() {
-        userAuthenticationViewModel.userID.observe(this, {
+    override fun subscribeObservers() {
+        viewModel.userId.observe(this, {
             userID = it
-            customerViewModel.getUserProfileInfo(userID)
+            viewModel.getUserProfileInfo(userID)
         })
 
-        customerViewModel.customerProfileInfo.observe(this, { _result ->
+        viewModel.customerProfileInfo.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -83,24 +68,6 @@ class CustomerProfile : AppCompatActivity(), ApplicationToolbar.ApplicationToolb
             }
         })
     }
-
-    private fun displayLoading(state: Boolean) {
-        if (state) progressBarHandler.show() else progressBarHandler.hide()
-    }
-
-
-    private fun displayRefreshing(loading: Boolean) {
-//        binding.swipeRefreshLayout.isRefreshing = loading
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show()
-        }
-    }
-
 
     fun initialUiState() {
         binding.apply {

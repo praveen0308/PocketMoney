@@ -30,7 +30,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/template_cart_item"
-        tools:itemCount="2"/>
+        tools:itemCount="2"
+        android:paddingHorizontal="@dimen/dimen_8dp"
+        android:paddingVertical="@dimen/dimen_16dp"/>
 <com.example.pocketmoney.utils.OrderAmountSummary
     android:id="@+id/orderAmountSummary"
     android:layout_width="match_parent"

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.databinding.TemplateContactListItemBinding
 import com.example.pocketmoney.mlm.model.ModelContact
+import com.example.pocketmoney.utils.extractMobileNumber
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -40,8 +41,9 @@ class ContactAdapter(private val sContactListener: ContactAdapterInterface): Rec
         }
         fun createContact(contact: ModelContact){
             binding.apply {
+
                 tvName.text = contact.contactName
-                tvNumber.text = contact.contactNumber
+                tvNumber.text = contact.contactNumber?.let { extractMobileNumber(it) }
                 tvSymbol.text = contact.contactName!!.take(1)
 
                 val rnd = Random()

@@ -14,5 +14,5 @@ object Constants {
 
     const val MERCHANT_ID = "IoEjZE36507440637572"
     const val WEBSITE = "WEBSTAGING"
-    const val PAYTM_CALLBACK_URL = "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=%s"
+    const val PAYTM_CALLBACK_URL = "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID="
 }

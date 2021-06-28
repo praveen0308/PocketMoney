@@ -1,48 +1,33 @@
 package com.example.pocketmoney.mlm.ui.welcome
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentLoginBinding
-import com.example.pocketmoney.mlm.model.UserModel
-import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
-import com.example.pocketmoney.utils.Constants
-import com.example.pocketmoney.utils.DataState
+import com.example.pocketmoney.mlm.repository.UserPreferencesRepository.Companion.LOGIN_DONE
+import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
+import com.example.pocketmoney.mlm.viewmodel.LoginViewModel
+import com.example.pocketmoney.utils.BaseFragment
+import com.example.pocketmoney.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import dmax.dialog.SpotsDialog
-import timber.log.Timber
 
 @AndroidEntryPoint
-class LoginFragment : Fragment() {
+class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
 
-    private var _binding: FragmentLoginBinding? = null
-    // This property is only valid between onCreateView and
-// onDestroyView.
-    private val binding get() = _binding!!
-    private val viewModel : AccountViewModel by viewModels()
+
+    private val viewModel : LoginViewModel by viewModels()
+//    private val viewModel : AccountViewModel by viewModels()
 
     private lateinit var dialog: android.app.AlertDialog
 
     private lateinit var navController:NavController
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,9 +35,9 @@ class LoginFragment : Fragment() {
 
         createProgressDialog()
 
-        binding.btnRegister.setOnClickListener(View.OnClickListener {
+        binding.btnRegister.setOnClickListener {
             navController.navigate(R.id.action_loginFragment_to_registerFragment)
-        })
+        }
 
         binding.btnSignIn.setOnClickListener{
             if (!binding.etUsername.text.isNullOrBlank()) {
@@ -69,32 +54,41 @@ class LoginFragment : Fragment() {
     }
 
 
-    private fun subscribeObservers(){
-        viewModel.userModel.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<UserModel?> -> {
-                    displayLoading(false)
+    override fun subscribeObservers(){
+        viewModel.userModel.observe(viewLifecycleOwner, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        try {
+                            viewModel.updateWelcomeStatus(LOGIN_DONE)
+                            viewModel.updateLoginId(it.LoginID!!)
+                            viewModel.updateUserId(it.UserID!!)
+                            viewModel.updateUserName(it.UserName!!)
+                            viewModel.updateUserRoleID(it.UserRoleID!!)
+                        }finally {
+                            val intent = Intent(requireActivity(), MainDashboard::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                            requireActivity().finish()
+                        }
 
-                    viewModel.updateWelcomeStatus(Constants.LOGIN_DONE)
-                    navController.navigate(LoginFragmentDirections.actionLoginFragmentToMainDashboard())
-                    activity?.finish()
+
+                    }
+                    displayLoading(false)
                 }
-                is DataState.Loading -> {
+                Status.LOADING -> {
                     displayLoading(true)
-
                 }
-                is DataState.Error -> {
+                Status.ERROR -> {
                     displayLoading(false)
-                    displayError(dataState.exception.message)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
     }
 
-    private fun displayLoading(state: Boolean) {
-        if (state) dialog.show() else dialog.dismiss()
-
-    }
 
     private fun createProgressDialog(){
         dialog = SpotsDialog.Builder()
@@ -103,18 +97,8 @@ class LoginFragment : Fragment() {
                 .setCancelable(false)
                 .setTheme(R.style.CustomProgressDialog)
                 .build()
-
-
-
     }
 
-    private fun displayError(message: String?){
-        if(message != null){
-            Toast.makeText(context, "Incorrect Username & Password !!!", Toast.LENGTH_LONG).show()
-            Timber.e(message)
-        }else{
-            Toast.makeText(context, "Unknown error", Toast.LENGTH_LONG).show()
-        }
-    }
+
 
 }

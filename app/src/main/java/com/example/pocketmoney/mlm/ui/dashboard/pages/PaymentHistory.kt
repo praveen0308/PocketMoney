@@ -13,9 +13,8 @@ import com.example.pocketmoney.mlm.model.TransactionModel
 import com.example.pocketmoney.mlm.model.TransactionTypeModel
 import com.example.pocketmoney.mlm.model.UniversalFilterItemModel
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerRequestModel1
-import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
 import com.example.pocketmoney.mlm.viewmodel.FilterViewModel
-import com.example.pocketmoney.mlm.viewmodel.WalletViewModel
+import com.example.pocketmoney.mlm.viewmodel.PaymentHistoryViewModel
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.DateTimeEnum
 import com.example.pocketmoney.utils.myEnums.PaymentHistoryFilterEnum
@@ -31,9 +30,8 @@ class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPayme
     private lateinit var paymentHistoryAdapter: PaymentHistoryAdapter
 
     // ViewModel
-    private val walletViewModel: WalletViewModel by viewModels()
-    private val accountViewModel: AccountViewModel by viewModels()
     private val filterViewModel by viewModels<FilterViewModel>()
+    private val viewModel by viewModels<PaymentHistoryViewModel>()
 
     // Variables
     private var userID: String = ""
@@ -121,11 +119,11 @@ class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPayme
                 UserID = userID.toLong()
         )
 
-        walletViewModel.getAllTransactionHistory(requestModel)
+        viewModel.getAllTransactionHistory(requestModel)
     }
 
     override fun subscribeObservers() {
-        walletViewModel.allTransactionHistory.observe(viewLifecycleOwner, { _result ->
+        viewModel.allTransactionHistory.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -173,19 +171,19 @@ class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPayme
         })
 
 
-        accountViewModel.userID.observe(viewLifecycleOwner, {
+        viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
 
         })
-        accountViewModel.roleID.observe(viewLifecycleOwner, {
+        viewModel.userRoleID.observe(viewLifecycleOwner, {
             roleID = it
             if (userID != "" && roleID != 0) {
-                walletViewModel.getWalletBalance(userID, roleID)
+                viewModel.getWalletBalance(userID, roleID)
                 requestTransactionHistory(userID, roleID, getDateRange(DateTimeEnum.LAST_MONTH), getTodayDate())
             }
 
         })
-        walletViewModel.walletBalance.observe(viewLifecycleOwner, { _result ->
+        viewModel.walletBalance.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {

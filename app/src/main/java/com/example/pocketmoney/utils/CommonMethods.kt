@@ -1,13 +1,19 @@
 package com.example.pocketmoney.utils
 
+import android.R.attr
+import android.graphics.Bitmap
 import android.widget.Adapter
 import android.widget.TextView
+import androidmads.library.qrgenearator.QRGContents
+import androidmads.library.qrgenearator.QRGEncoder
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.R
 import com.example.pocketmoney.mlm.model.UniversalFilterItemModel
 import com.example.pocketmoney.utils.myEnums.DateTimeEnum
 import com.example.pocketmoney.utils.myEnums.FilterEnum
 import com.example.pocketmoney.utils.myEnums.PaymentHistoryFilterEnum
+import com.google.zxing.WriterException
+import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -249,6 +255,27 @@ fun getMobileOperatorLogo(id: String): Int {
 
 }
 
+fun extractMobileNumber(number: String): String {
+    // for removing all whitespaces
+    var mobileNum: String = number.replace("\\s", "")
+
+    // for removing all non-numeric characters
+    mobileNum = mobileNum.replace("[^\\d]".toRegex(), "")
+
+    return when {
+        mobileNum.length == 10 -> {
+            mobileNum
+        }
+        mobileNum.length > 10 -> {
+            mobileNum.substring(mobileNum.length - 10)
+        }
+        else -> {
+            // whatever is appropriate in this case
+            Timber.e(IllegalArgumentException("word has fewer than 10 characters!"))
+            return "ERROR"
+        }
+    }
+}
 
 fun TextView.setAmount(amount: Any) {
     text = "₹ $amount"
@@ -257,3 +284,25 @@ fun TextView.setAmount(amount: Any) {
 fun RecyclerView.setup(adapter : Adapter){
 
 }
+
+fun lcm(vararg input: Int): Int {
+    var result = input[0]
+    for (i in 1 until input.size) result = lcm(result, input[i])
+    return result
+}
+//
+//fun getQrCodeBitmap(data: String): Bitmap {
+////    val qrCodeContent = "WIFI:S:$ssid;T:WPA;P:$password;;"
+////    val hints = hashMapOf<EncodeHintType, Int>().also { it[EncodeHintType.MARGIN] = 1 } // Make the QR code buffer border narrower
+////    val bits = QRCodeWriter().encode(qrCodeContent, BarcodeFormat.QR_CODE, 200, 200, hints)
+////    val size = 512 //pixels
+////    return Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565).also {
+////        for (x in 0 until size) {
+////            for (y in 0 until size) {
+////                it.setPixel(x, y, if (bits[x, y]) Color.BLACK else Color.WHITE)
+////            }
+////        }
+////    }
+//
+//
+//}

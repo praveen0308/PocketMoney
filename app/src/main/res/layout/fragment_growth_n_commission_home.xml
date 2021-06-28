@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Heading"
+        android:text="@string/income"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,6 +26,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="@dimen/dimen_8dp"
+        android:overScrollMode="never"
         app:layout_constraintTop_toBottomOf="@+id/tv_page_title"
         tools:listitem="@layout/template_card_widget_type_2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

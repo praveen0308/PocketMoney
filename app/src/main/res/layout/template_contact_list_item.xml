@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
 
-    android:paddingVertical="8dp">
+    android:paddingVertical="16dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cd_symbol_background"
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:text="TextView"
-        android:textStyle="bold"
+
         android:textSize="16sp"
         android:textColor="@color/colorTextPrimary"
         app:layout_constraintEnd_toEndOf="parent"

@@ -9,7 +9,6 @@ import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.LayoutOrderAmountSummaryBinding
-import kotlinx.android.synthetic.main.fragment_order_summary.view.*
 
 
 class OrderAmountSummary @kotlin.jvm.JvmOverloads constructor(

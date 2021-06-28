@@ -18,7 +18,6 @@ import com.example.pocketmoney.mlm.model.ModelOperator
 import com.example.pocketmoney.mlm.viewmodel.RechargeViewModel
 import com.example.pocketmoney.utils.DataState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.template_edit_text_with_back_arrow.view.*
 import timber.log.Timber
 
 
@@ -58,21 +57,21 @@ class OperatorList : Fragment(), OperatorAdapter.OperatorAdapterInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         operatorType = arguments?.getString("OPERATOR_TYPE")
-
-        when(operatorType){
-            "PREPAID","POSTPAID"->{
-                binding.mctilSearchOperator.input_edit_text.hint = "Select an operator"
-                binding.tvOperatorListTitle.text = getString(R.string.operators)
-            }
-            "DTH"->{
-                binding.mctilSearchOperator.input_edit_text.hint = "Select DTH Operator"
-                binding.tvOperatorListTitle.text = getString(R.string.dth_operators)
-            }
-            "ELECTRICITY"->{
-                binding.mctilSearchOperator.input_edit_text.hint = "Select an electricity board"
-                binding.tvOperatorListTitle.text = getString(R.string.electricity_boards)
-            }
-        }
+//
+//        when(operatorType){
+//            "PREPAID","POSTPAID"->{
+//                binding.mctilSearchOperator.input_edit_text.hint = "Select an operator"
+//                binding.tvOperatorListTitle.text = getString(R.string.operators)
+//            }
+//            "DTH"->{
+//                binding.mctilSearchOperator.input_edit_text.hint = "Select DTH Operator"
+//                binding.tvOperatorListTitle.text = getString(R.string.dth_operators)
+//            }
+//            "ELECTRICITY"->{
+//                binding.mctilSearchOperator.input_edit_text.hint = "Select an electricity board"
+//                binding.tvOperatorListTitle.text = getString(R.string.electricity_boards)
+//            }
+//        }
 
         setupRecyclerView()
         subscribeObservers()

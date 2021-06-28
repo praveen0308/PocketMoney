@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.pocketmoney.R;
+import com.example.pocketmoney.utils.Constants;
 import com.example.pocketmoney.utils.JSONParser;
 import com.paytm.pgsdk.Log;
 import com.paytm.pgsdk.PaytmOrder;
@@ -30,7 +31,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class PaytmSdk extends AppCompatActivity implements PaytmPaymentTransactionCallback {
-    private static String MercahntKey = "ATMIMC97739829232153";
+    private static String MercahntKey = "SAMPUR77863976180175";
     EditText price;
     String order_id, cust_id, price_amt;
 
@@ -47,6 +48,8 @@ public class PaytmSdk extends AppCompatActivity implements PaytmPaymentTransacti
                 order_id = createRandomOrderId();
                 cust_id = createRandomCustId();
                 price_amt = price.getText().toString();
+
+
                 sendUserDetailTOServerdd dl = new sendUserDetailTOServerdd();
                 dl.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
@@ -57,10 +60,13 @@ public class PaytmSdk extends AppCompatActivity implements PaytmPaymentTransacti
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
+
+
     @SuppressLint("StaticFieldLeak")
     public class sendUserDetailTOServerdd extends AsyncTask<ArrayList<String>, Void, String> {
         private ProgressDialog dialog = new ProgressDialog(PaytmSdk.this);
-        String url ="http://enactive-words.000webhostapp.com/paytm/generateChecksum.php";
+        String url = Constants.BASE_URL+"Payment/InitiateTransactionAPI";
+//        String url ="http://enactive-words.000webhostapp.com/paytm/generateChecksum.php";
         String varifyurl = "https://pguat.paytm.com/paytmchecksum/paytmCallback.jsp";
         String CHECKSUMHASH ="";
         @Override

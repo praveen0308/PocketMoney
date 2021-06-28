@@ -8,8 +8,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.pocketmoney.R
 import com.example.pocketmoney.utils.myEnums.NavigationType
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
-import kotlinx.android.synthetic.main.activity_checkout_order.*
-import kotlinx.android.synthetic.main.activity_extra_navigation.*
 
 class ExtraNavigationActivity : AppCompatActivity() {
 
@@ -28,7 +26,7 @@ class ExtraNavigationActivity : AppCompatActivity() {
     }
     fun setupStartDestination(step: Int) {
 
-        navHostFragment = nav_host_extra_navigation as NavHostFragment
+//        navHostFragment = findViewById(R.id.nav_host_extra_navigation) as NavHostFragment
         val graphInflater = navHostFragment.navController.navInflater
         navGraph = graphInflater.inflate(R.navigation.nav_extra_navigation)
         navController = navHostFragment.navController

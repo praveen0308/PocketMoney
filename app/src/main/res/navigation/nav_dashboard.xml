@@ -86,5 +86,10 @@
         android:name="com.example.pocketmoney.shopping.ui.SearchProductActivity"
         android:label="activity_search_product"
         tools:layout="@layout/activity_search_product" />
+    <fragment
+        android:id="@+id/account"
+        android:name="com.example.pocketmoney.mlm.ui.dashboard.pages.Account"
+        android:label="fragment_account"
+        tools:layout="@layout/fragment_account" />
 
 </navigation>

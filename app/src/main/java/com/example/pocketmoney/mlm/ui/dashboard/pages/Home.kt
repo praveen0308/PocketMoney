@@ -1,6 +1,7 @@
 package com.example.pocketmoney.mlm.ui.dashboard.pages
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,14 +12,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentHomeBinding
 import com.example.pocketmoney.mlm.HomeParentItemListener
 import com.example.pocketmoney.mlm.adapters.HomeParentAdapter
 import com.example.pocketmoney.mlm.model.*
+import com.example.pocketmoney.mlm.ui.dashboard.CustomerWalletActivity
 import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
 import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
+import com.example.pocketmoney.mlm.viewmodel.HomeViewModel
 import com.example.pocketmoney.mlm.viewmodel.WalletViewModel
 import com.example.pocketmoney.shopping.adapters.ShoppingHomeMasterAdapter
 import com.example.pocketmoney.utils.BaseFragment
@@ -26,20 +30,15 @@ import com.example.pocketmoney.utils.ProgressBarHandler
 
 import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.MyEnums
+import com.example.pocketmoney.utils.setAmount
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), HomeParentItemListener {
 
-    // UI
-    private lateinit var navController: NavController
-
-    // Adapter
-
     // ViewModel
-    private val walletViewModel: WalletViewModel by viewModels()
-    private val accountViewModel : AccountViewModel by viewModels()
+    private val viewModel by viewModels<HomeViewModel>()
 
     // Interface
     private lateinit var fragmentListener : HomeFragmentListener
@@ -56,7 +55,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
+        
         binding.bottomLayout.mainDashboardParentRecyclerView.setHasFixedSize(true)
         binding.bottomLayout.mainDashboardParentRecyclerView.layoutManager =
             LinearLayoutManager(context)
@@ -85,25 +84,25 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
 
     }
     override fun subscribeObservers() {
-        accountViewModel.userID.observe(viewLifecycleOwner, {
+        viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
 
         })
-        accountViewModel.roleID.observe(viewLifecycleOwner, {
+        viewModel.userRoleID.observe(viewLifecycleOwner, {
             roleID = it
             if (userID!="" && roleID!=0){
-                walletViewModel.getWalletBalance(userID,roleID)
-                walletViewModel.getPCashBalance(userID,roleID)
+                viewModel.getWalletBalance(userID,roleID)
+                viewModel.getPCashBalance(userID,roleID)
             }
 
         })
-        walletViewModel.walletBalance.observe(viewLifecycleOwner, Observer { _result ->
+        viewModel.walletBalance.observe(viewLifecycleOwner, Observer { _result ->
             when(_result.status)
             {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        binding.walletDetailView.tvWalletBalance.text = "₹".plus(it.toString())
-                        binding.topLayout.walletBalanceView.tvWalletBalance.text = "₹".plus(it.toString())
+                        binding.walletDetailView.tvWalletBalance.setAmount(it)
+                        binding.topLayout.walletBalanceView.tvWalletBalance.setAmount(it)
                     }
 
                     displayLoading(false)
@@ -119,12 +118,12 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
                 }
             }
         })
-        walletViewModel.pCash.observe(viewLifecycleOwner, { _result ->
+        viewModel.pCash.observe(viewLifecycleOwner, { _result ->
             when(_result.status)
             {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        binding.walletDetailView.tvPCash.text = "₹".plus(it.toString())
+                        binding.walletDetailView.tvPCash.setAmount(it)
                     }
                     displayLoading(false)
                 }
@@ -141,48 +140,6 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
         })
     }
 
-
-    private fun prepareBannerList(): ArrayList<ModelBanner> {
-        val bannerList: ArrayList<ModelBanner> = ArrayList()
-
-        bannerList.add(
-            ModelBanner(
-                "Send money from credit card to bank",
-                R.drawable.img_pay_bills,
-                R.color.colorPrimaryLight
-            )
-        )
-        bannerList.add(
-            ModelBanner(
-                "Send money from credit card to bank",
-                R.drawable.img_pay_bills,
-                R.color.colorPrimaryLight
-            )
-        )
-        bannerList.add(
-            ModelBanner(
-                "Send money from credit card to bank",
-                R.drawable.img_pay_bills,
-                R.color.colorPrimaryLight
-            )
-        )
-        bannerList.add(
-            ModelBanner(
-                "Send money from credit card to bank",
-                R.drawable.img_pay_bills,
-                R.color.colorPrimaryLight
-            )
-        )
-        bannerList.add(
-            ModelBanner(
-                "Send money from credit card to bank",
-                R.drawable.img_pay_bills,
-                R.color.colorPrimaryLight
-            )
-        )
-
-        return bannerList
-    }
 
     private fun prepareHomeData(): List<HomeParentModel> {
 
@@ -253,12 +210,17 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
 
     private fun performActionForServices(action:RechargeEnum){
         when(action){
-            RechargeEnum.PREPAID,RechargeEnum.POSTPAID -> navController.navigate(R.id.action_home_to_mobileRechargeActivity)
-            RechargeEnum.DTH->navController.navigate(R.id.action_home_to_dthActivity)
-            RechargeEnum.ELECTRICITY->navController.navigate(R.id.action_home_to_electricityActivity)
-            RechargeEnum.SHOPPING -> navController.navigate(R.id.action_home_to_shop)
-            RechargeEnum.PAYMENT_HISTORY -> navController.navigate(R.id.action_home_to_paymentHistory)
-            else -> navController.navigate(HomeDirections.actionHomeToRechargeActivity(action))
+            RechargeEnum.PREPAID,RechargeEnum.POSTPAID -> findNavController().navigate(R.id.action_home_to_mobileRechargeActivity)
+            RechargeEnum.DTH->findNavController().navigate(R.id.action_home_to_dthActivity)
+            RechargeEnum.ELECTRICITY->findNavController().navigate(R.id.action_home_to_electricityActivity)
+            RechargeEnum.SHOPPING -> findNavController().navigate(R.id.action_home_to_shop)
+            RechargeEnum.WALLET -> {
+                val intent = Intent(requireActivity(), CustomerWalletActivity::class.java)
+                intent.putExtra("FILTER","BUSINESS")
+                startActivity(intent)
+            }
+            RechargeEnum.PAYMENT_HISTORY -> findNavController().navigate(R.id.action_home_to_paymentHistory)
+            else -> findNavController().navigate(HomeDirections.actionHomeToRechargeActivity(action))
         }
     }
 

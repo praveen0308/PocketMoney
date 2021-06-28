@@ -2,50 +2,36 @@ package com.example.pocketmoney.mlm.ui.welcome
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
+import android.os.Looper
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.example.pocketmoney.R
-import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
+import com.example.pocketmoney.databinding.FragmentSplashScreenBinding
+import com.example.pocketmoney.mlm.viewmodel.SplashScreenViewModel
+import com.example.pocketmoney.utils.BaseFragment
 import com.example.pocketmoney.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SplashScreen : Fragment() {
+class SplashScreen : BaseFragment<FragmentSplashScreenBinding>(FragmentSplashScreenBinding::inflate) {
 
-    private val viewModel: AccountViewModel by viewModels()
+    private val viewModel by viewModels<SplashScreenViewModel>()
 
     private lateinit var navController: NavController
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_splash_screen, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         navController = Navigation.findNavController(view)
 
-
-        // we used the postDelayed(Runnable, time) method
-        // to send a message with a delayed time.
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             performNavigation()
-        }, 2000) // 300
+        }, 2000)
     }
 
     private fun performNavigation() {
         viewModel.welcomeStatus.observe(viewLifecycleOwner, {
-            Log.d("MyStatus", "performNavigation: $it")
 
             when(it){
                 Constants.NEW_USER -> navController.navigate(SplashScreenDirections.actionSplashScreenToOnBoardingScreen())
@@ -58,6 +44,10 @@ class SplashScreen : Fragment() {
             }
 
         })
+    }
+
+    override fun subscribeObservers() {
+
     }
 
 }

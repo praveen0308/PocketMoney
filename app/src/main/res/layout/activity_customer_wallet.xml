@@ -53,28 +53,35 @@
                     android:text="Last Month"
                     android:textAllCaps="false" />
             </com.google.android.material.textfield.TextInputLayout>
+
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:paddingHorizontal="8dp"
                 android:clipToPadding="false"
-                android:scrollbars="none">
+                android:paddingHorizontal="8dp"
+                android:scrollbars="none"
+                android:visibility="gone"
+                tools:visibility="visible">
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingVertical="8dp">
+
                     <include
 
                         android:id="@+id/layout_wallet_balance"
-                        layout="@layout/template_wallet_balance_view"/>
+                        layout="@layout/template_wallet_balance_view" />
+
                     <include
                         android:id="@+id/layout_total_credit"
-                        layout="@layout/template_wallet_balance_view"/>
+                        layout="@layout/template_wallet_balance_view" />
+
                     <include
                         android:id="@+id/layout_total_debit"
-                        layout="@layout/template_wallet_balance_view"/>
+                        layout="@layout/template_wallet_balance_view" />
                 </LinearLayout>
 
 
@@ -87,4 +94,20 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_transfer"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:icon="@drawable/ic_transfer"
+        android:text="@string/transfer"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        app:iconTint="@color/white"
+        android:textSize="@dimen/dimen_16sp"
+        app:backgroundTint="@color/colorPrimary"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

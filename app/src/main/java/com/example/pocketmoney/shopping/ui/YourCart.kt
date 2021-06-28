@@ -12,19 +12,16 @@ import com.example.pocketmoney.shopping.adapters.CartItemListAdapter
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.ui.checkoutorder.CheckoutOrder
 import com.example.pocketmoney.shopping.viewmodel.CartViewModel
-import com.example.pocketmoney.utils.ApplicationToolbar
-import com.example.pocketmoney.utils.DataState
-import com.example.pocketmoney.utils.ModelOrderAmountSummary
+import com.example.pocketmoney.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class YourCart : AppCompatActivity(), CartItemListAdapter.CartItemListAdapterListener, ApplicationToolbar.ApplicationToolbarListener {
+class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::inflate), CartItemListAdapter.CartItemListAdapterListener, ApplicationToolbar.ApplicationToolbarListener {
 
     //Ui
-    private lateinit var binding: ActivityYourCartBinding
 
     // ViewModels
-    private val cartViewModel: CartViewModel by viewModels()
+    private val viewModel: CartViewModel by viewModels()
 
     // Adapters
     private lateinit var cartItemListAdapter: CartItemListAdapter
@@ -35,57 +32,62 @@ class YourCart : AppCompatActivity(), CartItemListAdapter.CartItemListAdapterLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityYourCartBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         initialUiState()
         binding.toolbarYourCart.setApplicationToolbarListener(this)
         setUpCartItemRecyclerView()
-        subscribeObservers()
         binding.btnCheckout.setOnClickListener {
             startActivity(Intent(this, CheckoutOrder::class.java))
         }
 
     }
 
-    private fun subscribeObservers() {
+    override fun subscribeObservers() {
 
-        cartViewModel.userID.observe(this, {
+        viewModel.userID.observe(this, {
             userID = it
-            cartViewModel.getCartItems(userID)
+            viewModel.getCartItems(userID)
         })
-
-        cartViewModel.cartItems.observe(this, { dataState ->
-            when (dataState) {
-                is DataState.Success<List<CartModel>> -> {
+        viewModel.cartItems.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        cartIsEmpty(it)
+                    }
                     displayLoading(false)
-                    cartIsEmpty(dataState.data)
                 }
-                is DataState.Loading -> {
+                Status.LOADING -> {
                     displayLoading(true)
                 }
-                is DataState.Error -> {
+                Status.ERROR -> {
                     displayLoading(false)
-                    displayError(dataState.exception.message)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
 
-        cartViewModel.cartItemQuantity.observe(this, { dataState ->
-            when (dataState) {
-                is DataState.Success<Int> -> {
+        viewModel.cartItemQuantity.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        viewModel.getCartItems(userID)
+                    }
                     displayLoading(false)
-                    cartViewModel.getCartItems(userID)
                 }
-                is DataState.Loading -> {
+                Status.LOADING -> {
                     displayLoading(true)
-
                 }
-                is DataState.Error -> {
+                Status.ERROR -> {
                     displayLoading(false)
-                    displayError(dataState.exception.message)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
+
+
     }
 
     private fun cartIsEmpty(cartList: List<CartModel>) {
@@ -108,18 +110,6 @@ class YourCart : AppCompatActivity(), CartItemListAdapter.CartItemListAdapterLis
         binding.layoutCartSummary.visibility = View.GONE
     }
 
-    private fun displayLoading(state: Boolean) {
-
-        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show()
-        }
-    }
 
     private fun setUpCartItemRecyclerView() {
         cartItemListAdapter = CartItemListAdapter(this)
@@ -162,15 +152,15 @@ class YourCart : AppCompatActivity(), CartItemListAdapter.CartItemListAdapterLis
 
 
     override fun onItemQuantityIncrease(itemID: Int) {
-        cartViewModel.changeCartItemQuantity(1, itemID, userID)
+        viewModel.changeCartItemQuantity(1, itemID, userID)
     }
 
     override fun onItemQuantityDecrease(itemID: Int) {
-        cartViewModel.changeCartItemQuantity(0, itemID, userID)
+        viewModel.changeCartItemQuantity(0, itemID, userID)
     }
 
     override fun onItemDelete(itemID: Int) {
-        cartViewModel.changeCartItemQuantity(-1, itemID, userID)
+        viewModel.changeCartItemQuantity(-1, itemID, userID)
     }
 
     override fun onItemClick(itemID: Int) {

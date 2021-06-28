@@ -25,7 +25,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_customer_growth"
-        app:navGraph="@navigation/nav_customer_growth_n_commission" />
+        app:navGraph="@navigation/nav_customer_growth_n_commission"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

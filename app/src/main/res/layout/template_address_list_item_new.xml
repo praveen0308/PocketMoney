@@ -7,12 +7,11 @@
     android:background="@color/white">
 
     <TextView
-        android:id="@+id/textView19"
+        android:id="@+id/tv_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,18 +34,18 @@
         android:id="@+id/textView20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="8dp"
         android:text="@string/mobile"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        app:layout_constraintStart_toStartOf="@+id/textView19"
-        app:layout_constraintTop_toBottomOf="@+id/textView19" />
+        app:layout_constraintStart_toStartOf="@+id/tv_address"
+        app:layout_constraintTop_toBottomOf="@+id/tv_address" />
 
     <TextView
-        android:id="@+id/textView48"
+        android:id="@+id/tv_mobile_number"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:text="TextView"
         android:textAppearance="@style/ValueLabel"
         app:layout_constraintBottom_toBottomOf="@+id/textView20"
@@ -55,42 +54,45 @@
         app:layout_constraintTop_toTopOf="@+id/textView20" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btn_remove"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/remove"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:visibility="gone"
         app:cornerRadius="@dimen/btn_corner_radius"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/textView20"
+        app:layout_constraintStart_toEndOf="@+id/btn_edit"
         app:layout_constraintTop_toBottomOf="@+id/textView20"
-        app:strokeColor="@color/black_222222" />
+        app:strokeColor="@color/black_222222"
+        tools:visibility="visible" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/btn_edit"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:text="@string/edit"
         android:textColor="@color/black"
         android:textStyle="bold"
         app:cornerRadius="@dimen/btn_corner_radius"
-        app:layout_constraintBottom_toBottomOf="@+id/button2"
-        app:layout_constraintStart_toEndOf="@+id/button2"
-        app:layout_constraintTop_toTopOf="@+id/button2"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_remove"
+        app:layout_constraintStart_toStartOf="@+id/textView20"
+        app:layout_constraintTop_toTopOf="@+id/btn_remove"
         app:strokeColor="@color/black_222222" />
 
     <com.google.android.material.chip.Chip
-        android:id="@+id/chip4"
+        android:id="@+id/cp_address_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Home"
         android:textAllCaps="true"
         android:textColor="@color/colorPrimary"
+        android:visibility="gone"
         app:chipBackgroundColor="@color/white"
         app:chipEndPadding="@dimen/dimen_16dp"
         app:chipStartPadding="@dimen/dimen_16dp"
@@ -100,6 +102,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.92"
         app:layout_constraintStart_toEndOf="@+id/radioButton"
-        app:layout_constraintTop_toTopOf="@+id/radioButton" />
+        app:layout_constraintTop_toTopOf="@+id/radioButton"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

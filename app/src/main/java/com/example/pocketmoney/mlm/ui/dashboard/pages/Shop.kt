@@ -5,43 +5,37 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
-import android.view.View.OnTouchListener
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentShopBinding
 import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
+import com.example.pocketmoney.mlm.viewmodel.ShopViewModel
 import com.example.pocketmoney.shopping.adapters.ShoppingHomeCategoriesAdapter
 import com.example.pocketmoney.shopping.adapters.ShoppingHomeMasterAdapter
 import com.example.pocketmoney.shopping.model.HomeContentMaster
 import com.example.pocketmoney.shopping.model.ProductModel
 import com.example.pocketmoney.shopping.ui.BuyProduct
-import com.example.pocketmoney.shopping.viewmodel.CartViewModel
-import com.example.pocketmoney.shopping.viewmodel.ProductViewModel
 import com.example.pocketmoney.shopping.viewmodel.ShoppingHomeEvent
 import com.example.pocketmoney.utils.ApplicationToolbar
-import com.example.pocketmoney.utils.DataState
+import com.example.pocketmoney.utils.BaseFragment
+import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.MyEnums
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class Shop : Fragment(), ShoppingHomeCategoriesAdapter.ProductClickListener, ApplicationToolbar.ApplicationToolbarListener {
+class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate), ShoppingHomeCategoriesAdapter.ProductClickListener, ApplicationToolbar.ApplicationToolbarListener {
 
-
-    // Ui
-    private var _binding: FragmentShopBinding? = null
-    private val binding get() = _binding!!
 
     // Adapter
     private lateinit var shoppingHomeParentAdapter: ShoppingHomeMasterAdapter
 
     // ViewModel
-    private val viewModel: ProductViewModel by viewModels()
-    private val cartViewModel: CartViewModel by viewModels()
+    private val viewModel: ShopViewModel by viewModels()
+
 
     // Interface
     private lateinit var fragmentListener: ShopFragmentListener
@@ -49,21 +43,6 @@ class Shop : Fragment(), ShoppingHomeCategoriesAdapter.ProductClickListener, App
     // Variable
     private var userID: String = ""
     private var cartItemCount: Int = 0
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        setHasOptionsMenu(true)
-        _binding = FragmentShopBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
@@ -73,7 +52,7 @@ class Shop : Fragment(), ShoppingHomeCategoriesAdapter.ProductClickListener, App
     override fun onResume() {
         super.onResume()
         if (userID!="") {
-            cartViewModel.getCartItemCount(userID)
+            viewModel.getCartItemCount(userID)
         }
     }
 
@@ -89,71 +68,56 @@ class Shop : Fragment(), ShoppingHomeCategoriesAdapter.ProductClickListener, App
 
         setupRecyclerView()
         binding.fragmentShopToolbar.setApplicationToolbarListener(this)
-        subscribeObservers()
         viewModel.getProductList(ShoppingHomeEvent.GetProductList)
     }
 
-    private fun subscribeObservers() {
-
-        viewModel.productList.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<List<ProductModel>> -> {
+    override fun subscribeObservers() {
+        viewModel.productList.observe(viewLifecycleOwner, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        populateRecyclerView(it)
                     displayLoading(false)
-                    displayRefreshing(false)
-                    populateRecyclerView(dataState.data)
-//                    Timber.d(dataState.data.toString())
+                    }
                 }
-                is DataState.Loading -> {
+                Status.LOADING -> {
                     displayLoading(true)
-
                 }
-                is DataState.Error -> {
+                Status.ERROR -> {
                     displayLoading(false)
-                    displayRefreshing(false)
-                    displayError(dataState.exception.message)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
 
 
-        cartViewModel.userID.observe(viewLifecycleOwner, {
+        viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
-            cartViewModel.getCartItemCount(userID)
+            viewModel.getCartItemCount(userID)
         })
 
-        cartViewModel.cartItemCount.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<Int> -> {
-                    displayLoading(false)
-                    cartItemCount = dataState.data
-                    binding.fragmentShopToolbar.setMenuBadgeCount(cartItemCount)
+        viewModel.cartItemCount.observe(viewLifecycleOwner, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        cartItemCount = it
+                        binding.fragmentShopToolbar.setMenuBadgeCount(cartItemCount)
+                        displayLoading(false)
+                    }
                 }
-                is DataState.Loading -> {
+                Status.LOADING -> {
                     displayLoading(true)
-
                 }
-                is DataState.Error -> {
+                Status.ERROR -> {
                     displayLoading(false)
-                    displayError(dataState.exception.message)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
-    }
-
-    private fun displayLoading(state: Boolean) {
-        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
-    }
-
-    private fun displayRefreshing(loading: Boolean) {
-//        binding.swipeRefreshLayout.isRefreshing = loading
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(context, "Unknown error", Toast.LENGTH_LONG).show()
-        }
     }
 
 

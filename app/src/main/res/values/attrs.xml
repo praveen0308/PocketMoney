@@ -4,6 +4,14 @@
 <!--        <attr name="targetEditText" format="reference" />-->
 
 <!--    </declare-styleable>-->
+    <declare-styleable name="VerticalTextView">
+        <attr name="VT_direction">
+            <enum name="uptodown" value="0" />
+            <enum name="downtoup" value="1" />
+            <enum name="lefttoright" value="2" />
+            <enum name="righttoleft" value="3" />
+        </attr>
+    </declare-styleable>
 
     <declare-styleable name="NumericKeyboard">
         <attr name="field" format="reference" />

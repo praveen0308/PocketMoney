@@ -4,19 +4,14 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.databinding.ActivityPaymentHistoryFilterBinding
 import com.example.pocketmoney.mlm.adapters.PaymentHistoryFilterAdapter
 import com.example.pocketmoney.mlm.adapters.PaymentHistoryFilterItemAdapter
-import com.example.pocketmoney.mlm.model.TransactionTypeModel
 import com.example.pocketmoney.mlm.model.UniversalFilterItemModel
 import com.example.pocketmoney.mlm.model.UniversalFilterModel
 import com.example.pocketmoney.mlm.viewmodel.FilterViewModel
 import com.example.pocketmoney.utils.*
-import com.example.pocketmoney.utils.myEnums.DateTimeEnum
-import com.example.pocketmoney.utils.myEnums.PaymentHistoryFilterEnum
 import dagger.hilt.android.AndroidEntryPoint
 
 

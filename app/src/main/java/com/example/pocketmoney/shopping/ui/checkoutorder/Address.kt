@@ -74,24 +74,24 @@ class Address : BaseFragment<FragmentAddressBinding>(FragmentAddressBinding::inf
             userID = it
             addressViewModel.getCustomerAddressList(userID)
         })
-
-        addressViewModel.customerAddressList.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<List<ModelAddress>> -> {
-                    displayLoading(false)
-                    dataState.data[0].isSelected=true
-                    addressAdapter.setAddressList(dataState.data.toMutableList())
-                }
-                is DataState.Loading -> {
-                    displayLoading(true)
-
-                }
-                is DataState.Error -> {
-                    displayLoading(false)
-                    displayError(dataState.exception.message)
-                }
-            }
-        })
+//
+//        addressViewModel.customerAddressList.observe(viewLifecycleOwner, { dataState ->
+//            when (dataState) {
+//                is DataState.Success<List<ModelAddress>> -> {
+//                    displayLoading(false)
+//                    dataState.data[0].isSelected=true
+//                    addressAdapter.setAddressList(dataState.data.toMutableList())
+//                }
+//                is DataState.Loading -> {
+//                    displayLoading(true)
+//
+//                }
+//                is DataState.Error -> {
+//                    displayLoading(false)
+//                    displayError(dataState.exception.message)
+//                }
+//            }
+//        })
 
 
     }
@@ -106,7 +106,7 @@ class Address : BaseFragment<FragmentAddressBinding>(FragmentAddressBinding::inf
     }
 
     override fun onActionButtonClick(modelAddress: ModelAddress) {
-        checkoutOrderInterface.onDeliveryAddressSelected(modelAddress.AddressID!!)
+//        checkoutOrderInterface.onDeliveryAddressSelected(modelAddress.AddressID!!)
     }
 
     override fun onEditButtonClick(modelAddress: ModelAddress) {

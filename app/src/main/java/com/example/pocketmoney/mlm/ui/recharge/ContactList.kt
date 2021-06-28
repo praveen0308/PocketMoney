@@ -22,7 +22,6 @@ import com.example.pocketmoney.mlm.model.ModelContact
 import com.example.pocketmoney.mlm.viewmodel.RechargeViewModel
 import com.example.pocketmoney.utils.DataState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.template_edit_text_with_back_arrow.view.*
 import timber.log.Timber
 
 private const val ARG_PARAM1 = "param1"
@@ -49,7 +48,7 @@ class ContactList : Fragment(), ContactAdapter.ContactAdapterInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        binding.myCustomTextInputLayout.input_edit_text.hint = getString(R.string.msg_enter_name_n_mobile_no)
+//        binding.myCustomTextInputLayout. = getString(R.string.msg_enter_name_n_mobile_no)
         setupRecyclerView()
         subscribeObservers()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

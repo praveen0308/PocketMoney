@@ -5,6 +5,8 @@ import com.example.pocketmoney.mlm.model.ModelCustomerDetail
 import com.example.pocketmoney.mlm.model.UserMenu
 import com.example.pocketmoney.mlm.model.UserModel
 import com.example.pocketmoney.mlm.repository.AccountRepository
+import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
+import com.example.pocketmoney.mlm.repository.WalletRepository
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,30 +16,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountViewModel @Inject constructor(
-        private val accountRepository: AccountRepository
+        private val accountRepository: AccountRepository,
+        private val userPreferencesRepository: UserPreferencesRepository,
+        private val walletRepository: WalletRepository
+
 ):ViewModel(){
-    private val _userModel: MutableLiveData<DataState<UserModel?>> = MutableLiveData()
-    val userModel: LiveData<DataState<UserModel?>>
-        get() = _userModel
+    val loginId = userPreferencesRepository.loginId.asLiveData()
+    val userId = userPreferencesRepository.userId.asLiveData()
+    val userName = userPreferencesRepository.userName.asLiveData()
+    val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
 
-    val welcomeStatus = accountRepository.welcomeState.asLiveData()
-
-    val userID = accountRepository.userID.asLiveData()
-    val roleID = accountRepository.roleID.asLiveData()
-
-    fun updateWelcomeStatus(status:Int)=viewModelScope.launch {
-        accountRepository.updateWelcomeStatus(status)
-    }
-
-    fun doLogin(userName:String,password:String){
+    fun clearUserInfo(){
         viewModelScope.launch {
-
-            accountRepository.doLogin(userName, password)
-                    .onEach { dataState ->
-                        _userModel.value = dataState
-                    }
-                    .launchIn(viewModelScope)
+            userPreferencesRepository.clearUserInfo()
         }
+
     }
 
     private val _isAccountDuplicate = MutableLiveData<Resource<Boolean>>()
@@ -109,27 +102,27 @@ class AccountViewModel @Inject constructor(
 
     }
 
-    private val _userName = MutableLiveData<Resource<String>>()
-    val userName: LiveData<Resource<String>> = _userName
-
-    fun getUserName(id:String) {
-        viewModelScope.launch {
-            accountRepository
-                    .getUserName(id)
-                    .onStart {
-                        _userName.postValue(Resource.Loading(true))
-                    }
-                    .catch { exception ->
-                        exception.message?.let {
-                            _userName.postValue(Resource.Error(it))
-                        }
-                    }
-                    .collect { response->
-                        _userName.postValue(Resource.Success(response))
-                    }
-        }
-
-    }
+//    private val _userName = MutableLiveData<Resource<String>>()
+//    val userName: LiveData<Resource<String>> = _userName
+//
+//    fun getUserName(id:String) {
+//        viewModelScope.launch {
+//            accountRepository
+//                    .getUserName(id)
+//                    .onStart {
+//                        _userName.postValue(Resource.Loading(true))
+//                    }
+//                    .catch { exception ->
+//                        exception.message?.let {
+//                            _userName.postValue(Resource.Error(it))
+//                        }
+//                    }
+//                    .collect { response->
+//                        _userName.postValue(Resource.Success(response))
+//                    }
+//        }
+//
+//    }
 
     private val _isAccountActive = MutableLiveData<Resource<Boolean>>()
     val isAccountActive: LiveData<Resource<Boolean>> = _isAccountActive
@@ -174,5 +167,57 @@ class AccountViewModel @Inject constructor(
                     }
         }
     }
+
+    private val _walletBalance = MutableLiveData<Resource<Double>>()
+    val walletBalance : LiveData<Resource<Double>> = _walletBalance
+
+
+    private val _pCash = MutableLiveData<Resource<Double>>()
+    val pCash: LiveData<Resource<Double>> = _pCash
+
+
+    fun getWalletBalance(userId: String, roleId: Int) {
+
+        viewModelScope.launch {
+
+            walletRepository
+                .getWalletBalance(userId, roleId, 1)
+                .onStart {
+                    _walletBalance.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _walletBalance.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { _balance->
+                    _walletBalance.postValue(Resource.Success(_balance))
+                }
+        }
+
+    }
+
+
+    fun getPCashBalance(userId: String, roleId: Int) {
+
+        viewModelScope.launch {
+
+            walletRepository
+                .getWalletBalance(userId, roleId, 2)
+                .onStart {
+                    _pCash.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _pCash.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { _balance->
+                    _pCash.postValue(Resource.Success(_balance))
+                }
+        }
+
+    }
+
 
 }

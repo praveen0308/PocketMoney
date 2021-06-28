@@ -3,58 +3,38 @@ package com.example.pocketmoney.mlm.ui.customergrowth
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.databinding.FragmentGrowthNCommissionHomeBinding
 import com.example.pocketmoney.mlm.adapters.GrowthNCommissionAdapter
+import com.example.pocketmoney.mlm.adapters.IncomeAdapter
+import com.example.pocketmoney.mlm.model.IncomeModel
 import com.example.pocketmoney.mlm.model.mlmModels.*
 import com.example.pocketmoney.mlm.viewmodel.CustomerGrowthNCommissionViewModel
 import com.example.pocketmoney.utils.BaseFragment
 import com.example.pocketmoney.utils.Status
-import com.example.pocketmoney.utils.getDateRange
-import com.example.pocketmoney.utils.getTodayDate
-import com.example.pocketmoney.utils.myEnums.DateTimeEnum
 import com.example.pocketmoney.utils.myEnums.NavigationEnum
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val TYPE = "type"
 @AndroidEntryPoint
-class GrowthNCommissionHome : BaseFragment<FragmentGrowthNCommissionHomeBinding>(FragmentGrowthNCommissionHomeBinding::inflate),
+class GrowthNCommissionHome :
+    BaseFragment<FragmentGrowthNCommissionHomeBinding>(FragmentGrowthNCommissionHomeBinding::inflate),
     GrowthNCommissionAdapter.GrowthNCommissionInterface {
 
-    private var type: NavigationEnum? = null
+    private val viewModel by viewModels<CustomerGrowthNCommissionViewModel>()
 
-    private val viewModel by activityViewModels<CustomerGrowthNCommissionViewModel>()
-
-    private lateinit var growthCommissionAdapter : GrowthNCommissionAdapter
+    private lateinit var incomeAdapter: IncomeAdapter
+    private val incomeList = mutableListOf<IncomeModel>()
     // Variables
-    private var userID : String = ""
-    private var roleID : Int = 0
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            type = it.getSerializable(TYPE) as NavigationEnum
-
-        }
-    }
+    private var userID: String = ""
+    private var roleID: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setRvData()
 
     }
-//
-//    companion object {
-//        @JvmStatic
-//        fun newInstance(type: NavigationEnum) =
-//            GrowthNCommissionHome().apply {
-//                arguments = Bundle().apply {
-//                    putSerializable(TYPE, type)
-//                }
-//            }
-//    }
 
     override fun subscribeObservers() {
         viewModel.userID.observe(this, {
@@ -64,33 +44,35 @@ class GrowthNCommissionHome : BaseFragment<FragmentGrowthNCommissionHomeBinding>
         viewModel.roleID.observe(this, {
             roleID = it
             if (userID != "" && roleID != 0) {
-                when(type){
-                    NavigationEnum.GROWTH->{
-                        binding.tvPageTitle.text = "Growth"
-                        val requestModel = CustomerRequestModel1(
-                            UserID = userID.toLong(), RoleID = roleID
-                        )
-                        viewModel.getCustomerGrowth(requestModel)
-                    }
-                    NavigationEnum.COMMISSION->{
-                        binding.tvPageTitle.text = "Commission"
-                        val requestModel = GrowthComissionRequestModel(
-                            userID, roleID
-                        )
-                        viewModel.getGrowthCommission(requestModel)
-                    }
-                }
 
+                // For fetching growth
+                val requestModel1 = CustomerRequestModel1(
+                    UserID = userID.toLong(), RoleID = roleID
+                )
+                viewModel.getCustomerGrowth(requestModel1)
 
             }
-
         })
 
         viewModel.customerGrowth.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        growthCommissionAdapter.setGrowthCommissionDataModelList(getCustomerGrowthList(it))
+                        incomeList.clear()
+                        incomeList.add(
+                            IncomeModel(
+                                "Growth",
+                                    NavigationEnum.GROWTH,
+                                getCustomerGrowthList(it)
+                            )
+                        )
+
+                        // For fetching commission
+                        val requestModel2 = GrowthComissionRequestModel(
+                            userID, roleID
+                        )
+                        viewModel.getGrowthCommission(requestModel2)
+
                     }
                     displayLoading(false)
                 }
@@ -109,7 +91,14 @@ class GrowthNCommissionHome : BaseFragment<FragmentGrowthNCommissionHomeBinding>
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        growthCommissionAdapter.setGrowthCommissionDataModelList(getCommissionMenuList(it))
+                        incomeList.add(
+                            IncomeModel(
+                                "Commission",
+                                NavigationEnum.COMMISSION,
+                                getCommissionMenuList(it)
+                            )
+                        )
+                        incomeAdapter.setIncomeModelList(incomeList)
                     }
                     displayLoading(false)
                 }
@@ -126,12 +115,12 @@ class GrowthNCommissionHome : BaseFragment<FragmentGrowthNCommissionHomeBinding>
         })
     }
 
-    private fun setRvData(){
-        growthCommissionAdapter = GrowthNCommissionAdapter(this)
+    private fun setRvData() {
+        incomeAdapter = IncomeAdapter(this)
         binding.rvData.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
-            adapter = growthCommissionAdapter
+            adapter = incomeAdapter
         }
     }
 
@@ -143,7 +132,7 @@ class GrowthNCommissionHome : BaseFragment<FragmentGrowthNCommissionHomeBinding>
         menuList.add(
             GrowthCommissionDataModel(
                 0,
-                 "Direct Commission",
+                "Direct Commission",
                 commission.DirectCommCount,
                 response.DirectCommHistory,
                 type = NavigationEnum.COMMISSION,
@@ -223,6 +212,11 @@ class GrowthNCommissionHome : BaseFragment<FragmentGrowthNCommissionHomeBinding>
 
 
     override fun onItemClick(item: GrowthCommissionDataModel) {
-        findNavController().navigate(GrowthNCommissionHomeDirections.actionGrowthNCommissionHomeToGrowthNCommissionList(item.subType))
+        findNavController().navigate(
+            GrowthNCommissionHomeDirections.actionGrowthNCommissionHomeToGrowthNCommissionList(
+                item.subType
+            )
+        )
     }
+
 }

@@ -1,19 +1,18 @@
 package com.example.pocketmoney.mlm.ui.dashboard
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.pocketmoney.QRCodeScanner
 import com.example.pocketmoney.databinding.ActivityCustomerWalletBinding
 import com.example.pocketmoney.mlm.adapters.CustomerTransactionHistoryAdapter
 import com.example.pocketmoney.mlm.model.TransactionModel
 import com.example.pocketmoney.mlm.model.UniversalFilterItemModel
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerRequestModel1
-import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
-import com.example.pocketmoney.mlm.viewmodel.WalletViewModel
+import com.example.pocketmoney.mlm.viewmodel.CustomerWalletViewModel
 import com.example.pocketmoney.shopping.model.ModelProductVariant
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.DateTimeEnum
@@ -21,15 +20,11 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CustomerWalletActivity : AppCompatActivity(), ApplicationToolbar.ApplicationToolbarListener, CustomerTransactionHistoryAdapter.CustomerTransactionHistoryAdapterInterface {
+class CustomerWalletActivity : BaseActivity<ActivityCustomerWalletBinding>(ActivityCustomerWalletBinding::inflate), ApplicationToolbar.ApplicationToolbarListener, CustomerTransactionHistoryAdapter.CustomerTransactionHistoryAdapterInterface {
 
     //UI
-    private lateinit var binding: ActivityCustomerWalletBinding
-    private lateinit var progressBarHandler: ProgressBarHandler
-
     // ViewModels
-    private val walletViewModel by viewModels<WalletViewModel>()
-    private val userAuthenticationViewModel by viewModels<AccountViewModel>()
+    private val viewModel by viewModels<CustomerWalletViewModel>()
 
     // Adapters
     private lateinit var customerTransactionHistoryAdapter: CustomerTransactionHistoryAdapter
@@ -45,14 +40,14 @@ class CustomerWalletActivity : AppCompatActivity(), ApplicationToolbar.Applicati
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCustomerWalletBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+
         filter = intent.getStringExtra("FILTER").toString()
-        progressBarHandler = ProgressBarHandler(this)
         populateTimeFilter(getTimeFilter().toMutableList())
-        subscribeObservers()
         setupRecyclerview()
         binding.toolbarCustomerWallet.setApplicationToolbarListener(this)
+        binding.fabTransfer.setOnClickListener {
+            startActivity(Intent(this,QRCodeScanner::class.java))
+        }
     }
 
     private fun populateTimeFilter(stateList: MutableList<UniversalFilterItemModel>) {
@@ -80,7 +75,7 @@ class CustomerWalletActivity : AppCompatActivity(), ApplicationToolbar.Applicati
                     val requestModel = CustomerRequestModel1(
                             UserID = userID.toLong(), RoleID = roleID, FromDate = startDate, ToDate = endDate,Filter = filter
                     )
-                    walletViewModel.getTransactionHistory(requestModel)
+                    viewModel.getTransactionHistory(requestModel)
 
                     //Do something...
                 }
@@ -90,31 +85,31 @@ class CustomerWalletActivity : AppCompatActivity(), ApplicationToolbar.Applicati
                 val requestModel = CustomerRequestModel1(
                         UserID = userID.toLong(), RoleID = roleID, FromDate = getDateRange(filterItem.ID), ToDate = getTodayDate(),Filter = filter
                 )
-                walletViewModel.getTransactionHistory(requestModel)
+                viewModel.getTransactionHistory(requestModel)
             }
 
         }
     }
 
 
-    private fun subscribeObservers() {
-        userAuthenticationViewModel.userID.observe(this, {
+    override fun subscribeObservers() {
+        viewModel.userId.observe(this, {
             userID = it
 
         })
-        userAuthenticationViewModel.roleID.observe(this, {
+        viewModel.userRoleID.observe(this, {
             roleID = it
             if (userID != "" && roleID != 0) {
 
                 val requestModel = CustomerRequestModel1(
                         UserID = userID.toLong(), RoleID = roleID, FromDate = getDateRange(DateTimeEnum.LAST_MONTH), ToDate = getTodayDate(),Filter = filter
                 )
-                walletViewModel.getTransactionHistory(requestModel)
+                viewModel.getTransactionHistory(requestModel)
             }
 
         })
 
-        walletViewModel.transactionHistory.observe(this, { _result ->
+        viewModel.transactionHistory.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -134,23 +129,6 @@ class CustomerWalletActivity : AppCompatActivity(), ApplicationToolbar.Applicati
             }
         })
 
-    }
-
-    private fun displayLoading(state: Boolean) {
-        if (state) progressBarHandler.show() else progressBarHandler.hide()
-    }
-
-
-    private fun displayRefreshing(loading: Boolean) {
-//        binding.swipeRefreshLayout.isRefreshing = loading
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show()
-        }
     }
 
     private fun setupRecyclerview() {

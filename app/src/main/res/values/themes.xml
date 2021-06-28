@@ -11,11 +11,13 @@
         <item name="android:statusBarColor" tools:targetApi="l">@color/colorWhite</item>
         <item name="android:windowLightStatusBar">true</item>
         <!-- Customize your theme here. -->
-        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+<!--        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>-->
 
-        <item name="fontFamily">@font/metropolis</item>
-
+<!--        <item name="fontFamily">@font/metropolis</item>-->
+        <item name="fontFamily">@font/nunito_family</item>
         <item name="snackbarStyle">@style/MySnackbar</item>
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+
     </style>
 
     <style name="AppBottomSheetDialogTheme"
@@ -94,6 +96,22 @@
 
     <style name="keyboard_number_button" parent="keyboard_button">
         <item name="android:tag">number_button</item>
+    </style>
+
+    <style name="CustomBottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
+    </style>
+
+    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
+    </style>
+
+    <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 
 

@@ -2,11 +2,8 @@ package com.example.pocketmoney.shopping.ui.checkoutorder
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,33 +12,21 @@ import com.example.pocketmoney.shopping.adapters.CartItemListAdapter
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.ui.BuyProduct
-import com.example.pocketmoney.shopping.ui.CheckoutOrderInterface
-import com.example.pocketmoney.shopping.viewmodel.AddressViewModel
-import com.example.pocketmoney.shopping.viewmodel.CartViewModel
-import com.example.pocketmoney.shopping.viewmodel.ShoppingAuthViewModel
-import com.example.pocketmoney.utils.DataState
-import com.example.pocketmoney.utils.ModelOrderAmountSummary
-import com.example.pocketmoney.utils.ProgressBarHandler
-import com.example.pocketmoney.utils.Status
+import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
+import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderSummary : Fragment(), CartItemListAdapter.CartItemListAdapterListener {
+class OrderSummary : BaseFragment<FragmentOrderSummaryBinding>(FragmentOrderSummaryBinding::inflate), CartItemListAdapter.CartItemListAdapterListener {
 
-    //UI
-    private var _binding: FragmentOrderSummaryBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var progressBarHandler: ProgressBarHandler
 
     //ViewModels
-    private val shoppingAuthViewModel: ShoppingAuthViewModel by viewModels()
-    private val addressViewModel: AddressViewModel by viewModels()
-    private val cartViewModel: CartViewModel by viewModels()
+    private val viewModel by activityViewModels<CheckoutOrderViewModel>()
 
     // Adapters
     private lateinit var cartItemListAdapter: CartItemListAdapter
-    private lateinit var checkoutOrderInterface: CheckoutOrderInterface
+//    private lateinit var checkoutOrderInterface: CheckoutOrderInterface
 
     // Variable
     private lateinit var userID: String
@@ -51,66 +36,57 @@ class OrderSummary : Fragment(), CartItemListAdapter.CartItemListAdapterListener
     private val args: OrderSummaryArgs by navArgs()
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        progressBarHandler = ProgressBarHandler(requireActivity())
-        selectedAddressId = args.addressId
-    }
-
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentOrderSummaryBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        checkoutOrderInterface = requireActivity() as CheckoutOrder
-        checkoutOrderInterface.updateCheckOutStepStatus(1)
+        viewModel.setActiveStep(1)
+//        checkoutOrderInterface = requireActivity() as CheckoutOrder
+//        checkoutOrderInterface.updateCheckOutStepStatus(1)
         setUpCartItemRecyclerView()
-        subscribeObservers()
+
 
     }
 
-    private fun subscribeObservers() {
+    override fun subscribeObservers() {
 
-        shoppingAuthViewModel.userID.observe(viewLifecycleOwner, {
+        viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
-            addressViewModel.getAddressDetails(selectedAddressId, userID)
-            addressViewModel.getShippingCharge(selectedAddressId,userID)
+//            addressViewModel.getAddressDetails(selectedAddressId, userID)
+//            addressViewModel.getShippingCharge(selectedAddressId,userID)
 
         })
+        viewModel.selectedAddress.observe(viewLifecycleOwner,{
+            createAddressView(it)
+            selectedAddressId = it.AddressID!!
+            viewModel.getShippingCharge(selectedAddressId,userID)
 
-        addressViewModel.addressDetail.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        createAddressView(it)
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
         })
+//        addressViewModel.addressDetail.observe(viewLifecycleOwner, { _result ->
+//            when (_result.status) {
+//                Status.SUCCESS -> {
+//                    _result._data?.let {
+//                        createAddressView(it)
+//                        addressViewModel.getShippingCharge(selectedAddressId,userID)
+//                    }
+//                    displayLoading(false)
+//                }
+//                Status.LOADING -> {
+//                    displayLoading(true)
+//                }
+//                Status.ERROR -> {
+//                    displayLoading(false)
+//                    _result.message?.let {
+//                        displayError(it)
+//                    }
+//                }
+//            }
+//        })
 
-        addressViewModel.shippingCharge.observe(viewLifecycleOwner, { _result ->
+        viewModel.shippingCharge.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
                         shippingCharge=it
-                        cartViewModel.getCartItems(userID)
+                        viewModel.getCartItems(userID)
                     }
                     displayLoading(false)
                 }
@@ -126,38 +102,43 @@ class OrderSummary : Fragment(), CartItemListAdapter.CartItemListAdapterListener
             }
         })
 
-
-        cartViewModel.cartItems.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<List<CartModel>> -> {
+        viewModel.cartItems.observe(viewLifecycleOwner, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        cartItemListAdapter.setCartItemList(it)
+                        populateValues(it,shippingCharge)
+                    }
                     displayLoading(false)
-                    cartItemListAdapter.setCartItemList(dataState.data)
-                    populateValues(dataState.data,shippingCharge)
                 }
-                is DataState.Loading -> {
+                Status.LOADING -> {
                     displayLoading(true)
-
                 }
-                is DataState.Error -> {
+                Status.ERROR -> {
                     displayLoading(false)
-                    displayError(dataState.exception.message)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
 
-        cartViewModel.cartItemQuantity.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<Int> -> {
+        viewModel.cartItemQuantity.observe(viewLifecycleOwner, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        viewModel.getCartItems(userID)
+                    }
                     displayLoading(false)
-                    cartViewModel.getCartItems(userID)
                 }
-                is DataState.Loading -> {
+                Status.LOADING -> {
                     displayLoading(true)
-
                 }
-                is DataState.Error -> {
+                Status.ERROR -> {
                     displayLoading(false)
-                    displayError(dataState.exception.message)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
@@ -210,7 +191,8 @@ class OrderSummary : Fragment(), CartItemListAdapter.CartItemListAdapterListener
                 )
         )
         binding.orderAmountSummary.setVisibilityStatus(1)
-        checkoutOrderInterface.setPriceDetailNAction(grandTotal)
+        viewModel.setPayableAmount(grandTotal)
+//        checkoutOrderInterface.setPriceDetailNAction(grandTotal)
 
     }
 
@@ -246,28 +228,16 @@ class OrderSummary : Fragment(), CartItemListAdapter.CartItemListAdapterListener
         binding.layoutSelectedAddress.root.visibility = View.VISIBLE
     }
 
-    private fun displayLoading(state: Boolean) {
-        if (state) progressBarHandler.show() else progressBarHandler.hide()
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(context, "Unknown error", Toast.LENGTH_LONG).show()
-        }
-    }
-
     override fun onItemQuantityIncrease(itemID: Int) {
-        cartViewModel.changeCartItemQuantity(1,itemID, userID)
+        viewModel.changeCartItemQuantity(1,itemID, userID)
     }
 
     override fun onItemQuantityDecrease(itemID: Int) {
-        cartViewModel.changeCartItemQuantity(0,itemID, userID)
+        viewModel.changeCartItemQuantity(0,itemID, userID)
     }
 
     override fun onItemDelete(itemID: Int) {
-        cartViewModel.changeCartItemQuantity(-1,itemID, userID)
+        viewModel.changeCartItemQuantity(-1,itemID, userID)
     }
 
     override fun onItemClick(itemID: Int) {

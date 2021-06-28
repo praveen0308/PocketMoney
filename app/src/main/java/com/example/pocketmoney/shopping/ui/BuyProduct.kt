@@ -18,24 +18,22 @@ import com.example.pocketmoney.shopping.model.*
 import com.example.pocketmoney.shopping.viewmodel.BuyProductViewModel
 import com.example.pocketmoney.shopping.viewmodel.CartViewModel
 import com.example.pocketmoney.utils.ApplicationToolbar
+import com.example.pocketmoney.utils.BaseActivity
 import com.example.pocketmoney.utils.DataState
+import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.MyEnums
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_buy_product.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class BuyProduct : AppCompatActivity(), ShoppingHomeCategoriesAdapter.ProductClickListener, ApplicationToolbar.ApplicationToolbarListener, ProductVariantValuesAdapter.ProductVariantValuesAdapterListener {
-
-    //Ui
-    private lateinit var binding: ActivityBuyProductBinding
+class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBinding::inflate), ShoppingHomeCategoriesAdapter.ProductClickListener, ApplicationToolbar.ApplicationToolbarListener, ProductVariantValuesAdapter.ProductVariantValuesAdapterListener {
 
     // ViewModels
-    private val buyProductViewModel: BuyProductViewModel by viewModels()
-    private val cartViewModel: CartViewModel by viewModels()
+    private val viewModel by viewModels<BuyProductViewModel>()
+    
 
     // Adapters
     private lateinit var shoppingHomeParentAdapter: ShoppingHomeMasterAdapter
@@ -53,21 +51,18 @@ class BuyProduct : AppCompatActivity(), ShoppingHomeCategoriesAdapter.ProductCli
     override fun onResume() {
         super.onResume()
         if (userID!=""){
-        cartViewModel.getCartItemCount(userID)}
+        viewModel.getCartItemCount(userID)}
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBuyProductBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         productId = intent.getIntExtra("PRODUCT_ID", 0)
         productItemId = intent.getIntExtra("PRODUCT_ITEM_ID", 0)
-        subscribeObservers()
-        buyProductViewModel.getProductDetails(productItemId)
-        buyProductViewModel.getProductVariantValues(productId)
+        viewModel.getProductDetails(productItemId)
+        viewModel.getProductVariantValues(productId)
 
         binding.btnAddToCart.setOnClickListener {
-            cartViewModel.addToCart(productItemId, userID, 1)
+            viewModel.addToCart(productItemId, userID, 1)
         }
 
         binding.buyProductToolbar.setApplicationToolbarListener(this)
@@ -78,20 +73,20 @@ class BuyProduct : AppCompatActivity(), ShoppingHomeCategoriesAdapter.ProductCli
 
     }
 
-    private fun subscribeObservers() {
+    override fun subscribeObservers() {
 
-        cartViewModel.userID.observe(this, {
+        viewModel.userId.observe(this, {
             userID = it
-            cartViewModel.getCartItemCount(userID)
+            viewModel.getCartItemCount(userID)
         })
-        buyProductViewModel.productDetail.observe(this, { dataState ->
+        viewModel.productDetail.observe(this, { dataState ->
             when (dataState) {
                 is DataState.Success<ProductModel> -> {
                     displayLoading(false)
                     setupProductImagePager(dataState.data.Product_Image)
                     populateViews(dataState.data)
 
-                    buyProductViewModel.getSimilarProducts(dataState.data.CategoryId)
+                    viewModel.getSimilarProducts(dataState.data.CategoryId)
                 }
                 is DataState.Loading -> {
                     displayLoading(true)
@@ -103,7 +98,7 @@ class BuyProduct : AppCompatActivity(), ShoppingHomeCategoriesAdapter.ProductCli
             }
         })
 
-        buyProductViewModel.productVariantValues.observe(this, { dataState ->
+        viewModel.productVariantValues.observe(this, { dataState ->
             when (dataState) {
                 is DataState.Success<List<ProductVariantValue>> -> {
                     displayLoading(false)
@@ -123,7 +118,7 @@ class BuyProduct : AppCompatActivity(), ShoppingHomeCategoriesAdapter.ProductCli
 
 
 
-        buyProductViewModel.similarProductList.observe(this, { dataState ->
+        viewModel.similarProductList.observe(this, { dataState ->
             when (dataState) {
                 is DataState.Success<List<ProductModel>> -> {
                     displayLoading(false)
@@ -140,60 +135,65 @@ class BuyProduct : AppCompatActivity(), ShoppingHomeCategoriesAdapter.ProductCli
             }
         })
 
-
-        cartViewModel.cartItemCount.observe(this, { dataState ->
-            when (dataState) {
-                is DataState.Success<Int> -> {
+        viewModel.cartItemCount.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        cartItemCount = it
+                        binding.buyProductToolbar.setMenuBadgeCount(cartItemCount)
+                    }
                     displayLoading(false)
-                    cartItemCount = dataState.data
-                    binding.buyProductToolbar.setMenuBadgeCount(cartItemCount)
                 }
-                is DataState.Loading -> {
+                Status.LOADING -> {
                     displayLoading(true)
-
                 }
-                is DataState.Error -> {
+                Status.ERROR -> {
                     displayLoading(false)
-                    displayError(dataState.exception.message)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
 
-
-        cartViewModel.addToCartOperationResult.observe(this, { dataState ->
-            when (dataState) {
-                is DataState.Success<Boolean> -> {
-                    displayLoading(false)
-                    cartViewModel.getCartItemCount(userID)
-                    val snackbar: Snackbar = Snackbar.make(
+        viewModel.addToCartOperationResult.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        viewModel.getCartItemCount(userID)
+                        val snackbar: Snackbar = Snackbar.make(
                             binding.root, "Added Successfully",
                             Snackbar.LENGTH_LONG
-                    )
-                    snackbar.setAction("Go to Cart") {
-                        // executed when DISMISS is clicked
-                        val intent = Intent(this, YourCart::class.java)
-                        startActivity(intent)
+                        )
+                        snackbar.setAction("Go to Cart") {
+                            // executed when DISMISS is clicked
+                            val intent = Intent(this, YourCart::class.java)
+                            startActivity(intent)
 
+                        }
+                        snackbar.show()
                     }
-                    snackbar.show()
-                }
-                is DataState.Loading -> {
-                    displayLoading(true)
-
-                }
-                is DataState.Error -> {
                     displayLoading(false)
-                    displayError(dataState.exception.message)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
                 }
             }
         })
 
-        buyProductViewModel.productItemIdAcVariant.observe(this, { dataState ->
+
+        viewModel.productItemIdAcVariant.observe(this, { dataState ->
             when (dataState) {
                 is DataState.Success<Int> -> {
                     displayLoading(false)
                     productItemId = dataState.data
-                    buyProductViewModel.getProductDetails(productItemId)
+                    viewModel.getProductDetails(productItemId)
 
                 }
                 is DataState.Loading -> {
@@ -206,20 +206,6 @@ class BuyProduct : AppCompatActivity(), ShoppingHomeCategoriesAdapter.ProductCli
                 }
             }
         })
-    }
-
-
-    private fun displayLoading(state: Boolean) {
-
-        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show()
-        }
     }
 
     private fun setupProductImagePager(images: List<ProductImage>) {
@@ -392,7 +378,7 @@ class BuyProduct : AppCompatActivity(), ShoppingHomeCategoriesAdapter.ProductCli
 
         }
 
-        buyProductViewModel.getProductItemIdAcVariant(productId, variantIds, variantValueIds)
+        viewModel.getProductItemIdAcVariant(productId, variantIds, variantValueIds)
     }
 
 }

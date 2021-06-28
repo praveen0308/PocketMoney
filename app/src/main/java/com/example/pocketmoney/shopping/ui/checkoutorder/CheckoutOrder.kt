@@ -7,9 +7,11 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.loader.app.LoaderManager
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityCheckoutOrderBinding
@@ -17,20 +19,13 @@ import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.shopping.adapters.CartItemListAdapter
 import com.example.pocketmoney.shopping.ui.CheckoutOrderInterface
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
-import com.example.pocketmoney.utils.ApplicationToolbar
-import com.example.pocketmoney.utils.BaseActivity
-import com.example.pocketmoney.utils.Constants
-import com.example.pocketmoney.utils.Status
+import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
 import com.paytm.pgsdk.TransactionManager
 import dagger.hilt.android.AndroidEntryPoint
 import dmax.dialog.SpotsDialog
-import io.github.parthav46.httprequest.HttpRequest
-import kotlinx.android.synthetic.main.activity_checkout_order.*
-import org.json.JSONException
-import org.json.JSONObject
 import java.util.*
 
 
@@ -51,28 +46,34 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
     private var selectedAddressId: Int = 0
 
     // Navigation
-
     private lateinit var navController: NavController
     private lateinit var navGraph: NavGraph
     private lateinit var navHostFragment: NavHostFragment
 
 
-    var ORDER_ID: String? = null
+    private lateinit var ORDER_ID: String
+    private lateinit var ACCOUNT_ID : String
     var loaderManager: LoaderManager? = null
     var bodyData = ""
     var value = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        navController = Navigation.findNavController(this,R.id.nav_host_checkout_order)
         binding.toolbarCheckoutOrder.setApplicationToolbarListener(this)
         createProgressDialog()
-        setupStartDestination(0)
+//        setupStartDestination(0)
         setupStepView()
-
+        binding.btnDeliverHere.setOnClickListener {
+            navController.navigate(
+                R.id.action_selectAddress_to_orderSummary,
+                OrderSummaryArgs(selectedAddressId).toBundle()
+            )
+        }
     }
 
     fun setupStartDestination(step: Int) {
-        navHostFragment = nav_host_checkout_order as NavHostFragment
+//        navHostFragment = nav_host_checkout_order as NavHostFragment
         val graphInflater = navHostFragment.navController.navInflater
         navGraph = graphInflater.inflate(R.navigation.nav_checkout_order)
         navController = navHostFragment.navController
@@ -92,8 +93,8 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
             .animationDuration(resources.getInteger(android.R.integer.config_shortAnimTime)) // other state methods are equal to the corresponding xml attributes
             .commit()
 
-        binding.layoutCheckoutAction.btnContinue.setOnClickListener {
-            when (stepView.currentStep) {
+        binding.btnContinue.setOnClickListener {
+            when (binding.stepView.currentStep) {
                 1 -> navController.navigate(
                         R.id.action_orderSummary_to_payment,
                         PaymentArgs(selectedAddressId).toBundle()
@@ -115,9 +116,35 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
     override fun subscribeObservers() {
         viewModel.activeStep.observe(this,{
-            binding.stepView.go(it,true)
+            binding.apply {
+                stepView.go(it,true)
+                when(it){
+                    0->{
+                        btnDeliverHere.isVisible=true
+                        layoutCheckoutAction.isVisible=false
+                    }
+                    1->{
+                        btnDeliverHere.isVisible=false
+                    }
+                    2->{
+                        btnDeliverHere.isVisible=false
+                    }
+                }
+            }
         })
 
+        viewModel.amountPayable.observe(this,{
+            binding.tvAmountPayable.setAmount(it)
+            binding.btnContinue.text = getString(R.string.str_continue)
+            binding.layoutCheckoutAction.isVisible = true
+        })
+
+        viewModel.selectedAddress.observe(this,{
+            it?.let {
+                selectedAddressId = it.AddressID!!
+                binding.btnDeliverHere.isVisible=true
+            }
+        })
         viewModel.orderStatus.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -148,34 +175,15 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        val paytmParams = JSONObject()
-                        val head = JSONObject()
-                        val checksum = it
-                        Log.e("checksum", checksum)
-                        head.put("signature", checksum)
-                        paytmParams.put("head", head)
-                        paytmParams.put("body", JSONObject(bodyData))
-                        val url =
-                            "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=" + Constants.MERCHANT_ID.toString() + "&orderId=" + ORDER_ID
 
-                        HttpRequest(
-                            this@CheckoutOrder,
-                            url,
-                            HttpRequest.Request.POST,
-                            paytmParams.toString()
-                        ) { response ->
-                            if (response != null) {
-                                try {
-                                    processPaytmTransaction(JSONObject(response))
-                                } catch (e: JSONException) {
-                                    e.printStackTrace()
-                                } finally {
-                                    ORDER_ID = "ID" + System.currentTimeMillis()
-
-                                }
-                            }
-
-                        }.execute()
+                        val paytmOrder = PaytmOrder(
+                            ACCOUNT_ID,
+                            "SAMPUR32393595223213",
+                            it,
+                            "100",
+                            "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$ACCOUNT_ID"
+                        )
+                        processPaytmTransaction(paytmOrder)
                     }
                     displayLoading(false)
                 }
@@ -199,18 +207,18 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                 OrderSummaryArgs(addressId).toBundle()
         )
         selectedAddressId = addressId
-        stepView.go(1, true)
+        binding.stepView.go(1, true)
     }
 
     override fun updateCheckOutStepStatus(step: Int) {
-        stepView.go(step, true)
+        binding.stepView.go(step, true)
 
     }
 
     override fun setPriceDetailNAction(amountPayable: Double) {
-        binding.layoutCheckoutAction.tvAmountPayable.text = "₹ ".plus(amountPayable.toString())
-        binding.layoutCheckoutAction.btnContinue.text = getString(R.string.str_continue)
-        binding.layoutCheckoutAction.root.visibility = View.VISIBLE
+        binding.tvAmountPayable.text = "₹ ".plus(amountPayable.toString())
+        binding.btnContinue.text = getString(R.string.str_continue)
+        binding.root.isVisible = true
 
     }
 
@@ -232,94 +240,19 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
 
     fun startPayment() {
-
-        bodyData = getPaytmParams()
+        ACCOUNT_ID = createRandomAccountId()
+        ORDER_ID = createRandomOrderId()
         viewModel.initiateTransactionApi(
             PaytmRequestData(
-                amount = "150",
+                account= ACCOUNT_ID,
+                amount = "100",
                 callbackurl = Constants.PAYTM_CALLBACK_URL,
-                orderid = "5485485748",
                 userid = "8767404060"
             )
         )
-//        HttpRequest(
-//            this,
-//            Constants.CHECKSUM,
-//            HttpRequest.Request.POST,
-//            bodyData
-//        ) { response ->
-//            if (response != null) {
-//                try {
-//                    val paytmParams = JSONObject()
-//                    val head = JSONObject()
-//                    val checksum = JSONObject(response).getString("checksum")
-//                    Log.e("checksum", checksum)
-//                    head.put("signature", checksum)
-//                    paytmParams.put("head", head)
-//                    paytmParams.put("body", JSONObject(bodyData))
-//                    val url =
-//                        "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=" + Constants.MERCHANT_ID.toString() + "&orderId=" + ORDER_ID
-//                    HttpRequest(
-//                        this@CheckoutOrder,
-//                        url,
-//                        HttpRequest.Request.POST,
-//                        paytmParams.toString()
-//                    ) { response ->
-//                        if (response != null) {
-//                            try {
-//                                processPaytmTransaction(JSONObject(response))
-//                            } catch (e: JSONException) {
-//                                e.printStackTrace()
-//                            } finally {
-//                                ORDER_ID = "ID" + System.currentTimeMillis()
-//                                orderID.setText(ORDER_ID)
-//                            }
-//                        }
-//                        if (progressDialog.isShowing) progressDialog.dismiss()
-//                    }.execute()
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                    if (progressDialog.isShowing) progressDialog.dismiss()
-//                }
-//            } else {
-//                if (progressDialog.isShowing) progressDialog.dismiss()
-//            }
-//        }.execute()
+
     }
 
-    fun getPaytmParams(): String {
-        var paytmParams: JSONObject
-        try {
-            val body = JSONObject()
-            body.put("requestType", "Payment")
-            body.put("mid", Constants.MERCHANT_ID)
-            body.put("websiteName", Constants.WEBSITE)
-            body.put("orderId", ORDER_ID)
-            body.put("callbackUrl", Constants.PAYTM_CALLBACK_URL)
-            val txnAmount = JSONObject()
-            try {
-                value = binding.layoutCheckoutAction.tvAmountPayable.text.toString().toFloat()
-            } catch (e: Exception) {
-                value = 0f
-            }
-            txnAmount.put("value", String.format(Locale.getDefault(), "%.2f", value))
-            txnAmount.put("currency", "INR")
-            val userInfo = JSONObject()
-            userInfo.put("custId", "CUST_001")
-            body.put("txnAmount", txnAmount)
-            body.put("userInfo", userInfo)
-
-            /*
-             * Generate checksum by parameters we have in body
-             * You can get Checksum JAR from https://developer.paytm.com/docs/checksum/
-             * Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys
-             */paytmParams = body
-        } catch (e: Exception) {
-            e.printStackTrace()
-            paytmParams = JSONObject()
-        }
-        return paytmParams.toString()
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -330,20 +263,9 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
         }
     }
 
-    fun processPaytmTransaction(data: JSONObject) {
+    fun processPaytmTransaction(paytmOrder: PaytmOrder) {
         try {
-            Log.i("CHECKSUM", data.getJSONObject("body").toString())
-            Log.i("CHECKSUM", data.getJSONObject("head").getString("signature"))
-            Log.e("TXN_TOKEN", data.getJSONObject("body").getString("txnToken"))
-            val paytmOrder = PaytmOrder(
-                ORDER_ID,
-                Constants.MERCHANT_ID,
-                data.getJSONObject("body").getString("txnToken"),
-                String.format(
-                    Locale.getDefault(), "%.2f", value
-                ),
-                Constants.PAYTM_CALLBACK_URL
-            )
+
             val transactionManager =
                 TransactionManager(paytmOrder, object : PaytmPaymentTransactionCallback {
 
@@ -383,9 +305,40 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                         Log.e("RESPONSE", "transaction cancel: $s")
                     }
                 })
+            transactionManager.setAppInvokeEnabled(false)
             transactionManager.startTransaction(this, 3)
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+
+    private fun createRandomAccountId(): String {
+        var randomAccountID = "DI"
+        val ranChar = 65 + Random().nextInt(90 - 65)
+        val ch = ranChar.toChar()
+        randomAccountID += ch
+        val r = Random()
+        val numbers = 100000 + (r.nextFloat() * 899900).toInt()
+        randomAccountID += numbers.toString()
+        randomAccountID += "-"
+        var i = 0
+        while (i < 6) {
+            val ranAny = 48 + Random().nextInt(90 - 65)
+            if (ranAny !in 58..65) {
+                val c = ranAny.toChar()
+                randomAccountID += c
+                i++
+            }
+        }
+        return randomAccountID
+    }
+
+    private fun createRandomOrderId(): String {
+        val timeSeed = System.nanoTime()
+        val randSeed = Math.random() * 1000
+        val midSeed = (timeSeed * randSeed).toLong()
+        val s = midSeed.toString() + ""
+        return s.substring(0, 9)
     }
 }

@@ -21,8 +21,8 @@ object MLMNetworkModule {
     }
 
     @Provides
-    fun provideUserAuthenticationRepo(mlmApiService: MLMApiService,@ApplicationContext context: Context):AccountRepository{
-        return AccountRepository(mlmApiService,context)
+    fun provideUserAuthenticationRepo(mlmApiService: MLMApiService):AccountRepository{
+        return AccountRepository(mlmApiService)
     }
 
     @Provides
@@ -39,6 +39,11 @@ object MLMNetworkModule {
     @Singleton
     fun providePaymentFilterRepo(mlmApiService: MLMApiService):PaymentHistoryFilterRepository{
         return PaymentHistoryFilterRepository(mlmApiService)
+    }
+    @Singleton
+    @Provides
+    fun provideUserPreferencesRepository(@ApplicationContext context: Context): UserPreferencesRepository {
+        return UserPreferencesRepository(context)
     }
 
 

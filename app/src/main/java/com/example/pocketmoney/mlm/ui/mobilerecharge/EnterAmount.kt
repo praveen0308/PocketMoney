@@ -1,21 +1,17 @@
 package com.example.pocketmoney.mlm.ui.mobilerecharge
 
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentEnterAmountBinding
-import com.example.pocketmoney.databinding.FragmentOperatorListBinding
-import kotlinx.android.synthetic.main.fragment_enter_amount.*
+
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"

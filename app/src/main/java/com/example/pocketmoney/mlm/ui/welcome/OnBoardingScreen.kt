@@ -8,53 +8,29 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentOnBoardingScreenBinding
 import com.example.pocketmoney.mlm.adapters.OnBoardingAdapter
 import com.example.pocketmoney.mlm.model.ModelOnBoardingItem
 import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
+import com.example.pocketmoney.mlm.viewmodel.OnBoardingScreenViewModel
+import com.example.pocketmoney.utils.BaseFragment
 import com.example.pocketmoney.utils.Constants
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OnBoardingScreen : Fragment() {
+class OnBoardingScreen : BaseFragment<FragmentOnBoardingScreenBinding>(FragmentOnBoardingScreenBinding::inflate) {
 
     private lateinit var onBoardingAdapter: OnBoardingAdapter
-    private val viewModel: AccountViewModel by viewModels()
-
-    private lateinit var navController: NavController
-
-    private var _binding: FragmentOnBoardingScreenBinding? = null
-    private val binding get() = _binding!!
+    private val viewModel by viewModels<OnBoardingScreenViewModel>()
 
     var position = 0
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View {
-
-        _binding = FragmentOnBoardingScreenBinding.inflate(inflater, container, false)
-        return binding.root
-        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.fragment_on_boarding_screen, container, false)
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
 
         val boardingItemList: MutableList<ModelOnBoardingItem> = ArrayList()
         boardingItemList.add(
@@ -124,7 +100,11 @@ class OnBoardingScreen : Fragment() {
 
     private fun goToLoginPage(){
         viewModel.updateWelcomeStatus(Constants.ONBOARDING_DONE)
-        navController.navigate(OnBoardingScreenDirections.actionOnBoardingScreenToLoginFragment())
+        findNavController().navigate(OnBoardingScreenDirections.actionOnBoardingScreenToLoginFragment())
+    }
+
+    override fun subscribeObservers() {
+
     }
 
 

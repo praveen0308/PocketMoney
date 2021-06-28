@@ -9,13 +9,10 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentProductCategoriesBinding
-import com.example.pocketmoney.databinding.FragmentProductMainCategoriesBinding
 import com.example.pocketmoney.shopping.adapters.ProductCategoriesAdapter
-import com.example.pocketmoney.shopping.adapters.ProductMainCategoriesAdapter
 import com.example.pocketmoney.shopping.model.ProductCategory
 import com.example.pocketmoney.shopping.viewmodel.StoreViewModel
 import com.example.pocketmoney.utils.ApplicationToolbar

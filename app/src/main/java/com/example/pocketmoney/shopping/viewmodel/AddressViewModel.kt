@@ -1,9 +1,7 @@
 package com.example.pocketmoney.shopping.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.model.ModelCity
@@ -20,57 +18,34 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddressViewModel @Inject constructor(
-    private val addressRepository: AddressRepository
+    private val addressRepository: AddressRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ): ViewModel() {
+    val userId = userPreferencesRepository.userId.asLiveData()
 
-    private val _customerAddressList: MutableLiveData<DataState<List<ModelAddress>>> = MutableLiveData()
-    val customerAddressList: LiveData<DataState<List<ModelAddress>>>
-        get() = _customerAddressList
-
-    private val _isSuccessfullyAdded: MutableLiveData<DataState<Boolean>> = MutableLiveData()
-    val isSuccessFullyAdded: LiveData<DataState<Boolean>>
-        get() = _isSuccessfullyAdded
-
-    private val _isSuccessfullyUpdated: MutableLiveData<DataState<Boolean>> = MutableLiveData()
-    val isSuccessfullyUpdated: LiveData<DataState<Boolean>>
-        get() = _isSuccessfullyUpdated
-
-
-    private val _addressDetail = MutableLiveData<Resource<ModelAddress>>()
-    val addressDetail : LiveData<Resource<ModelAddress>> = _addressDetail
+    private val _customerAddressList: MutableLiveData<Resource<List<ModelAddress>>> = MutableLiveData()
+    val customerAddressList: LiveData<Resource<List<ModelAddress>>> = _customerAddressList
 
     fun getCustomerAddressList(userId: String){
         viewModelScope.launch {
 
             addressRepository.getCustomerAddressByUserId(userId)
-                .onEach { dataState ->
-                    _customerAddressList.value = dataState
+                .onStart {
+                    _customerAddressList.postValue(Resource.Loading(true))
                 }
-                .launchIn(viewModelScope)
+                .catch { exception ->
+                    exception.message?.let {
+                        _customerAddressList.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _customerAddressList.postValue(Resource.Success(response))
+                }
         }
     }
 
-    fun addNewAddress(modelAddress: ModelAddress){
-        viewModelScope.launch {
-
-            addressRepository.addNewAddress(modelAddress)
-                .onEach { dataState ->
-                    _isSuccessfullyAdded.value = dataState
-                }
-                .launchIn(viewModelScope)
-        }
-    }
-
-    fun updateAddress(modelAddress: ModelAddress){
-        viewModelScope.launch {
-
-            addressRepository.updateAddress(modelAddress)
-                .onEach { dataState ->
-                    _isSuccessfullyUpdated.value = dataState
-                }
-                .launchIn(viewModelScope)
-        }
-    }
+    private val _addressDetail = MutableLiveData<Resource<ModelAddress>>()
+    val addressDetail : LiveData<Resource<ModelAddress>> = _addressDetail
 
     fun getAddressDetails(addressId:Int,userId: String) {
 

@@ -14,7 +14,10 @@ enum class ShippingStatus(val status:Int)
 
 }
 
+enum class OtherEnum{
+    ADD,EDIT,DELETE
 
+}
 enum class PaymentStatus(val status: Int)
 {
     Pending(1),
@@ -95,6 +98,7 @@ enum class NavigationEnum{
     SYSTEM_GROWTH,UPDATE_COUNT,RENEWAL_COUNT,
     DIRECT_COMMISSION,SHOPPING_COMMISSION,UPDATE_COMMISSION,SERVICE_COMMISSION
 
+    ,HELP_CENTRE,ABOUT,SHARE,
 
 }
 

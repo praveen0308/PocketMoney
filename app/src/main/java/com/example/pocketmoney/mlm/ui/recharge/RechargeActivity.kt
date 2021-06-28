@@ -14,7 +14,6 @@ import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityRechargeBinding
 import com.example.pocketmoney.mlm.model.RechargeEnum
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_recharge.*
 
 
 @AndroidEntryPoint
@@ -31,10 +30,10 @@ class RechargeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val navHostFragment = nav_host_recharge_activity as NavHostFragment
-        val graphInflater = navHostFragment.navController.navInflater
-        navGraph = graphInflater.inflate(R.navigation.nav_recharge)
-        navController = navHostFragment.navController
+//        val navHostFragment = nav_host_recharge_activity as NavHostFragment
+//        val graphInflater = navHostFragment.navController.navInflater
+//        navGraph = graphInflater.inflate(R.navigation.nav_recharge)
+//        navController = navHostFragment.navController
 
 //        when (args.rechargetype) {
 //            RechargeEnum.PREPAID, RechargeEnum.POSTPAID -> {

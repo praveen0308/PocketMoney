@@ -1,16 +1,14 @@
 package com.example.pocketmoney.mlm.ui.dashboard
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.databinding.ActivityMyCouponsBinding
 import com.example.pocketmoney.mlm.adapters.MyCouponsAdapter
 import com.example.pocketmoney.mlm.model.UniversalFilterItemModel
-import com.example.pocketmoney.mlm.viewmodel.CustomerViewModel
-import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
+import com.example.pocketmoney.mlm.ui.coupons.GenerateCoupon
+import com.example.pocketmoney.mlm.viewmodel.MyCouponsViewModel
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.DateTimeEnum
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -18,18 +16,10 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MyCoupons : AppCompatActivity(), ApplicationToolbar.ApplicationToolbarListener {
-
-
-    //UI
-    private lateinit var binding: ActivityMyCouponsBinding
-    private lateinit var progressBarHandler: ProgressBarHandler
+class MyCoupons : BaseActivity<ActivityMyCouponsBinding>(ActivityMyCouponsBinding::inflate), ApplicationToolbar.ApplicationToolbarListener {
 
     // ViewModels
-    private val customerViewModel by viewModels<CustomerViewModel>()
-    private val userAuthenticationViewModel by viewModels<AccountViewModel>()
-
-
+    private val viewModel by viewModels<MyCouponsViewModel>()
     // Adapters
     private lateinit var myCouponsAdapter: MyCouponsAdapter
 
@@ -40,16 +30,16 @@ class MyCoupons : AppCompatActivity(), ApplicationToolbar.ApplicationToolbarList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMyCouponsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        progressBarHandler = ProgressBarHandler(this)
         populateTimeFilter(getTimeFilter().toMutableList())
         subscribeObservers()
         setupRecyclerView()
 
         binding.apply {
             toolbarMyCoupons.setApplicationToolbarListener(this@MyCoupons)
+            fabCreateCoupon.setOnClickListener {
+                val bottomSheet = GenerateCoupon()
+                bottomSheet.show(supportFragmentManager,bottomSheet.tag)
+            }
         }
 
 
@@ -78,35 +68,35 @@ class MyCoupons : AppCompatActivity(), ApplicationToolbar.ApplicationToolbarList
                     val endDate = convertMillisecondsToDate(selection.second, "yyyy-MM-dd")
 
 
-                    customerViewModel.getCouponList(userID,roleID,startDate,endDate)
+                    viewModel.getCouponList(userID,roleID,startDate,endDate)
 
                     //Do something...
                 }
 
             } else {
 
-                customerViewModel.getCouponList( userID, roleID,getDateRange(filterItem.ID),getTodayDate())
+                viewModel.getCouponList( userID, roleID,getDateRange(filterItem.ID),getTodayDate())
             }
 
         }
     }
 
 
-    private fun subscribeObservers() {
-        userAuthenticationViewModel.userID.observe(this, {
+    override fun subscribeObservers() {
+        viewModel.userId.observe(this, {
             userID = it
 
         })
-        userAuthenticationViewModel.roleID.observe(this, {
+        viewModel.userRoleID.observe(this, {
             roleID = it
             if (userID != "" && roleID != 0) {
 
-                customerViewModel.getCouponList(userID, roleID,getDateRange(DateTimeEnum.LAST_MONTH),getTodayDate())
+                viewModel.getCouponList(userID, roleID,getDateRange(DateTimeEnum.LAST_MONTH),getTodayDate())
             }
 
         })
 
-        customerViewModel.couponList.observe(this, { _result ->
+        viewModel.couponList.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -126,23 +116,6 @@ class MyCoupons : AppCompatActivity(), ApplicationToolbar.ApplicationToolbarList
             }
         })
 
-    }
-
-    private fun displayLoading(state: Boolean) {
-        if (state) progressBarHandler.show() else progressBarHandler.hide()
-    }
-
-
-    private fun displayRefreshing(loading: Boolean) {
-//        binding.swipeRefreshLayout.isRefreshing = loading
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show()
-        }
     }
 
     private fun setupRecyclerView() {

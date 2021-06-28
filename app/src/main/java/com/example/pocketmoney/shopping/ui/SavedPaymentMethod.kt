@@ -14,7 +14,6 @@ import com.example.pocketmoney.databinding.FragmentSavedPaymentMethodBinding
 import com.example.pocketmoney.shopping.adapters.CustomMenuAdapter
 import com.example.pocketmoney.shopping.adapters.SavedPaymentCardAdapter
 import com.example.pocketmoney.shopping.model.ModelPaymentCard
-import kotlinx.android.synthetic.main.fragment_saved_payment_method.*
 
 
 class SavedPaymentMethod : Fragment() {

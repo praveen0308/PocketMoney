@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_checkout_order"
-    app:startDestination="@id/address">
+    app:startDestination="@id/selectAddress">
 
     <fragment
         android:id="@+id/address"
@@ -59,4 +59,21 @@
         android:name="com.example.pocketmoney.shopping.ui.checkoutorder.OrderSuccessful"
         android:label="activity_order_successful"
         tools:layout="@layout/activity_order_successful" />
+    <fragment
+        android:id="@+id/selectAddress"
+        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.SelectAddress"
+        android:label="fragment_select_address"
+        tools:layout="@layout/fragment_select_address" >
+        <action
+            android:id="@+id/action_selectAddress_to_orderSummary"
+            app:destination="@id/orderSummary" />
+        <action
+            android:id="@+id/action_selectAddress_to_addNewAddress"
+            app:destination="@id/addNewAddress" />
+    </fragment>
+    <activity
+        android:id="@+id/addNewAddress"
+        android:name="com.example.pocketmoney.shopping.ui.AddNewAddress"
+        android:label="activity_add_new_address"
+        tools:layout="@layout/activity_add_new_address" />
 </navigation>

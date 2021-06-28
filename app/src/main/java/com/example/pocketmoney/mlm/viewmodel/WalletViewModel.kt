@@ -102,7 +102,6 @@ class WalletViewModel @Inject constructor(
     private val _transactionHistory = MutableLiveData<Resource<List<TransactionModel>>>()
     val transactionHistory: LiveData<Resource<List<TransactionModel>>> = _transactionHistory
 
-
     fun getTransactionHistory(requestModel1: CustomerRequestModel1) {
 
         viewModelScope.launch {

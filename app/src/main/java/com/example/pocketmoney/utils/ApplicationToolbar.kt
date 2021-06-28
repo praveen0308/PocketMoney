@@ -7,13 +7,8 @@ import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.GravityCompat
-import com.bumptech.glide.Glide
 import com.example.pocketmoney.R
-import kotlin.math.log
 
 class ApplicationToolbar(
         context: Context, attrs: AttributeSet

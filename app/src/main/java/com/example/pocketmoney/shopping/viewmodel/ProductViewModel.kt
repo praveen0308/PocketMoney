@@ -18,30 +18,6 @@ class ProductViewModel @Inject constructor(
     private val productRepository: ProductRepository
 ):ViewModel() {
 
-    private val _productList: MutableLiveData<DataState<List<ProductModel>>> = MutableLiveData()
-
-    val productList: LiveData<DataState<List<ProductModel>>>
-        get() = _productList
-
-
-    fun getProductList(shoppingHomeEvent: ShoppingHomeEvent){
-        viewModelScope.launch {
-            when(shoppingHomeEvent){
-                is ShoppingHomeEvent.GetProductList ->{
-                    productRepository.getHomeProductList()
-                        .onEach { dataState ->
-                            _productList.value = dataState
-                        }
-                        .launchIn(viewModelScope)
-                }
-
-                is ShoppingHomeEvent.None ->{
-                    // No action
-                }
-            }
-        }
-    }
-
     private val _productListBySearch = MutableLiveData<Resource<List<ProductModel>>>()
     val productListBySearch : LiveData<Resource<List<ProductModel>>> = _productListBySearch
 

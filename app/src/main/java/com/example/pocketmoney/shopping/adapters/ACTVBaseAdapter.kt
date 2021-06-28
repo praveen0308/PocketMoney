@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import androidx.annotation.LayoutRes
 import com.example.pocketmoney.shopping.model.ModelACTV
-import kotlinx.android.synthetic.main.item_auto_complete_text_view.view.*
+
 
 
 class ACTVBaseAdapter(private val c: Context, @LayoutRes private val layoutResource: Int, private val mList: ArrayList<ModelACTV>) :
@@ -24,7 +24,7 @@ class ACTVBaseAdapter(private val c: Context, @LayoutRes private val layoutResou
 
         val view = convertView ?: LayoutInflater.from(c).inflate(layoutResource, parent, false)
 
-        view.tv_actv_text.text = filteredMovies[position].name
+//        view.tv_actv_text.text = filteredMovies[position].name
 
 
         return view

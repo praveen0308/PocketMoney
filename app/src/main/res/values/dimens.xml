@@ -6,4 +6,5 @@
     <dimen name="list_item_spacing_half">8dp</dimen>
     <dimen name="product_view_chip_text_size">11sp</dimen>
     <dimen name="btn_corner_radius">5dp</dimen>
+    <dimen name="activity_margin">10dp</dimen>
 </resources>

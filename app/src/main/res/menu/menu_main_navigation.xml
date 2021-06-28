@@ -23,9 +23,22 @@
         android:enabled="true"
         android:icon="@drawable/ic_history"
         android:title="@string/history" />
+<!--    <item-->
+<!--        android:id="@+id/offers"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/ic_offer"-->
+<!--        android:title="@string/offers"/>-->
+
+<!--    <item-->
+<!--        android:id="@+id/offers"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/ic_offer"-->
+<!--        android:title="@string/offers"/>-->
+
+
     <item
-        android:id="@+id/offers"
+        android:id="@+id/account"
         android:enabled="true"
-        android:icon="@drawable/ic_offer"
-        android:title="@string/offers"/>
+        android:icon="@drawable/ic_person"
+        android:title= "Account"/>
 </menu>

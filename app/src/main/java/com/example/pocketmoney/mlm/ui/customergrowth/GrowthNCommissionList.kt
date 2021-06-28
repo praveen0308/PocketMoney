@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,7 +35,7 @@ class GrowthNCommissionList :
     private lateinit var growthNCommissionHistoryAdapter: GrowthNCommissionHistoryAdapter
     private lateinit var updateCountAdapter: CustomerUpdateCountAdapter
 
-    private val viewModel by activityViewModels<CustomerGrowthNCommissionViewModel>()
+    private val viewModel by viewModels<CustomerGrowthNCommissionViewModel>()
 
     // Variables
     private var startDate: String = getDateRange(FilterEnum.LAST_MONTH)

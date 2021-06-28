@@ -12,13 +12,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentSearchResultBinding
 import com.example.pocketmoney.shopping.adapters.SearchResultProductAdapter
 import com.example.pocketmoney.shopping.model.ProductModel
 import com.example.pocketmoney.shopping.ui.bottomsheetdialogs.SortingFilter
-import com.example.pocketmoney.shopping.ui.bottomsheetdialogs.SortingFilterArgs
 import com.example.pocketmoney.shopping.viewmodel.FilterViewModel
 import com.example.pocketmoney.shopping.viewmodel.ProductViewModel
 import com.example.pocketmoney.utils.ApplicationToolbar

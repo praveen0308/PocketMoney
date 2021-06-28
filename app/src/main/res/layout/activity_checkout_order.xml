@@ -59,17 +59,70 @@
         app:layout_constraintBottom_toTopOf="@+id/layout_checkout_action"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/stepView" />
+        app:layout_constraintTop_toBottomOf="@+id/stepView"
+        app:navGraph="@navigation/nav_checkout_order"
+        />
 
-    <include
+<!--    <include-->
+<!--        android:id="@+id/layout_checkout_action"-->
+<!--        layout="@layout/bottom_layout_checkout_order"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_checkout_action"
-        layout="@layout/bottom_layout_checkout_order"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        android:background="@color/colorWhite"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp">
+
+        <TextView
+            android:id="@+id/tv_amount_payable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/colorTextPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_continue"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/rupee_zero" />
+
+        <com.google.android.material.button.MaterialButton
+
+            android:id="@+id/btn_continue"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_amount_payable"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Continue" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_deliver_here"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/deliver_here"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:paddingVertical="14dp"
+        android:layout_marginHorizontal="@dimen/dimen_8dp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -54,7 +54,7 @@ abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (Layout
     protected fun showFragment(fragment: Fragment) {
 
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-//        fragmentTransaction.replace(R.id.frame_layout, fragment)
+        fragmentTransaction.replace(R.id.frame_layout, fragment)
         fragmentTransaction.commit()
     }
 

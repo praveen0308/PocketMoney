@@ -80,7 +80,7 @@ class MainDashboard : AppCompatActivity(), Home.HomeFragmentListener, Shop.ShopF
         navigationList.add(ModelItem("Offer", mutableListOf(),NavigationEnum.OFFER))
 
         val reportSubItemList = mutableListOf<ModelSubItem>()
-        reportSubItemList.add(ModelSubItem("Ticket History",NavigationEnum.TICKET_HISTORY))
+        reportSubItemList.add(ModelSubItem("Complaint History",NavigationEnum.TICKET_HISTORY))
         reportSubItemList.add(ModelSubItem("Transaction History",NavigationEnum.ALL_TRANSACTION))
         navigationList.add(ModelItem("Report",reportSubItemList,NavigationEnum.PARENT_MENU))
         navigationList.add(ModelItem("Logout", mutableListOf(),NavigationEnum.LOG_OUT))

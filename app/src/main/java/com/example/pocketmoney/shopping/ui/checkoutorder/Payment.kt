@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,32 +19,22 @@ import com.example.pocketmoney.shopping.model.ModelPaymentMethod
 import com.example.pocketmoney.shopping.ui.CheckoutOrderInterface
 import com.example.pocketmoney.shopping.viewmodel.AddressViewModel
 import com.example.pocketmoney.shopping.viewmodel.CartViewModel
+import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.shopping.viewmodel.ShoppingAuthViewModel
-import com.example.pocketmoney.utils.DataState
-import com.example.pocketmoney.utils.ModelOrderAmountSummary
-import com.example.pocketmoney.utils.ProgressBarHandler
-import com.example.pocketmoney.utils.Status
+import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Payment : Fragment() {
-
-    //UI
-    private var _binding: FragmentPaymentBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var progressBarHandler: ProgressBarHandler
+class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inflate) {
 
     //ViewModels
-    private val shoppingAuthViewModel: ShoppingAuthViewModel by viewModels()
-    private val addressViewModel: AddressViewModel by viewModels()
-    private val cartViewModel: CartViewModel by viewModels()
-
+    private val viewModel by activityViewModels<CheckoutOrderViewModel>()
 
     // Adapters
     private lateinit var masterPaymentMethodAdapter: MasterPaymentMethodAdapter
-    private lateinit var checkoutOrderInterface: CheckoutOrderInterface
+//    private lateinit var checkoutOrderInterface: CheckoutOrderInterface
 
     // Variable
     private lateinit var userID: String
@@ -53,42 +44,52 @@ class Payment : Fragment() {
     private lateinit var modelOrderAmountSummary:ModelOrderAmountSummary
     private val args: PaymentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        selectedAddressId = args.selectedAddressId
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentPaymentBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRvPaymentMethod()
-        subscribeObservers()
-        checkoutOrderInterface = requireActivity() as CheckoutOrder
-        checkoutOrderInterface.updateCheckOutStepStatus(2)
+//        checkoutOrderInterface = requireActivity() as CheckoutOrder
+//        checkoutOrderInterface.updateCheckOutStepStatus(2)
         masterPaymentMethodAdapter.setPaymentCategoryList(getPaymentMethods())
     }
 
-    private fun subscribeObservers() {
-
-        shoppingAuthViewModel.userID.observe(viewLifecycleOwner, {
+    override fun subscribeObservers() {
+        viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
-            addressViewModel.getShippingCharge(selectedAddressId,userID)
-        })
+//            addressViewModel.getAddressDetails(selectedAddressId, userID)
+//            addressViewModel.getShippingCharge(selectedAddressId,userID)
 
-        addressViewModel.shippingCharge.observe(viewLifecycleOwner, { _result ->
+        })
+        viewModel.selectedAddress.observe(viewLifecycleOwner,{
+            selectedAddressId = it.AddressID!!
+            viewModel.getShippingCharge(selectedAddressId,userID)
+
+        })
+        viewModel.shippingCharge.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
                         shippingCharge=it
-                        cartViewModel.getCartItems(userID)
+                        viewModel.getCartItems(userID)
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+        viewModel.cartItems.observe(viewLifecycleOwner, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        populateValues(it,shippingCharge)
                     }
                     displayLoading(false)
                 }
@@ -104,23 +105,6 @@ class Payment : Fragment() {
             }
         })
 
-
-        cartViewModel.cartItems.observe(viewLifecycleOwner, { dataState ->
-            when (dataState) {
-                is DataState.Success<List<CartModel>> -> {
-                    displayLoading(false)
-//                    cartItemListAdapter.setCartItemList(dataState.data)
-                    populateValues(dataState.data,shippingCharge)
-                }
-                is DataState.Loading -> {
-                    displayLoading(true)
-                }
-                is DataState.Error -> {
-                    displayLoading(false)
-                    displayError(dataState.exception.message)
-                }
-            }
-        })
     }
 
     private fun setupRvPaymentMethod() {
@@ -195,20 +179,9 @@ class Payment : Fragment() {
         binding.orderAmountSummary.setAmountSummary(orderAmountSummary)
         modelOrderAmountSummary = orderAmountSummary
         binding.orderAmountSummary.setVisibilityStatus(1)
-        checkoutOrderInterface.setPriceDetailNAction(grandTotal)
+        viewModel.setPayableAmount(grandTotal)
 
 
     }
 
-    private fun displayLoading(state: Boolean) {
-        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(context, "Unknown error", Toast.LENGTH_LONG).show()
-        }
-    }
 }
