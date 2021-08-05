@@ -15,9 +15,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:logoVisibility="true"
-        app:menuIconVisibility="true"
+        app:menuIconVisibility="false"
         app:subtitleVisibility="true"
-        app:toolbarMenuIcon="@drawable/ic_round_open_in_new_24" />
+/>
 
     <TextView
         android:id="@+id/tv_recharge_amount"

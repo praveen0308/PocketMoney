@@ -234,6 +234,9 @@ If you have a query, issue, concern, or complaint in relation to collection or u
     <string name="scan_pay_by_pocket_money"><![CDATA[Scan & Pay by Pocket Money]]></string>
     <string name="welcome_to_pocket_money">Welcome to Pocket Money</string>
     <string name="about_pocket_money">We has brought an amazing multi-state venture POCKET MONEY which can remember all the recharge and all the bill payments and shoppings and get done.  POCKET MONEY is a venture the provides the opportunity to change life by helping its recharges reach the basics needs through business opportunitys.</string>
+    <string name="send_money_to_mobile_no">Send Money to Mobile No.</string>
+    <string name="enter_mobile_no">Enter Mobile No.</string>
+    <string name="confirm">Confirm</string>
 
 
 </resources>

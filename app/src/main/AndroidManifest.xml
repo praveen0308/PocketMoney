@@ -14,8 +14,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PocketMoney">
-        <activity android:name=".mlm.ui.dashboard.AccountActivity"></activity>
-        <activity android:name=".QRCodeScanner" />
+        <activity android:name=".mlm.ui.mobilerecharge.MobileNumberDetail"></activity>
+<!--        <activity android:name=".mlm.ui.mobilerecharge.SelectLocation" />-->
+        <activity android:name=".mlm.ui.AddMoneyToWallet" />
+        <activity android:name=".mlm.ui.payouts.Payouts" />
+        <activity android:name=".mlm.ui.transfermoney.B2BTransfer" />
+<!--        <activity android:name=".mlm.ui.transfermoney.PayToWallet" />-->
+<!--        <activity android:name=".mlm.ui.transfermoney.SendMoneyToMobile" />-->
+        <activity android:name=".mlm.ui.dashboard.AccountActivity" />
+        <activity android:name=".mlm.ui.transfermoney.QRCodeScanner" />
         <activity android:name=".mlm.ui.customergrowth.CustomerGrowthNCommission" />
         <activity android:name=".shopping.ui.AddNewAddress" />
         <activity android:name=".mlm.ui.mobilerecharge.PaytmActivity" />
@@ -23,8 +30,8 @@
         <activity android:name=".mlm.ui.dashboard.MyCoupons" />
         <activity android:name=".mlm.ui.dashboard.CustomerWalletActivity" />
         <activity android:name=".mlm.ui.dashboard.CustomerProfile" />
-        <activity android:name=".mlm.ui.dashboard.CustomerGrowthActivity" />
-        <activity android:name=".mlm.ui.dashboard.CustomerCommissionActivity" />
+<!--        <activity android:name=".mlm.ui.dashboard.CustomerGrowthActivity" />-->
+<!--        <activity android:name=".mlm.ui.dashboard.CustomerCommissionActivity" />-->
         <activity android:name=".mlm.ui.dashboard.IncomeActivity" />
         <activity android:name=".shopping.ui.ExtraNavigationActivity" />
         <activity android:name=".shopping.ui.customernavigation.AllCategories" />
@@ -41,8 +48,9 @@
         <activity android:name=".mlm.ui.electricity.ElectricityActivity" />
         <activity android:name=".mlm.ui.dashboard.pages.PaymentHistoryFilter" />
         <activity android:name=".mlm.ui.dth.DthActivity" />
-        <activity android:name=".mlm.ui.recharge.OperatorsPlan" />
-        <activity android:name=".mlm.ui.recharge.RechargeActivity" />
+        <activity android:name=".mlm.ui.mobilerecharge.SelectContact"/>
+<!--        <activity android:name=".mlm.ui.recharge.OperatorsPlan" />-->
+<!--        <activity android:name=".mlm.ui.recharge.RechargeActivity" />-->
         <activity android:name=".shopping.ui.BuyProduct" />
         <activity
             android:name=".mlm.ui.dashboard.MainDashboard"

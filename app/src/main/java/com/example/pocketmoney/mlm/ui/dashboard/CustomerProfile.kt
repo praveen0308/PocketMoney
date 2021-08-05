@@ -26,7 +26,6 @@ class CustomerProfile : BaseActivity<ActivityCustomerProfileBinding>(ActivityCus
     // Data
     private lateinit var customerProfileModel:CustomerProfileModel
 
-
     // Variable
     private var userID: String = ""
 

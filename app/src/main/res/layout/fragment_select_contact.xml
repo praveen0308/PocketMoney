@@ -14,8 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Prepaid"
-        />
+        app:title="Select Contact" />
 
     <com.example.pocketmoney.utils.EditTextWithClear
         android:id="@+id/editTextWithClear"

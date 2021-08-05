@@ -3,22 +3,22 @@ package com.example.pocketmoney.mlm.repository
 import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
+import com.example.pocketmoney.R
 import com.example.pocketmoney.mlm.model.ModelContact
 import com.example.pocketmoney.mlm.model.ModelOperator
-import com.example.pocketmoney.mlm.model.UserMenu
+import com.example.pocketmoney.mlm.model.RechargeEnum
 import com.example.pocketmoney.mlm.model.serviceModels.IdNameModel
 import com.example.pocketmoney.mlm.model.serviceModels.MobileCircleOperator
 import com.example.pocketmoney.mlm.model.serviceModels.MobileOperatorPlan
 import com.example.pocketmoney.mlm.model.serviceModels.SimplePlanResponse
 import com.example.pocketmoney.mlm.network.MLMApiService
 import com.example.pocketmoney.utils.DataState
+import com.example.pocketmoney.utils.extractMobileNumber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import retrofit2.http.Query
 import javax.inject.Inject
-import kotlin.concurrent.fixedRateTimer
 
 
 class RechargeRepository @Inject constructor(
@@ -44,7 +44,7 @@ class RechargeRepository @Inject constructor(
 //                    Log.e("contact", "getAllContacts: $name $phoneNo $photoUri")
 
 
-                    mContactList.add(ModelContact(name, phoneNo))
+                    mContactList.add(ModelContact(name, extractMobileNumber(phoneNo)))
                     emit(DataState.Success(mContactList))
                 }
             }
@@ -76,6 +76,15 @@ class RechargeRepository @Inject constructor(
         } catch (e: Exception) {
             emit(DataState.Error(e))
         }
+    }
+
+    fun getOperators(operatorOf: RechargeEnum):List<ModelOperator>{
+        return when(operatorOf){
+                RechargeEnum.PREPAID,RechargeEnum.POSTPAID->getMobileOperators()
+                RechargeEnum.DTH->getDTHOperators()
+                else->getDTHOperators()
+            }
+
     }
 
     private fun getElectricityBoards(): List<ModelOperator> {
@@ -141,11 +150,12 @@ class RechargeRepository @Inject constructor(
     private fun getDTHOperators(): List<ModelOperator> {
         val dthOperatorList:MutableList<ModelOperator> = ArrayList()
 
-        dthOperatorList.add(ModelOperator("Airtel DTH"))
-        dthOperatorList.add(ModelOperator("Dish TV"))
-        dthOperatorList.add(ModelOperator("Sun Direct"))
-        dthOperatorList.add(ModelOperator("Tata Sky"))
-        dthOperatorList.add(ModelOperator("Videocon D2H"))
+        dthOperatorList.add(ModelOperator("Tata Sky",R.drawable.ic_tata_sky))
+        dthOperatorList.add(ModelOperator("Airtel DTH",R.drawable.ic_airtel))
+        dthOperatorList.add(ModelOperator("Big TV",R.drawable.ic_big_tv))
+        dthOperatorList.add(ModelOperator("Dish TV",R.drawable.ic_dish_tv))
+        dthOperatorList.add(ModelOperator("Sun Direct",R.drawable.ic_sun_direct))
+        dthOperatorList.add(ModelOperator("Videocon D2H",R.drawable.ic_videocon_d2h))
 
         return dthOperatorList
     }
@@ -153,12 +163,12 @@ class RechargeRepository @Inject constructor(
     private fun getMobileOperators(): List<ModelOperator> {
         val mobileOperatorList:MutableList<ModelOperator> = ArrayList()
 
-        mobileOperatorList.add(ModelOperator("Reliance Jio"))
-        mobileOperatorList.add(ModelOperator("Airtel"))
-        mobileOperatorList.add(ModelOperator("VI"))
-        mobileOperatorList.add(ModelOperator("Tata Docomo"))
-        mobileOperatorList.add(ModelOperator("BSNL"))
-        mobileOperatorList.add(ModelOperator("MTNL"))
+        mobileOperatorList.add(ModelOperator("Jio", R.drawable.ic_jio))
+        mobileOperatorList.add(ModelOperator("Airtel",R.drawable.ic_airtel))
+        mobileOperatorList.add(ModelOperator("VI",R.drawable.ic_vi_vodafone_idea))
+//        mobileOperatorList.add(ModelOperator("Tata Docomo",R.drawable.ict))
+        mobileOperatorList.add(ModelOperator("BSNL",R.drawable.ic_bsnl))
+        mobileOperatorList.add(ModelOperator("MTNL",R.drawable.ic_mtnl))
 
         return mobileOperatorList
     }

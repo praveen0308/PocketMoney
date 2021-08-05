@@ -36,7 +36,10 @@ class SelectAddress : BaseFragment<FragmentSelectAddressBinding>(FragmentSelectA
 
     private lateinit var resultLauncher : ActivityResultLauncher<Intent>
 
-
+    override fun onResume() {
+        super.onResume()
+        viewModel.setActiveStep(0)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resultLauncher =

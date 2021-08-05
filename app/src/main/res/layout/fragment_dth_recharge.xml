@@ -9,14 +9,13 @@
     android:background="@color/colorWhite">
 
     <com.example.pocketmoney.utils.MyCustomToolbar
-        android:id="@+id/myCustomToolbar3"
+        android:id="@+id/toolbar_dth_recharge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:logoVisibility="true"
-
         app:title="DTH Operator name"
         />
 
@@ -34,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
 
-        app:layout_constraintTop_toBottomOf="@+id/myCustomToolbar3">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_dth_recharge">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"

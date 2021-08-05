@@ -6,7 +6,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.pocketmoney.mlm.model.ModelOperatorPlan
 import com.example.pocketmoney.mlm.model.serviceModels.MobileOperatorPlan
-import com.example.pocketmoney.mlm.ui.recharge.MobileOperatorPlanPagerFragment
+import com.example.pocketmoney.mlm.ui.mobilerecharge.MobileOperatorPlanPagerFragment
+
+//import com.example.pocketmoney.mlm.ui.recharge.MobileOperatorPlanPagerFragment
 
 class OperatorPlanPagerAdapter(
     private val numberOfTabs: Int,

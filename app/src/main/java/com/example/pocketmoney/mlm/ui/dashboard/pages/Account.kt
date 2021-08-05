@@ -76,7 +76,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 NavigationEnum.INCOME,
                 "Income",
                 "Growth,Commission",
-                R.drawable.ic_person
+                R.drawable.ic_baseline_data_saver_on_24
             )
         )
 //
@@ -94,7 +94,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 NavigationEnum.MY_COUPON,
                 "My Coupons",
                 "Manage & create coupons",
-                R.drawable.ic_person
+                R.drawable.ic_baseline_local_offer_24
             )
         )
 
@@ -124,7 +124,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 NavigationEnum.DOWNLINE,
                 "Downline",
                 "Track your user network",
-                R.drawable.ic_person
+                R.drawable.ic_baseline_device_hub_24
             )
         )
 
@@ -133,7 +133,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 NavigationEnum.REPORT,
                 "Report",
                 "Complaint history",
-                R.drawable.ic_person
+                R.drawable.ic_baseline_filter_list_24
             )
         )
 
@@ -403,12 +403,14 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
             //initializing dialog screen
             val imageView = dialogview.findViewById<ImageView>(R.id.iv_qr_code)
             val ivClose = dialogview.findViewById<ImageView>(R.id.img_close)
+            val ivLogo = dialogview.findViewById<ImageView>(R.id.iv_logo)
             ivClose.setOnClickListener {
                 dismissPopup()
             }
             val qrgEncoder = QRGEncoder(userId, null, QRGContents.Type.TEXT, 300)
             try {
                 imageView.setImageBitmap(qrgEncoder.bitmap)
+                ivLogo.isVisible = true
             } catch (e: WriterException) {
                 e.printStackTrace()
             }

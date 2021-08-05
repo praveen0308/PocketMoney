@@ -1,8 +1,6 @@
 package com.example.pocketmoney.mlm.ui.dashboard
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityAccountBinding
 import com.example.pocketmoney.utils.ApplicationToolbar
 import com.example.pocketmoney.utils.BaseActivity

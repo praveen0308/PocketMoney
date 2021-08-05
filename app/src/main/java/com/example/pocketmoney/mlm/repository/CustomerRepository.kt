@@ -1,5 +1,6 @@
 package com.example.pocketmoney.mlm.repository
 
+import com.example.pocketmoney.mlm.model.CustomerDetailResponse
 import com.example.pocketmoney.mlm.model.mlmModels.*
 import com.example.pocketmoney.mlm.network.MLMApiService
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +12,14 @@ import javax.inject.Inject
 class CustomerRepository @Inject constructor(
     private val mlmApiService: MLMApiService
 ) {
+
+    suspend fun getCustomerDetail(userID: String): Flow<CustomerDetailResponse> {
+        return flow {
+            val response = mlmApiService.getCustomerDetails(userID)
+
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
 
     suspend fun getCustomerGrowth(requestModel1: CustomerRequestModel1): Flow<CustomerGrowthResponse> {
         return flow {

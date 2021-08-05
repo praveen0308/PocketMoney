@@ -40,9 +40,7 @@
                 app:hintTextColor="@color/colorTextSecondary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/myCustomToolbar3"
-
-                >
+                app:layout_constraintTop_toBottomOf="@+id/myCustomToolbar3">
 
                 <com.google.android.material.textfield.TextInputEditText
                     style="@style/styleTextInputEditText"

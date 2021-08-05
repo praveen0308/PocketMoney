@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.databinding.FragmentOrderSummaryBinding
@@ -13,7 +13,9 @@ import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.ui.BuyProduct
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
-import com.example.pocketmoney.utils.*
+import com.example.pocketmoney.utils.BaseFragment
+import com.example.pocketmoney.utils.ModelOrderAmountSummary
+import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,7 +37,10 @@ class OrderSummary : BaseFragment<FragmentOrderSummaryBinding>(FragmentOrderSumm
     private var source: ShoppingEnum? = null
     private val args: OrderSummaryArgs by navArgs()
 
-
+    override fun onResume() {
+        super.onResume()
+        viewModel.setActiveStep(1)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.setActiveStep(1)
@@ -216,10 +221,9 @@ class OrderSummary : BaseFragment<FragmentOrderSummaryBinding>(FragmentOrderSumm
 
                 tvMobileNumber.text = modelAddress.MobileNo
 
-                if (modelAddress.isSelected == true) {
-                    btnDeliverHere.visibility = View.VISIBLE
-                } else btnDeliverHere.visibility = View.GONE
-
+                btnChangeAddress.setOnClickListener {
+                   findNavController().navigate(OrderSummaryDirections.actionOrderSummaryToSelectAddress())
+                }
             }
         }
     }

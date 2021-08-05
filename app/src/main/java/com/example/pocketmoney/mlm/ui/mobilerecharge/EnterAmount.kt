@@ -63,7 +63,7 @@ class EnterAmount : Fragment() {
         })
 
         binding.tvSeePlans.setOnClickListener {
-            navController.navigate(R.id.action_enterAmount_to_operatorsPlan)
+//            navController.navigate(R.id.action_enterAmount_to_operatorsPlan)
         }
 
     }

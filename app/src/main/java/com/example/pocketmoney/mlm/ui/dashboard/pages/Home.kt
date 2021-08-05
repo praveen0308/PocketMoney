@@ -19,8 +19,10 @@ import com.example.pocketmoney.databinding.FragmentHomeBinding
 import com.example.pocketmoney.mlm.HomeParentItemListener
 import com.example.pocketmoney.mlm.adapters.HomeParentAdapter
 import com.example.pocketmoney.mlm.model.*
+import com.example.pocketmoney.mlm.ui.AddMoneyToWallet
 import com.example.pocketmoney.mlm.ui.dashboard.CustomerWalletActivity
 import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
+import com.example.pocketmoney.mlm.ui.payouts.Payouts
 import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
 import com.example.pocketmoney.mlm.viewmodel.HomeViewModel
 import com.example.pocketmoney.mlm.viewmodel.WalletViewModel
@@ -79,7 +81,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
         }
 
         binding.topLayout.ivUserProfile.setOnClickListener{
-         fragmentListener.onUserProfileClick()
+//         fragmentListener.onUserProfileClick()
         }
 
     }
@@ -170,18 +172,10 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
         services2.add(ModelServiceView("Broadband", R.drawable.ic_broadband, RechargeEnum.BROADBAND))
         services2.add(ModelServiceView("Loans", R.drawable.ic_loan, RechargeEnum.LOAN))
         services2.add(ModelServiceView("DMT", R.drawable.ic_dmt, RechargeEnum.DMT))
-        services2.add(
-            ModelServiceView(
-                "Life Insurance",
-                R.drawable.ic_life_insurance,
-                RechargeEnum.LIFE_INSURANCE
-            )
-        )
+        services2.add(ModelServiceView("Life Insurance", R.drawable.ic_life_insurance, RechargeEnum.LIFE_INSURANCE))
         services2.add(ModelServiceView("FASTag", R.drawable.ic_fastag, RechargeEnum.FASTAG))
 
-        val servicesCategory2 = ModelServiceCategory(
-            "Featured", services2
-        )
+        val servicesCategory2 = ModelServiceCategory("Featured", services2)
 
         val model2 = HomeParentModel(MyEnums.SERVICES, servicesCategory2)
 
@@ -195,9 +189,47 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
 
         val model3 = HomeParentModel(MyEnums.OFFERS, offerBannerList = bannerList)
 
+
+        // Working Services
+        val workingServices: MutableList<ModelServiceView> = java.util.ArrayList()
+        workingServices.add(ModelServiceView("Prepaid", R.drawable.ic_prepaid, RechargeEnum.PREPAID))
+        workingServices.add(ModelServiceView("DTH", R.drawable.ic_dth, RechargeEnum.DTH))
+        workingServices.add(ModelServiceView("Bank Transfer", R.drawable.ic_bank, RechargeEnum.BANK_TRANSFER))
+        workingServices.add(ModelServiceView("Paytm Wallet Transfer", R.drawable.ic_paytm_logo, RechargeEnum.PAYTM_WALLET_TRANSFER))
+
+
+
+        val workingServiceCategory = ModelServiceCategory("Featured", workingServices)
+
+        val workingServiceCategoryModel = HomeParentModel(MyEnums.SERVICES, workingServiceCategory)
+
+
+
+        // Coming Soon
+        val comingSoonServices: MutableList<ModelServiceView> = java.util.ArrayList()
+        comingSoonServices.add(ModelServiceView("Postpaid", R.drawable.ic_postpaid, RechargeEnum.POSTPAID))
+        comingSoonServices.add(ModelServiceView("Landline", R.drawable.ic_landline, RechargeEnum.LANDLINE))
+        comingSoonServices.add(ModelServiceView("Electricity", R.drawable.ic_electricity, RechargeEnum.ELECTRICITY))
+        comingSoonServices.add(ModelServiceView("Water", R.drawable.ic_water, RechargeEnum.WATER))
+        comingSoonServices.add(ModelServiceView("Gas Cylinder Booking", R.drawable.ic_gas, RechargeEnum.GAS))
+        comingSoonServices.add(ModelServiceView("Broadband", R.drawable.ic_broadband, RechargeEnum.BROADBAND))
+        comingSoonServices.add(ModelServiceView("Loans", R.drawable.ic_loan, RechargeEnum.LOAN))
+        comingSoonServices.add(ModelServiceView("DMT", R.drawable.ic_dmt, RechargeEnum.DMT))
+        comingSoonServices.add(ModelServiceView("Life Insurance", R.drawable.ic_life_insurance, RechargeEnum.LIFE_INSURANCE))
+        comingSoonServices.add(ModelServiceView("FASTag", R.drawable.ic_fastag, RechargeEnum.FASTAG))
+
+        val comingSoonServicesCategory = ModelServiceCategory("Coming Soon", comingSoonServices)
+
+        val comingSoonServicesCategoryModel = HomeParentModel(MyEnums.SERVICES, comingSoonServicesCategory)
+
+
+
+
         dataList.add(model1)
         dataList.add(model3)
-        dataList.add(model2)
+//        dataList.add(model2)
+        dataList.add(workingServiceCategoryModel)
+        dataList.add(comingSoonServicesCategoryModel)
         return dataList
     }
 
@@ -219,8 +251,17 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
                 intent.putExtra("FILTER","BUSINESS")
                 startActivity(intent)
             }
+            RechargeEnum.ADD_MONEY->{
+                startActivity(Intent(requireActivity(),AddMoneyToWallet::class.java))
+            }
             RechargeEnum.PAYMENT_HISTORY -> findNavController().navigate(R.id.action_home_to_paymentHistory)
-            else -> findNavController().navigate(HomeDirections.actionHomeToRechargeActivity(action))
+            RechargeEnum.BANK_TRANSFER,RechargeEnum.PAYTM_WALLET_TRANSFER->{
+                startActivity(Intent(requireActivity(),Payouts::class.java))
+            }
+            else -> {
+//                findNavController().navigate(HomeDirections.actionHomeToRechargeActivity(action))
+                showToast("Coming soon !!!")
+            }
         }
     }
 

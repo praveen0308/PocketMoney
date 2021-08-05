@@ -13,10 +13,10 @@
 <!--            android:title="@string/offer_zone"-->
 <!--            android:icon="@drawable/ic_offer"/>-->
 
-        <item
-            android:id="@+id/choose_language"
-            android:title="@string/choose_language"
-            android:icon="@drawable/ic_baseline_language_24"/>
+<!--        <item-->
+<!--            android:id="@+id/choose_language"-->
+<!--            android:title="@string/choose_language"-->
+<!--            android:icon="@drawable/ic_baseline_language_24"/>-->
 
     </group>
 
@@ -71,9 +71,9 @@
 <!--            android:id="@+id/notification_preferences"-->
 <!--            android:title="@string/notification_preferences" />-->
 
-        <item
-            android:id="@+id/help_centre"
-            android:title="@string/help_centre" />
+<!--        <item-->
+<!--            android:id="@+id/help_centre"-->
+<!--            android:title="@string/help_centre" />-->
 
         <item
             android:id="@+id/privacy_policy"

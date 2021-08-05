@@ -17,7 +17,6 @@ import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.shopping.viewmodel.ShoppingAuthViewModel
 import com.example.pocketmoney.utils.ApplicationToolbar
 import com.example.pocketmoney.utils.BaseFragment
-import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -54,7 +53,7 @@ class Address : BaseFragment<FragmentAddressBinding>(FragmentAddressBinding::inf
         when(args.source){
             ShoppingEnum.CHECKOUT ->{
                 binding.toolbarAddress.visibility = View.GONE
-                checkoutOrderInterface = requireActivity() as CheckoutOrder
+//                checkoutOrderInterface = requireActivity() as CheckoutOrder
                 checkoutOrderInterface.updateCheckOutStepStatus(0)
             }
             ShoppingEnum.MY_ACCOUNT->{

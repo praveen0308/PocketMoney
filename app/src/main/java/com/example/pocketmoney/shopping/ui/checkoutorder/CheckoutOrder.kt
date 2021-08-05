@@ -4,11 +4,9 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
-import androidx.loader.app.LoaderManager
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.Navigation
@@ -16,10 +14,9 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityCheckoutOrderBinding
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
-import com.example.pocketmoney.shopping.adapters.CartItemListAdapter
-import com.example.pocketmoney.shopping.ui.CheckoutOrderInterface
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.utils.*
+import com.example.pocketmoney.utils.Constants.P_MERCHANT_ID
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
@@ -30,7 +27,7 @@ import java.util.*
 
 
 @AndroidEntryPoint
-class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckoutOrderBinding::inflate), CheckoutOrderInterface,
+class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckoutOrderBinding::inflate),
     ApplicationToolbar.ApplicationToolbarListener {
 
     //UI
@@ -40,7 +37,6 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
     private val viewModel by viewModels<CheckoutOrderViewModel>()
 
     // Adapters
-    private lateinit var cartItemListAdapter: CartItemListAdapter
 
     // Variable
     private var selectedAddressId: Int = 0
@@ -53,7 +49,8 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
     private lateinit var ORDER_ID: String
     private lateinit var ACCOUNT_ID : String
-    var loaderManager: LoaderManager? = null
+    private lateinit var AMOUNT : String
+    private lateinit var userId : String
     var bodyData = ""
     var value = 0f
 
@@ -100,8 +97,9 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                         PaymentArgs(selectedAddressId).toBundle()
                 )
                 2 -> {
-                    val fragment = navHostFragment.childFragmentManager.fragments[0] as Payment
+//                    val fragment = navHostFragment.childFragmentManager.fragments[0] as Payment
 //                    viewModel.createCustomerOrder(fragment.getCustomerOrder())
+                    it.isEnabled = false
                     startPayment()
 
                 }
@@ -115,6 +113,9 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
     }
 
     override fun subscribeObservers() {
+        viewModel.userId.observe(this,{
+            userId = it
+        })
         viewModel.activeStep.observe(this,{
             binding.apply {
                 stepView.go(it,true)
@@ -134,9 +135,11 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
         })
 
         viewModel.amountPayable.observe(this,{
+            AMOUNT = it.toString()
+            binding.layoutCheckoutAction.isVisible = true
             binding.tvAmountPayable.setAmount(it)
             binding.btnContinue.text = getString(R.string.str_continue)
-            binding.layoutCheckoutAction.isVisible = true
+
         })
 
         viewModel.selectedAddress.observe(this,{
@@ -178,9 +181,9 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
                         val paytmOrder = PaytmOrder(
                             ACCOUNT_ID,
-                            "SAMPUR32393595223213",
+                            P_MERCHANT_ID,
                             it,
-                            "100",
+                            AMOUNT,
                             "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$ACCOUNT_ID"
                         )
                         processPaytmTransaction(paytmOrder)
@@ -200,27 +203,6 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
         })
     }
 
-
-    override fun onDeliveryAddressSelected(addressId: Int) {
-        navController.navigate(
-                R.id.action_address_to_orderSummary,
-                OrderSummaryArgs(addressId).toBundle()
-        )
-        selectedAddressId = addressId
-        binding.stepView.go(1, true)
-    }
-
-    override fun updateCheckOutStepStatus(step: Int) {
-        binding.stepView.go(step, true)
-
-    }
-
-    override fun setPriceDetailNAction(amountPayable: Double) {
-        binding.tvAmountPayable.text = "₹ ".plus(amountPayable.toString())
-        binding.btnContinue.text = getString(R.string.str_continue)
-        binding.root.isVisible = true
-
-    }
 
     override fun onToolbarNavClick() {
         navController.popBackStack()
@@ -245,9 +227,9 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
         viewModel.initiateTransactionApi(
             PaytmRequestData(
                 account= ACCOUNT_ID,
-                amount = "100",
+                amount = AMOUNT,
                 callbackurl = Constants.PAYTM_CALLBACK_URL,
-                userid = "8767404060"
+                userid = userId
             )
         )
 
@@ -263,7 +245,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
         }
     }
 
-    fun processPaytmTransaction(paytmOrder: PaytmOrder) {
+    private fun processPaytmTransaction(paytmOrder: PaytmOrder) {
         try {
 
             val transactionManager =

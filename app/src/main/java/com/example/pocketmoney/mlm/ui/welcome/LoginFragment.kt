@@ -22,7 +22,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
 
 
     private val viewModel : LoginViewModel by viewModels()
-//    private val viewModel : AccountViewModel by viewModels()
 
     private lateinit var dialog: android.app.AlertDialog
 

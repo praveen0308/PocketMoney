@@ -36,6 +36,9 @@
         <action
             android:id="@+id/action_orderSummary_to_address"
             app:destination="@id/address" />
+        <action
+            android:id="@+id/action_orderSummary_to_selectAddress"
+            app:destination="@id/selectAddress" />
     </fragment>
     <fragment
         android:id="@+id/payment"

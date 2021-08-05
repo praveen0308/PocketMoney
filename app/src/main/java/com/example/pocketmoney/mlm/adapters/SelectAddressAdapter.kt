@@ -1,14 +1,11 @@
 package com.example.pocketmoney.mlm.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.databinding.TemplateAddressListItemNewBinding
 import com.example.pocketmoney.shopping.model.ModelAddress
-import com.example.pocketmoney.shopping.model.orderModule.CustomerAddress
-import java.lang.StringBuilder
 
 class SelectAddressAdapter(private val mListener: SelectAddressInterface) :
     RecyclerView.Adapter<SelectAddressAdapter.SelectAddressViewHolder>() {
@@ -48,10 +45,12 @@ class SelectAddressAdapter(private val mListener: SelectAddressInterface) :
         init {
             itemView.setOnClickListener {
                 for (i in 0 until mList.size){
-                    mList[i].isSelected = i==absoluteAdapterPosition
+                    mList[i].isSelected = false
                 }
+                mList[absoluteAdapterPosition].isSelected= true
                 mListener.onAddressSelect(mList[absoluteAdapterPosition])
                 notifyDataSetChanged()
+
             }
 
             binding.btnEdit.setOnClickListener {

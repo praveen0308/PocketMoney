@@ -243,15 +243,15 @@ fun getTimeFilters(): List<UniversalFilterItemModel> {
 
 fun getMobileOperatorLogo(id: String): Int {
 
-    return when (id) {
-        "Jio" -> R.drawable.ic_jio
-        "Airtel" -> R.drawable.ic_airtel
-        "Idea", "Vodafone" -> R.drawable.ic_vi_vodafone_idea
-
-        "BSNL" -> R.drawable.ic_bsnl
-        "MTNL" -> R.drawable.ic_mtnl
-        else -> R.drawable.temp_logo
-    }
+    val mobileOperators = hashMapOf<String,Int>()
+    mobileOperators["Jio"] = R.drawable.ic_jio
+    mobileOperators["Airtel"] = R.drawable.ic_airtel
+    mobileOperators["Idea"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["Vodafone"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["VI"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["BSNL"] = R.drawable.ic_bsnl
+    mobileOperators["MTNL"] = R.drawable.ic_mtnl
+    return mobileOperators[id]!!
 
 }
 
@@ -306,3 +306,11 @@ fun lcm(vararg input: Int): Int {
 //
 //
 //}
+
+ fun createRandomOrderId(): String {
+    val timeSeed = System.nanoTime()
+    val randSeed = Math.random() * 1000
+    val midSeed = (timeSeed * randSeed).toLong()
+    val s = midSeed.toString() + ""
+    return s.substring(0, 9)
+}

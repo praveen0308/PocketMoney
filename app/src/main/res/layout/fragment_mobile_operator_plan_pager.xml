@@ -3,18 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".mlm.ui.recharge.MobileOperatorPlanPagerFragment">
+    tools:context=".mlm.ui.mobilerecharge.MobileOperatorPlanPagerFragment">
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/template_mobile_operator_simple_plan"
-        android:paddingVertical="12dp"
         android:clipToPadding="false"
         android:paddingHorizontal="5dp"
-        />
+        android:paddingVertical="12dp"
+        tools:listitem="@layout/template_mobile_operator_simple_plan" />
 
     <TextView
         android:id="@+id/tv_not_found"

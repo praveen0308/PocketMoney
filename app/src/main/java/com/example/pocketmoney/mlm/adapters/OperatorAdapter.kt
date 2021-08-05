@@ -37,21 +37,21 @@ class OperatorAdapter(private val operatorAdapterInterface: OperatorAdapterInter
 
         init {
             itemView.setOnClickListener {
-                operatorAdapterInterface.onOperatorClick()
+                operatorAdapterInterface.onOperatorClick(operatorList[absoluteAdapterPosition])
             }
         }
 
         fun bindOperator(operator: ModelOperator) {
             binding.apply {
                 tvOperatorName.text = operator.name
-
+                ivOperatorLogo.setImageResource(operator.imageUrl as Int)
             }
         }
     }
 
 
     public interface OperatorAdapterInterface {
-        fun onOperatorClick()
+        fun onOperatorClick(operator: ModelOperator)
     }
 
 

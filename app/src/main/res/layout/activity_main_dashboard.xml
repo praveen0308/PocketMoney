@@ -16,19 +16,19 @@
         app:menu="@menu/menu_primary_shopping"
         />
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/main_dashboard_user_navigation_drawer"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        >
+<!--    <com.google.android.material.navigation.NavigationView-->
+<!--        android:id="@+id/main_dashboard_user_navigation_drawer"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_gravity="end"-->
+<!--        >-->
 
-        <com.example.pocketmoney.utils.MyCustomNavigationDrawer.MyNavigationDrawer
-            android:id="@+id/custom_user_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+<!--        <com.example.pocketmoney.utils.MyCustomNavigationDrawer.MyNavigationDrawer-->
+<!--            android:id="@+id/custom_user_navigation"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"/>-->
 
-    </com.google.android.material.navigation.NavigationView>
+<!--    </com.google.android.material.navigation.NavigationView>-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

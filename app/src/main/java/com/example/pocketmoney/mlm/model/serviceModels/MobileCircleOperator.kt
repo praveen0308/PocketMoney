@@ -1,8 +1,8 @@
 package com.example.pocketmoney.mlm.model.serviceModels
 
 data class MobileCircleOperator(
-    val Operator: String,
-    val circle: String,
-    val comcircle: String,
-    val status: Any
+    val Operator: String?=null,
+    val circle: String?=null,
+    val comcircle: String?=null,
+    val status: Any?=null
 )

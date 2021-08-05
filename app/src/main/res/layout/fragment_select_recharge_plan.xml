@@ -7,6 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".mlm.ui.mobilerecharge.SelectRechargePlan">
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_change_operator"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Change operator or circle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_select_recharge_plan"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="@color/LightBlue"
+        app:cornerRadius="@dimen/dimen_0dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textAllCaps="false"
+        android:gravity="start|center_vertical"
+        app:icon="@drawable/ic_right"
+        app:iconTint="@color/colorPrimaryDark"
+        app:iconGravity="end"
+        android:insetTop="@dimen/dimen_0dp"
+        android:insetBottom="@dimen/dimen_0dp"
+        />
+
     <com.example.pocketmoney.utils.MyCustomToolbar
         android:id="@+id/toolbar_select_recharge_plan"
         android:layout_width="match_parent"
@@ -20,7 +42,7 @@
         app:menuIconVisibility="true"/>
 
     <com.example.pocketmoney.utils.EditTextWithClear
-        android:id="@+id/editTextWithClear2"
+        android:id="@+id/et_search_plan"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_marginStart="8dp"
@@ -30,7 +52,7 @@
         android:paddingHorizontal="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_select_recharge_plan" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_change_operator" />
 
 
 
@@ -42,7 +64,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextWithClear2"
+        app:layout_constraintTop_toBottomOf="@+id/et_search_plan"
         >
 
         <com.google.android.material.tabs.TabLayout

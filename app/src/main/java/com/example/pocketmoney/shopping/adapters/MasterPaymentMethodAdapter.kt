@@ -2,6 +2,7 @@ package com.example.pocketmoney.shopping.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.databinding.TemplateSectionedRvBinding
@@ -35,7 +36,8 @@ class MasterPaymentMethodAdapter: RecyclerView.Adapter<MasterPaymentMethodAdapte
             binding.templateSectionedRvTitle.text = cat.title
             binding.templateSectionedRvRecyclerview.apply {
                 setHasFixedSize(true)
-                layoutManager = LinearLayoutManager(context)
+                layoutManager = GridLayoutManager(context,2)
+//                layoutManager = LinearLayoutManager(context)
                 adapter = PaymentMethodAdapter(cat.methodList)
             }
         }

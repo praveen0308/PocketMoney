@@ -33,6 +33,7 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.getAllStates()
+
         action = intent.getSerializableExtra("ACTION") as OtherEnum
         mID = intent.getIntExtra("ID",0)
         binding.toolbar.setApplicationToolbarListener(this)
@@ -209,6 +210,7 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
             actvState.setText(states.find { state->
                 state.StateCode==it.StateID!!
             }!!.State1)
+            viewModel.getCitiesByStateCode(it.StateID!!)
             actvCity.setText(cities.find { city->
                 city.ID==it.CityID!!.toInt()
             }!!.City1)

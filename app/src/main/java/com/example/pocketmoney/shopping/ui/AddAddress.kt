@@ -13,7 +13,6 @@ import com.example.pocketmoney.shopping.model.ModelCity
 import com.example.pocketmoney.shopping.model.ModelState
 import com.example.pocketmoney.shopping.viewmodel.AddressViewModel
 import com.example.pocketmoney.utils.ApplicationToolbar
-import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 

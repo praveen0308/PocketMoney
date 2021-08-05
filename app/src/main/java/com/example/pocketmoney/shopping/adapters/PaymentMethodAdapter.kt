@@ -73,13 +73,10 @@ class PaymentMethodAdapter(private val methodList:MutableList<Any>) : RecyclerVi
         fun createPaymentMethod(method:ModelPaymentMethod){
 
             binding.apply {
-                tvPaymentMethodName.text = method.methodName
-                if (method.isSelected==true){
-                    rbIndicator.isChecked = true
-                }
-                else{
-                    rbIndicator.isChecked = false
-                }
+//                tvPaymentMethodName.text = method.methodName
+                rbIndicator.text = method.methodName
+                rbIndicator.isChecked = method.isSelected==true
+                tvPaymentMethodImage.setImageResource(method.imageUrl)
             }
         }
     }

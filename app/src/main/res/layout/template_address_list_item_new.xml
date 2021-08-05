@@ -23,12 +23,13 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:checked="true"
+        android:checked="false"
         android:text="Praveen Yadav"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:clickable="false"/>
 
     <TextView
         android:id="@+id/textView20"

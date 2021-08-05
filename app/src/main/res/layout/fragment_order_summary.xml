@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:id="@+id/layout_selected_address"
-        layout="@layout/layout_address_view"
+        layout="@layout/layout_address_view_type_2"
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_marginHorizontal="8dp"/>

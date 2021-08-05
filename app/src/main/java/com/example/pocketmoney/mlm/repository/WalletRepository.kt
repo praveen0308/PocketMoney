@@ -3,10 +3,12 @@ package com.example.pocketmoney.mlm.repository
 import com.example.pocketmoney.mlm.model.TransactionModel
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerRequestModel1
 import com.example.pocketmoney.mlm.network.MLMApiService
+import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import org.json.JSONObject
 import javax.inject.Inject
 
 class WalletRepository @Inject constructor(
@@ -39,6 +41,14 @@ class WalletRepository @Inject constructor(
     suspend fun getTransactionHistory(requestModel1: CustomerRequestModel1): Flow<List<TransactionModel>> {
         return flow {
             val response = mlmApiService.getTransactionHistory(requestModel1)
+
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun transferB2BWallet(requestData : JsonObject): Flow<Int> {
+        return flow {
+            val response = mlmApiService.b2bWalletTransfer(requestData)
 
             emit(response)
         }.flowOn(Dispatchers.IO)

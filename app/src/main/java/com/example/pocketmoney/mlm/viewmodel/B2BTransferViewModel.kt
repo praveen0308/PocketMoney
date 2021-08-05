@@ -1,0 +1,102 @@
+package com.example.pocketmoney.mlm.viewmodel
+
+import androidx.lifecycle.*
+import com.example.pocketmoney.mlm.model.*
+import com.example.pocketmoney.mlm.repository.*
+import com.example.pocketmoney.utils.DataState
+import com.example.pocketmoney.utils.Resource
+import com.google.gson.JsonObject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import javax.inject.Inject
+
+@HiltViewModel
+class B2BTransferViewModel @Inject constructor(
+    private val customerRepository: CustomerRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val rechargeRepository: RechargeRepository,
+    private val walletRepository: WalletRepository
+
+) : ViewModel() {
+    val loginId = userPreferencesRepository.loginId.asLiveData()
+    val userId = userPreferencesRepository.userId.asLiveData()
+    val userName = userPreferencesRepository.userName.asLiveData()
+    val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
+
+    val recipientUserId = MutableLiveData<String>()
+
+    fun setRecipientUserId(userId:String){
+        recipientUserId.postValue(userId)
+    }
+
+    private val _customerDetail = MutableLiveData<Resource<CustomerDetailResponse>>()
+    val customerDetail: LiveData<Resource<CustomerDetailResponse>> = _customerDetail
+
+
+    fun getCustomerDetail(userId: String) {
+
+        viewModelScope.launch {
+
+            customerRepository
+                .getCustomerDetail(userId)
+                .onStart {
+                    _customerDetail.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _customerDetail.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response ->
+                    _customerDetail.postValue(Resource.Success(response))
+                }
+        }
+
+    }
+
+    private val _contactList: MutableLiveData<DataState<List<ModelContact>>> = MutableLiveData()
+    val contactList: LiveData<DataState<List<ModelContact>>>
+        get() = _contactList
+
+
+    fun getContactList(){
+        viewModelScope.launch {
+
+            rechargeRepository.getContactList()
+                .onEach { dataState ->
+                    _contactList.value = dataState
+                }
+                .launchIn(viewModelScope)
+        }
+    }
+
+    private val _b2bTransferResponse = MutableLiveData<Resource<Int>>()
+    val b2bTransferResponse: LiveData<Resource<Int>> = _b2bTransferResponse
+
+
+    fun b2bTransfer(requestData:JsonObject) {
+
+        viewModelScope.launch {
+
+            walletRepository
+                .transferB2BWallet(requestData)
+                .onStart {
+                    _b2bTransferResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _b2bTransferResponse.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response ->
+                    _b2bTransferResponse.postValue(Resource.Success(response))
+                }
+        }
+
+    }
+
+
+
+}

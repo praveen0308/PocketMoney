@@ -47,14 +47,14 @@ class MainDashboard : AppCompatActivity(), Home.HomeFragmentListener, Shop.ShopF
 
         //Setting the navigation controller to Bottom Nav
 
-        binding.mainDashboardUserNavigationDrawer.bringToFront()
+//        binding.mainDashboardUserNavigationDrawer.bringToFront()
 
         binding.mainDashboardShoppingNavigationDrawer.bringToFront()
 
 
         binding.mainDashboardDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, binding.mainDashboardShoppingNavigationDrawer)
-        binding.customUserNavigation.setNavigationItemList(getUserNavigationItems())
-        binding.customUserNavigation.setNavigationListener(this)
+//        binding.customUserNavigation.setNavigationItemList(getUserNavigationItems())
+//        binding.customUserNavigation.setNavigationListener(this)
 
     }
 
@@ -132,12 +132,12 @@ class MainDashboard : AppCompatActivity(), Home.HomeFragmentListener, Shop.ShopF
 //                startActivity(intent)
 //
 //            }
-            R.id.choose_language -> {
-                Toast.makeText(this, "Coming soon!!", Toast.LENGTH_SHORT).show()
-            //                val intent = Intent(this, YourCart::class.java)
-//                startActivity(intent)
-
-            }
+//            R.id.choose_language -> {
+//                Toast.makeText(this, "Coming soon!!", Toast.LENGTH_SHORT).show()
+//            //                val intent = Intent(this, YourCart::class.java)
+////                startActivity(intent)
+//
+//            }
             R.id.my_orders -> {
                 val intent = Intent(this, MyOrders::class.java)
                 startActivity(intent)
@@ -175,18 +175,18 @@ class MainDashboard : AppCompatActivity(), Home.HomeFragmentListener, Shop.ShopF
 //                startActivity(intent)
 //
 //            }
-            R.id.help_centre -> {
-                val intent = Intent(this, ExtraNavigationActivity::class.java)
-                intent.putExtra("SOURCE",2)
-                startActivity(intent)
-
-            }
-            R.id.privacy_policy -> {
-                val intent = Intent(this, ExtraNavigationActivity::class.java)
-                intent.putExtra("SOURCE",3)
-                startActivity(intent)
-
-            }
+//            R.id.help_centre -> {
+//                val intent = Intent(this, ExtraNavigationActivity::class.java)
+//                intent.putExtra("SOURCE",2)
+//                startActivity(intent)
+//
+//            }
+//            R.id.privacy_policy -> {
+//                val intent = Intent(this, ExtraNavigationActivity::class.java)
+//                intent.putExtra("SOURCE",3)
+//                startActivity(intent)
+//
+//            }
             else->startActivity(Intent(this,YourCart::class.java))
 
         }

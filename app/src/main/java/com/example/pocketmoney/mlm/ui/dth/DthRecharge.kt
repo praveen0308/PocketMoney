@@ -5,43 +5,36 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.pocketmoney.R
+import com.example.pocketmoney.databinding.FragmentDthRechargeBinding
+import com.example.pocketmoney.mlm.viewmodel.DTHActivityViewModel
+import com.example.pocketmoney.utils.BaseFragment
+import com.example.pocketmoney.utils.MyCustomToolbar
 
+class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRechargeBinding::inflate),
+    MyCustomToolbar.MyCustomToolbarListener {
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+    private val viewModel by activityViewModels<DTHActivityViewModel>()
 
-
-class DthRecharge : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.toolbarDthRecharge.setCustomToolbarListener(this)
+    }
+    override fun subscribeObservers() {
+        viewModel.selectedOperator.observe(viewLifecycleOwner,{
+            binding.toolbarDthRecharge.setToolbarLogo(it.imageUrl as Int)
+            binding.toolbarDthRecharge.setToolbarTitle(it.name.toString())
+        })
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dth_recharge, container, false)
+    override fun onToolbarNavClick() {
+        findNavController().popBackStack()
     }
 
-    companion object {
+    override fun onMenuClick() {
 
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DthRecharge().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
+
 }

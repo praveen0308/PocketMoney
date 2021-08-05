@@ -38,4 +38,17 @@
         app:tint="@color/colorPrimary"
         android:clickable="true"
         android:focusable="true"/>
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="@dimen/dimen_32dp"
+        android:layout_height="@dimen/dimen_32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_qr_code"
+        app:layout_constraintEnd_toEndOf="@+id/iv_qr_code"
+        app:layout_constraintStart_toStartOf="@+id/iv_qr_code"
+        app:layout_constraintTop_toTopOf="@+id/iv_qr_code"
+        app:srcCompat="@drawable/ic_logo"
+        tools:visibility="visible"
+        android:background="@color/white"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

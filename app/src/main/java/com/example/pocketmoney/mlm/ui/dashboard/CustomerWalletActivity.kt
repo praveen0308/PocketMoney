@@ -6,12 +6,12 @@ import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.pocketmoney.QRCodeScanner
 import com.example.pocketmoney.databinding.ActivityCustomerWalletBinding
 import com.example.pocketmoney.mlm.adapters.CustomerTransactionHistoryAdapter
 import com.example.pocketmoney.mlm.model.TransactionModel
 import com.example.pocketmoney.mlm.model.UniversalFilterItemModel
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerRequestModel1
+import com.example.pocketmoney.mlm.ui.transfermoney.B2BTransfer
 import com.example.pocketmoney.mlm.viewmodel.CustomerWalletViewModel
 import com.example.pocketmoney.shopping.model.ModelProductVariant
 import com.example.pocketmoney.utils.*
@@ -46,7 +46,7 @@ class CustomerWalletActivity : BaseActivity<ActivityCustomerWalletBinding>(Activ
         setupRecyclerview()
         binding.toolbarCustomerWallet.setApplicationToolbarListener(this)
         binding.fabTransfer.setOnClickListener {
-            startActivity(Intent(this,QRCodeScanner::class.java))
+            startActivity(Intent(this, B2BTransfer::class.java))
         }
     }
 

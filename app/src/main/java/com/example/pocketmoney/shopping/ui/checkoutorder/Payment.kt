@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentPaymentBinding
 import com.example.pocketmoney.shopping.adapters.MasterPaymentMethodAdapter
 import com.example.pocketmoney.shopping.model.CartModel
@@ -44,9 +45,13 @@ class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inf
     private lateinit var modelOrderAmountSummary:ModelOrderAmountSummary
     private val args: PaymentArgs by navArgs()
 
-
+    override fun onResume() {
+        super.onResume()
+        viewModel.setActiveStep(2)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.setActiveStep(2)
         setupRvPaymentMethod()
 //        checkoutOrderInterface = requireActivity() as CheckoutOrder
 //        checkoutOrderInterface.updateCheckOutStepStatus(2)
@@ -122,11 +127,11 @@ class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inf
         val paymentMethods= mutableListOf<ModelMasterPaymentMethod>()
 
         val methodList = mutableListOf<Any>()
-        methodList.add(ModelPaymentMethod(PaymentEnum.PAYTM,"Paytm",true))
-        methodList.add(ModelPaymentMethod(PaymentEnum.WALLET,"Wallet"))
-        methodList.add(ModelPaymentMethod(PaymentEnum.PAYMENT_CARD,"Credit/Debit Card"))
-        methodList.add(ModelPaymentMethod(PaymentEnum.NET_BANKING,"Net Banking"))
-        methodList.add(ModelPaymentMethod(PaymentEnum.COD,"Cash On Delivery"))
+        methodList.add(ModelPaymentMethod(PaymentEnum.PAYTM,"Paytm",R.drawable.ic_paytm_logo,true))
+        methodList.add(ModelPaymentMethod(PaymentEnum.WALLET,"Wallet",R.drawable.ic_logo))
+//        methodList.add(ModelPaymentMethod(PaymentEnum.PAYMENT_CARD,"Credit/Debit Card"))
+//        methodList.add(ModelPaymentMethod(PaymentEnum.NET_BANKING,"Net Banking"))
+//        methodList.add(ModelPaymentMethod(PaymentEnum.COD,"Cash On Delivery"))
         paymentMethods.add(ModelMasterPaymentMethod("Payment Methods",methodList))
 
         return paymentMethods

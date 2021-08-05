@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityBuyProductBinding
@@ -16,7 +15,6 @@ import com.example.pocketmoney.shopping.adapters.ShoppingHomeCategoriesAdapter
 import com.example.pocketmoney.shopping.adapters.ShoppingHomeMasterAdapter
 import com.example.pocketmoney.shopping.model.*
 import com.example.pocketmoney.shopping.viewmodel.BuyProductViewModel
-import com.example.pocketmoney.shopping.viewmodel.CartViewModel
 import com.example.pocketmoney.utils.ApplicationToolbar
 import com.example.pocketmoney.utils.BaseActivity
 import com.example.pocketmoney.utils.DataState
