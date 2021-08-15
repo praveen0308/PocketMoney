@@ -1,4 +1,4 @@
-package com.example.pocketmoney.mlm.ui.welcome
+package com.example.pocketmoney.mlm.ui.membership
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

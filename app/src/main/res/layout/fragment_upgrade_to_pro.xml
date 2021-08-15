@@ -9,7 +9,7 @@
     android:paddingHorizontal="14dp"
     android:paddingBottom="16dp"
     app:layout_behavior="@string/bottom_sheet_behavior"
-    tools:context=".mlm.ui.welcome.UpgradeToPro">
+    tools:context=".mlm.ui.membership.UpgradeToPro">
 
     <ImageView
         android:id="@+id/imageView4"
