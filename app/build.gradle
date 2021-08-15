@@ -81,11 +81,12 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
     // Dagger Hilt
-    implementation "com.google.dagger:hilt-android:$hiltVersion"
-    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltAndroidXVersion"
-    kapt "androidx.hilt:hilt-compiler:$hiltAndroidXVersion"
-
+//    implementation "com.google.dagger:hilt-android:$hiltVersion"
+//    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
+//    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltAndroidXVersion"
+//    kapt "androidx.hilt:hilt-compiler:$hiltAndroidXVersion"
+    implementation 'com.google.dagger:hilt-android:2.37'
+    kapt 'com.google.dagger:hilt-compiler:2.37'
     // Retrofit + GSON
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"

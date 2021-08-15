@@ -237,6 +237,10 @@ If you have a query, issue, concern, or complaint in relation to collection or u
     <string name="send_money_to_mobile_no">Send Money to Mobile No.</string>
     <string name="enter_mobile_no">Enter Mobile No.</string>
     <string name="confirm">Confirm</string>
+    <string name="msg_go_to_pro">Please Activate your account to become a PRO Member to get the commissions, all Recharge services and Shopping commission will be provided to only PRO Member</string>
+    <string name="using_coupon">Using Coupon</string>
+    <string name="using_wallet">Using Wallet</string>
+    <string name="using_payment">Using Payment</string>
 
 
 </resources>
