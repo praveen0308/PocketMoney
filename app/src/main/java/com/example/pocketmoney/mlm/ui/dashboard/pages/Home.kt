@@ -22,6 +22,7 @@ import com.example.pocketmoney.mlm.model.*
 import com.example.pocketmoney.mlm.ui.AddMoneyToWallet
 import com.example.pocketmoney.mlm.ui.dashboard.CustomerWalletActivity
 import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
+import com.example.pocketmoney.mlm.ui.membership.UpgradeToPro
 import com.example.pocketmoney.mlm.ui.payouts.Payouts
 import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
 import com.example.pocketmoney.mlm.viewmodel.HomeViewModel
@@ -57,7 +58,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         binding.bottomLayout.mainDashboardParentRecyclerView.setHasFixedSize(true)
         binding.bottomLayout.mainDashboardParentRecyclerView.layoutManager =
             LinearLayoutManager(context)
@@ -82,6 +83,8 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
 
         binding.topLayout.ivUserProfile.setOnClickListener{
 //         fragmentListener.onUserProfileClick()
+            val bottomSheet = UpgradeToPro()
+            bottomSheet.show(parentFragmentManager,bottomSheet.tag)
         }
 
     }
@@ -95,6 +98,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
             if (userID!="" && roleID!=0){
                 viewModel.getWalletBalance(userID,roleID)
                 viewModel.getPCashBalance(userID,roleID)
+                viewModel.checkIsAccountActive(userID)
             }
 
         })
@@ -140,6 +144,31 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate), Ho
                 }
             }
         })
+
+        viewModel.isAccountActive.observe(viewLifecycleOwner, { _result ->
+            when(_result.status)
+            {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        val bottomSheet = UpgradeToPro()
+                        bottomSheet.show(parentFragmentManager,bottomSheet.tag)
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+
+
     }
 
 

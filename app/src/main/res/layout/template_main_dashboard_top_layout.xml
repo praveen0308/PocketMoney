@@ -55,14 +55,16 @@
     </LinearLayout>
 
 
-    <ImageView
+    <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/iv_user_profile"
         android:layout_width="40dp"
         android:layout_height="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_user_profile"
+        app:lottie_rawRes="@raw/go_to_pro"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
         />
 
     <ImageView

@@ -13,7 +13,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:ATNavIcon="@drawable/ic_round_close_24"/>
+        app:ATNavIcon="@drawable/ic_round_close_24"
+        app:ATTitle="Activate Account"/>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -26,12 +27,44 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <fragment
-                android:id="@+id/fragmentContainerView3"
-                android:name="com.example.pocketmoney.common.PaymentMethods"
+<!--            <fragment-->
+<!--                android:id="@+id/fragmentContainerView3"-->
+<!--                android:name="com.example.pocketmoney.common.PaymentMethods"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                tools:layout="@layout/fragment_payment_methods"/>-->
+
+            <RadioGroup
+                android:id="@+id/rg_payment_choices"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:layout="@layout/fragment_payment_methods"/>
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+
+                >
+
+                <RadioButton
+                    android:id="@+id/rb_coupon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/using_coupon"
+                    android:checked="true"
+                    />
+
+                <RadioButton
+                    android:id="@+id/rb_wallet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/using_wallet"
+                    android:layout_marginHorizontal="@dimen/dimen_8dp"/>
+
+                <RadioButton
+                    android:id="@+id/rb_payment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/using_payment"
+                    android:layout_marginHorizontal="@dimen/dimen_8dp"/>
+            </RadioGroup>
+
 
             <fragment
                 android:id="@+id/fragmentContainerView4"
@@ -41,6 +74,24 @@
                 tools:layout="@layout/fragment_membership_plan_details"/>
 
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_activate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:paddingHorizontal="50dp"
+        android:paddingVertical="@dimen/dimen_16dp"
+        android:text="@string/confirm"
+        android:textAllCaps="false"
+        android:textSize="@dimen/dimen_18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
