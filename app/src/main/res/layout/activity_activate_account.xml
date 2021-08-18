@@ -39,29 +39,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-
+                android:weightSum="2"
                 >
 
                 <RadioButton
                     android:id="@+id/rb_coupon"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/using_coupon"
                     android:checked="true"
+                    android:layout_weight="1"
                     />
-
-                <RadioButton
-                    android:id="@+id/rb_wallet"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/using_wallet"
-                    android:layout_marginHorizontal="@dimen/dimen_8dp"/>
-
                 <RadioButton
                     android:id="@+id/rb_payment"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/using_payment"
+                    android:layout_weight="1"
                     android:layout_marginHorizontal="@dimen/dimen_8dp"/>
             </RadioGroup>
 

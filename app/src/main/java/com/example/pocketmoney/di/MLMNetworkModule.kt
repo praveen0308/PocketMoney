@@ -1,6 +1,7 @@
 package com.example.pocketmoney.di
 
 import android.content.Context
+import com.example.pocketmoney.mlm.network.CustomerService
 import com.example.pocketmoney.mlm.network.MLMApiService
 import com.example.pocketmoney.mlm.repository.*
 import dagger.Module
@@ -19,6 +20,12 @@ object MLMNetworkModule {
     fun provideMLMService(retrofit: Retrofit): MLMApiService {
         return retrofit.create(MLMApiService::class.java)
     }
+
+    @Provides
+    fun provideCustomerService(retrofit: Retrofit): CustomerService {
+        return retrofit.create(CustomerService::class.java)
+    }
+
 
     @Provides
     fun provideUserAuthenticationRepo(mlmApiService: MLMApiService):AccountRepository{

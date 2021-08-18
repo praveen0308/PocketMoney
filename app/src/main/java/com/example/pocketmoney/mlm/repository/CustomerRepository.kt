@@ -2,6 +2,7 @@ package com.example.pocketmoney.mlm.repository
 
 import com.example.pocketmoney.mlm.model.CustomerDetailResponse
 import com.example.pocketmoney.mlm.model.mlmModels.*
+import com.example.pocketmoney.mlm.network.CustomerService
 import com.example.pocketmoney.mlm.network.MLMApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +11,8 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class CustomerRepository @Inject constructor(
-    private val mlmApiService: MLMApiService
+    private val mlmApiService: MLMApiService,
+    private val customerService: CustomerService
 ) {
 
     suspend fun getCustomerDetail(userID: String): Flow<CustomerDetailResponse> {
@@ -95,5 +97,26 @@ class CustomerRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun validateCustomerRegistration(mobileNo:String,pin:String,pinSerialNo:String): Flow<Int> {
+        return flow {
+            val response = customerService.validateCustomerRegistration(mobileNo,pin, pinSerialNo)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun activateAccountUsingCoupon(userID: String,pin:String,pinSerialNo:String): Flow<Int> {
+        return flow {
+            val response = customerService.activateCustomerAccount(userID,pin, pinSerialNo)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
+    suspend fun onlineActivateAccount(userID: String,walletTypeId:Int): Flow<Int> {
+        return flow {
+            val response = customerService.onlineActivateCustomerAccount(userID,walletTypeId)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
 
 }

@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentActivateUsingWalletBinding
 import com.example.pocketmoney.utils.BaseBottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ActivateUsingPayment : BaseBottomSheetDialogFragment<FragmentActivateUsingWalletBinding>(FragmentActivateUsingWalletBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
