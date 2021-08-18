@@ -21,7 +21,7 @@ class ActivateAccUsingCoupon : BaseBottomSheetDialogFragment<FragmentActivateAcc
             btnConfirm.setOnClickListener {
                 if(etCouponPin.text.toString().isNotEmpty()){
                     if (etSerialNo.text.toString().isNotEmpty()){
-                        viewModel.validateCustomerRegistration()
+//                        viewModel.validateCustomerRegistration()
                     }
                     else{
                         showToast("Enter coupon series !!!")
