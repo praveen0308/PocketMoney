@@ -14,7 +14,6 @@ class ApplicationToolbar(
         context: Context, attrs: AttributeSet
 ) : FrameLayout(context, attrs) {
 
-
     // UI
     private var title: TextView
     private var tvMenuBadge: TextView
