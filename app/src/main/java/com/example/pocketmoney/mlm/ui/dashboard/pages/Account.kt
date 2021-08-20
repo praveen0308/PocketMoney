@@ -425,4 +425,9 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
         var dialog: Dialog? = null
         fun dismissPopup() = dialog?.let { dialog!!.dismiss() }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        progressBarHandler.hide()
+    }
 }

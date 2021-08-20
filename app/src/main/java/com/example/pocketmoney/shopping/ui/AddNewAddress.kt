@@ -60,7 +60,8 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
                 StateID =  stateId.toString(),
                 CityID =  cityId.toString(),
                 PostalCode = pincode,
-                UserID = userId
+                UserID = userId,
+                AddressType = "Home"
             )
 
             if (action==OtherEnum.ADD){

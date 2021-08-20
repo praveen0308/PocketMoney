@@ -203,4 +203,8 @@ class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate), Sh
         findNavController().navigate(R.id.action_shop_to_yourCart)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        progressBarHandler.hide()
+    }
 }

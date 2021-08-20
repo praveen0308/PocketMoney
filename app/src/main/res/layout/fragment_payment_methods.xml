@@ -1,43 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frameLayout28"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".common.PaymentMethods" >
+    tools:context=".common.PaymentMethods">
 
-        <RadioGroup
-            android:id="@+id/rg_payment_choices"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            >
-
-            <RadioButton
-                android:id="@+id/rb_coupon"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/using_coupon"
-                android:checked="true"
-                android:layout_weight="1"
-                />
-
-<!--            <RadioButton-->
-<!--                android:id="@+id/rb_wallet"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="@string/using_wallet"-->
-<!--                android:layout_marginHorizontal="@dimen/dimen_8dp"/>-->
-
-            <RadioButton
-                android:id="@+id/rb_payment"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/using_payment"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="@dimen/dimen_8dp"/>
-        </RadioGroup>
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_payment_methods"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:itemCount="3"
+        tools:listitem="@layout/template_payment_method" />
 
 </FrameLayout>

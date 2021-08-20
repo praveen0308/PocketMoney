@@ -25,62 +25,67 @@ import com.example.pocketmoney.utils.myEnums.OtherEnum
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SelectAddress : BaseFragment<FragmentSelectAddressBinding>(FragmentSelectAddressBinding::inflate),
+class SelectAddress :
+    BaseFragment<FragmentSelectAddressBinding>(FragmentSelectAddressBinding::inflate),
     SelectAddressAdapter.SelectAddressInterface {
 
     private val viewModel by activityViewModels<CheckoutOrderViewModel>()
 
-    private lateinit var selectAddressAdapter:SelectAddressAdapter
+    private lateinit var selectAddressAdapter: SelectAddressAdapter
 
     private lateinit var userID: String
 
-    private lateinit var resultLauncher : ActivityResultLauncher<Intent>
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     override fun onResume() {
         super.onResume()
         viewModel.setActiveStep(0)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 val data: Intent? = result.data
-                if (result.resultCode == RESULT_OK){
+                if (result.resultCode == RESULT_OK) {
                     showToast(data!!.getStringExtra("Message")!!)
-                }
-                else{
+                } else {
                     showToast("Cancelled !!")
                 }
 
             }
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRvData()
         binding.btnAddNewAddress.setOnClickListener {
-            val intent = Intent(requireActivity(),AddNewAddress::class.java)
-            intent.putExtra("ACTION",OtherEnum.ADD)
-            intent.putExtra("ID",0)
+            val intent = Intent(requireActivity(), AddNewAddress::class.java)
+            intent.putExtra("ACTION", OtherEnum.ADD)
+            intent.putExtra("ID", 0)
             resultLauncher.launch(intent)
 
         }
     }
 
-    private fun setupRvData(){
+    private fun setupRvData() {
         selectAddressAdapter = SelectAddressAdapter(this)
         binding.rvData.apply {
             setHasFixedSize(true)
             val layoutManager = LinearLayoutManager(context)
-            val dividerItemDecoration = DividerItemDecoration(context,
-                layoutManager.orientation)
+            val dividerItemDecoration = DividerItemDecoration(
+                context,
+                layoutManager.orientation
+            )
             addItemDecoration(dividerItemDecoration)
 
             this.layoutManager = layoutManager
             adapter = selectAddressAdapter
         }
     }
+
     override fun subscribeObservers() {
-        viewModel.userId.observe(viewLifecycleOwner,{
+        viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
             viewModel.getCustomerAddressList(userID)
         })
@@ -88,9 +93,11 @@ class SelectAddress : BaseFragment<FragmentSelectAddressBinding>(FragmentSelectA
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        it[0].isSelected=true
-                        viewModel.setSelectedAddress(it[0])
-                        selectAddressAdapter.setCustomerAddressList(it)
+                        if (it.isNotEmpty()) {
+                            it[0].isSelected = true
+                            viewModel.setSelectedAddress(it[0])
+                            selectAddressAdapter.setCustomerAddressList(it)
+                        }
                     }
                     displayLoading(false)
                 }
@@ -113,9 +120,9 @@ class SelectAddress : BaseFragment<FragmentSelectAddressBinding>(FragmentSelectA
     }
 
     override fun onEditClick(item: ModelAddress) {
-        val intent = Intent(requireActivity(),AddNewAddress::class.java)
-        intent.putExtra("ACTION",OtherEnum.EDIT)
-        intent.putExtra("ID",item.AddressID)
+        val intent = Intent(requireActivity(), AddNewAddress::class.java)
+        intent.putExtra("ACTION", OtherEnum.EDIT)
+        intent.putExtra("ID", item.AddressID)
         resultLauncher.launch(intent)
 
     }

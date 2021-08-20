@@ -1,56 +1,90 @@
 package com.example.pocketmoney.shopping.ui.customernavigation
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
+import android.view.KeyEvent
 import android.view.View
-import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.R
+import com.example.pocketmoney.databinding.FragmentPrivacyPolicyBinding
+import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
+import com.example.pocketmoney.shopping.adapters.TitleTextAdapter
+import com.example.pocketmoney.shopping.model.ModelTitleSubtitle
+import com.example.pocketmoney.utils.ApplicationToolbar
+import com.example.pocketmoney.utils.BaseFragment
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class PrivacyPolicy : BaseFragment<FragmentPrivacyPolicyBinding>(FragmentPrivacyPolicyBinding::inflate),
+    ApplicationToolbar.ApplicationToolbarListener {
 
-
-class PrivacyPolicy : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+    private lateinit var titleTextAdapter: TitleTextAdapter
+    override fun onStart() {
+        super.onStart()
+        (activity as MainDashboard).toggleBottomNav(false)
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupRvData()
+        binding.applicationToolbar5.setApplicationToolbarListener(this)
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_privacy_policy, container, false)
-    }
+        view.isFocusableInTouchMode = true
+        view.requestFocus()
+        view.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PrivacyPolicy.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PrivacyPolicy().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                findNavController().navigateUp()
+
+                return@OnKeyListener true
             }
+            false
+        })
     }
+
+    private fun setupRvData(){
+        titleTextAdapter = TitleTextAdapter()
+        binding.rvData.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = titleTextAdapter
+        }
+        populateData()
+    }
+
+    private fun populateData(){
+        val dataList = mutableListOf<ModelTitleSubtitle>()
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_1),getString(R.string.policy_text_1)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_2),getString(R.string.policy_text_2)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_3),getString(R.string.policy_text_3)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_4),getString(R.string.policy_text_4)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_5),getString(R.string.policy_text_5)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_6),getString(R.string.policy_text_6)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_7),getString(R.string.policy_text_7)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_8),getString(R.string.policy_text_8)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_9),getString(R.string.policy_text_9)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_10),getString(R.string.policy_text_10)))
+        dataList.add(ModelTitleSubtitle(getString(R.string.policy_title_11),getString(R.string.policy_text_11)))
+
+        titleTextAdapter.setModelTitleSubtitleList(dataList)
+
+    }
+
+
+    override fun subscribeObservers() {
+
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (activity as MainDashboard).toggleBottomNav(true)
+    }
+
+    override fun onToolbarNavClick() {
+        findNavController().navigateUp()
+    }
+
+    override fun onMenuClick() {
+
+    }
+
+
 }

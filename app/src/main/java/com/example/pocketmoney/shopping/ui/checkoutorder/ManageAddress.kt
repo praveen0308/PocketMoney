@@ -8,7 +8,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.R
-import com.example.pocketmoney.databinding.FragmentAddressBinding
+import com.example.pocketmoney.databinding.FragmentManageAddressBinding
+import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
 import com.example.pocketmoney.shopping.adapters.AddressAdapter
 import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.ui.CheckoutOrderInterface
@@ -24,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 private const val ARG_PARAM1 = "source"
 
 @AndroidEntryPoint
-class Address : BaseFragment<FragmentAddressBinding>(FragmentAddressBinding::inflate), AddressAdapter.AddressAdapterListener, ApplicationToolbar.ApplicationToolbarListener {
+class Address : BaseFragment<FragmentManageAddressBinding>(FragmentManageAddressBinding::inflate), AddressAdapter.AddressAdapterListener, ApplicationToolbar.ApplicationToolbarListener {
 
     //UI
 
@@ -41,26 +42,18 @@ class Address : BaseFragment<FragmentAddressBinding>(FragmentAddressBinding::inf
     // Variable
     private lateinit var userID: String
     private var source:ShoppingEnum?=null
-    private val args: AddressArgs by navArgs()
+//    private val args: AddressArgs by navArgs()
 
-
+    override fun onStart() {
+        super.onStart()
+        (activity as MainDashboard).toggleBottomNav(false)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        source = arguments?.getSerializable("source") as ShoppingEnum
 
         binding.toolbarAddress.setApplicationToolbarListener(this)
-        when(args.source){
-            ShoppingEnum.CHECKOUT ->{
-                binding.toolbarAddress.visibility = View.GONE
-//                checkoutOrderInterface = requireActivity() as CheckoutOrder
-                checkoutOrderInterface.updateCheckOutStepStatus(0)
-            }
-            ShoppingEnum.MY_ACCOUNT->{
-                binding.toolbarAddress.visibility = View.VISIBLE
 
-            }
-        }
         setUpRecyclerview()
         binding.fabAddNewAddress.setOnClickListener {
             findNavController().navigate(R.id.action_address_to_addAddress)
@@ -96,7 +89,7 @@ class Address : BaseFragment<FragmentAddressBinding>(FragmentAddressBinding::inf
     }
 
     private fun setUpRecyclerview(){
-        addressAdapter = AddressAdapter(args.source,this)
+        addressAdapter = AddressAdapter(this)
         binding.rvAddressList.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
@@ -113,7 +106,7 @@ class Address : BaseFragment<FragmentAddressBinding>(FragmentAddressBinding::inf
     }
 
     override fun onToolbarNavClick() {
-        findNavController().popBackStack()
+        findNavController().navigateUp()
 
     }
 
@@ -121,6 +114,15 @@ class Address : BaseFragment<FragmentAddressBinding>(FragmentAddressBinding::inf
 
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        progressBarHandler.hide()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (activity as MainDashboard).toggleBottomNav(true)
+    }
 
 
 }

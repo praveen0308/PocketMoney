@@ -13,34 +13,16 @@
         android:paddingHorizontal="8dp"
         >
 
-<!--        <TextView-->
-<!--            android:id="@+id/lbl_saved_payment_methods"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="8dp"-->
-<!--            android:text="@string/saved_payment_methods"-->
-<!--            android:textAppearance="@style/TextAppearance.AppCompat.Large" />-->
-
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/rv_saved_payment_methods"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            tools:itemCount="3"-->
-<!--            tools:listitem="@layout/template_saved_payment_method"-->
-<!--            />-->
-
-
-        <androidx.recyclerview.widget.RecyclerView
+        <fragment
             android:id="@+id/rv_payment_methods"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:itemCount="2"
-            tools:listitem="@layout/template_payment_method">
+            tools:layout="@layout/fragment_payment_methods">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        </fragment>
 
         <com.example.pocketmoney.utils.OrderAmountSummary
             android:id="@+id/orderAmountSummary"

@@ -7,9 +7,11 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityMainDashboardBinding
@@ -181,12 +183,17 @@ class MainDashboard : AppCompatActivity(), Home.HomeFragmentListener, Shop.ShopF
 //                startActivity(intent)
 //
 //            }
-//            R.id.privacy_policy -> {
+
+            R.id.my_addresses ->{
+                navController.navigate(R.id.action_shop_to_address2)
+            }
+            R.id.privacy_policy -> {
 //                val intent = Intent(this, ExtraNavigationActivity::class.java)
 //                intent.putExtra("SOURCE",3)
 //                startActivity(intent)
-//
-//            }
+                navController.navigate(R.id.action_shop_to_privacyPolicy2)
+
+            }
             else->startActivity(Intent(this,YourCart::class.java))
 
         }
@@ -234,6 +241,10 @@ class MainDashboard : AppCompatActivity(), Home.HomeFragmentListener, Shop.ShopF
                 startActivity(intent)
             }
         }
+    }
+
+    fun toggleBottomNav(visibility:Boolean){
+        binding.bottomNavMainDashboard.isVisible = visibility
     }
 
 

@@ -9,7 +9,7 @@
         android:id="@+id/address"
         android:name="com.example.pocketmoney.shopping.ui.checkoutorder.Address"
         android:label="fragment_address"
-        tools:layout="@layout/fragment_address" >
+        tools:layout="@layout/fragment_manage_address" >
         <action
             android:id="@+id/action_address_to_orderSummary"
             app:destination="@id/orderSummary" />

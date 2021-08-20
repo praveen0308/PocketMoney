@@ -1,9 +1,6 @@
 package com.example.pocketmoney.mlm.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.pocketmoney.mlm.repository.CustomerRepository
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.example.pocketmoney.utils.Resource
@@ -21,7 +18,7 @@ class ActivateAccountViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository,
     private val customerRepository: CustomerRepository
 ): ViewModel() {
-
+    val userId = userPreferencesRepository.userId.asLiveData()
     val selectedMethod = MutableStateFlow(1)
 
     private val _isValid = MutableLiveData<Resource<Int>>()
@@ -42,6 +39,16 @@ class ActivateAccountViewModel @Inject constructor(
                 }
                 .collect { response->
                     _isValid.postValue(Resource.Success(response))
+                    when(response){
+                        1->_isValid.postValue(Resource.Error("Mobile no. already registered. Please register with new Mobile no"))
+                        2->_isValid.postValue(Resource.Error("PIN or Serial no. does not exist, Please contact Admin"))
+                        3->_isValid.postValue(Resource.Error("PIN or Serial no. already used, please contact Admin"))
+                        4->_isValid.postValue(Resource.Error("PIN and Serial no. mismatched"))
+                        else->{
+
+                        }
+                    }
+
                 }
         }
 
@@ -53,7 +60,7 @@ class ActivateAccountViewModel @Inject constructor(
     fun activateAccountUsingCoupon(userId: String,pin:String,pinSerial:String) {
         viewModelScope.launch {
             customerRepository
-                .validateCustomerRegistration(userId,pin,pinSerial)
+                .activateAccountUsingCoupon(userId,pinSerial,pin)
                 .onStart {
                     _isActivationSuccessful.postValue(Resource.Loading(true))
                 }

@@ -41,6 +41,12 @@
         <action
             android:id="@+id/action_shop_to_searchProductActivity"
             app:destination="@id/searchProductActivity" />
+        <action
+            android:id="@+id/action_shop_to_privacyPolicy2"
+            app:destination="@id/privacyPolicy2" />
+        <action
+            android:id="@+id/action_shop_to_address2"
+            app:destination="@id/address2" />
     </fragment>
     <fragment
         android:id="@+id/paymentHistory"
@@ -91,5 +97,15 @@
         android:name="com.example.pocketmoney.mlm.ui.dashboard.pages.Account"
         android:label="fragment_account"
         tools:layout="@layout/fragment_account" />
+    <fragment
+        android:id="@+id/privacyPolicy2"
+        android:name="com.example.pocketmoney.shopping.ui.customernavigation.PrivacyPolicy"
+        android:label="fragment_privacy_policy"
+        tools:layout="@layout/fragment_privacy_policy" />
+    <fragment
+        android:id="@+id/address2"
+        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.Address"
+        android:label="fragment_manage_address"
+        tools:layout="@layout/fragment_manage_address" />
 
 </navigation>

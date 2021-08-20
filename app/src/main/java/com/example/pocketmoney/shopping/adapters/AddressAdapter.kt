@@ -8,7 +8,7 @@ import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.utils.MyAddressView
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 
-class AddressAdapter(private val source: ShoppingEnum, private val mListener: AddressAdapterListener) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
+class AddressAdapter(private val mListener: AddressAdapterListener) : RecyclerView.Adapter<AddressAdapter.AddressViewHolder>() {
 
     private val addressList = mutableListOf<ModelAddress>()
 

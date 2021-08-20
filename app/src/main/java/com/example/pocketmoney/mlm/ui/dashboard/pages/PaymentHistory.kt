@@ -259,4 +259,9 @@ class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPayme
 
         binding.refreshLayout.isRefreshing = false
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        progressBarHandler.hide()
+    }
 }

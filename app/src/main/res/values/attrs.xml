@@ -82,4 +82,9 @@
         </attr>
 
     </declare-styleable>
+
+    <declare-styleable name="LoadingButton">
+        <attr name="android:text" format="string"/>
+
+    </declare-styleable>
 </resources>

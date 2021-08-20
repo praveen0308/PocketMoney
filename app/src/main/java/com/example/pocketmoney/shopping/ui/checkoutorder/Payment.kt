@@ -52,17 +52,13 @@ class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inf
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.setActiveStep(2)
-        setupRvPaymentMethod()
-//        checkoutOrderInterface = requireActivity() as CheckoutOrder
-//        checkoutOrderInterface.updateCheckOutStepStatus(2)
-        masterPaymentMethodAdapter.setPaymentCategoryList(getPaymentMethods())
+
+
     }
 
     override fun subscribeObservers() {
         viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
-//            addressViewModel.getAddressDetails(selectedAddressId, userID)
-//            addressViewModel.getShippingCharge(selectedAddressId,userID)
 
         })
         viewModel.selectedAddress.observe(viewLifecycleOwner,{
@@ -112,32 +108,7 @@ class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inf
 
     }
 
-    private fun setupRvPaymentMethod() {
-        masterPaymentMethodAdapter = MasterPaymentMethodAdapter()
-        binding.apply {
-            rvPaymentMethods.apply {
-                setHasFixedSize(true)
-                layoutManager = LinearLayoutManager(context)
-                adapter = masterPaymentMethodAdapter
-            }
-        }
-    }
-
-    private fun getPaymentMethods():MutableList<ModelMasterPaymentMethod>{
-        val paymentMethods= mutableListOf<ModelMasterPaymentMethod>()
-
-        val methodList = mutableListOf<Any>()
-        methodList.add(ModelPaymentMethod(PaymentEnum.PAYTM,"Paytm",R.drawable.ic_paytm_logo,true))
-        methodList.add(ModelPaymentMethod(PaymentEnum.WALLET,"Wallet",R.drawable.ic_logo))
-//        methodList.add(ModelPaymentMethod(PaymentEnum.PAYMENT_CARD,"Credit/Debit Card"))
-//        methodList.add(ModelPaymentMethod(PaymentEnum.NET_BANKING,"Net Banking"))
-//        methodList.add(ModelPaymentMethod(PaymentEnum.COD,"Cash On Delivery"))
-        paymentMethods.add(ModelMasterPaymentMethod("Payment Methods",methodList))
-
-        return paymentMethods
-    }
-
-    fun getCustomerOrder():CustomerOrder{
+/*    fun getCustomerOrder():CustomerOrder{
         val customerOrder = CustomerOrder(
                 UserID= userID,
                 ShippingAddressId = selectedAddressId,
@@ -150,7 +121,7 @@ class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inf
 
         )
         return customerOrder
-    }
+    }*/
     private fun populateValues(cartList:List<CartModel>, shippingCharge:Double){
         binding.orderAmountSummary.visibility=View.VISIBLE
 

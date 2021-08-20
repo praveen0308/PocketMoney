@@ -19,7 +19,7 @@ abstract class BaseFragment<VB : ViewBinding>(
     // UI
     private var _binding: VB? = null
     val binding get() = _binding!!
-    private lateinit var progressBarHandler: ProgressBarHandler
+    lateinit var progressBarHandler: ProgressBarHandler
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -54,7 +54,7 @@
         <item
             android:id="@+id/my_addresses"
             android:title="My Addresses"
-            android:icon="@drawable/ic_home"
+            android:icon="@drawable/ic_baseline_location_on_24"
             android:iconTint="@color/black"/>
 
         <!--        <item-->

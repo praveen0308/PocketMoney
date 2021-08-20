@@ -12,6 +12,7 @@ import com.example.pocketmoney.shopping.repository.CartRepository
 import com.example.pocketmoney.shopping.repository.CheckoutRepository
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Resource
+import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -29,6 +30,8 @@ class CheckoutOrderViewModel @Inject constructor(
     val userId = userPreferencesRepository.userId.asLiveData()
     val userName = userPreferencesRepository.userName.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
+
+    val paymentMethod = MutableLiveData(PaymentEnum.WALLET)
 
     val activeStep = MutableLiveData(0)
 

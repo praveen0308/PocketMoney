@@ -25,7 +25,6 @@ import com.example.pocketmoney.mlm.viewmodel.MobileRechargeViewModel
 import com.example.pocketmoney.utils.ApplicationToolbar
 import com.example.pocketmoney.utils.BaseFragment
 import com.example.pocketmoney.utils.DataState
-import com.example.pocketmoney.utils.extractMobileNumber
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
