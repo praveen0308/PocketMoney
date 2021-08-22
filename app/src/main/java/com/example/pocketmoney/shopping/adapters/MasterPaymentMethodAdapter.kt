@@ -38,7 +38,7 @@ class MasterPaymentMethodAdapter: RecyclerView.Adapter<MasterPaymentMethodAdapte
                 setHasFixedSize(true)
                 layoutManager = GridLayoutManager(context,2)
 //                layoutManager = LinearLayoutManager(context)
-                adapter = PaymentMethodAdapter(cat.methodList)
+//                adapter = PaymentMethodAdapter(cat.methodList)
             }
         }
     }

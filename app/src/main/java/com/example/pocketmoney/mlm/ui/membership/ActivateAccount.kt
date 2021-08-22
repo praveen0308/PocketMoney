@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.pocketmoney.R
+import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.ActivityActivateAccountBinding
 import com.example.pocketmoney.mlm.viewmodel.ActivateAccountViewModel
 import com.example.pocketmoney.utils.BaseActivity
@@ -26,7 +27,7 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
                     sheet.show(supportFragmentManager,sheet.tag)
                 }
                 2->{
-                    val sheet = ActivateUsingPayment()
+                    val sheet = PaymentMethods()
                     sheet.show(supportFragmentManager,sheet.tag)
                 }
             }

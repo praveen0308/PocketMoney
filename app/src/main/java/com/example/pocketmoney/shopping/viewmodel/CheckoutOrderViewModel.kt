@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.mlm.repository.PaytmRepository
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
+import com.example.pocketmoney.mlm.repository.WalletRepository
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.model.CustomerOrder
 import com.example.pocketmoney.shopping.model.ModelAddress
@@ -24,7 +25,8 @@ class CheckoutOrderViewModel @Inject constructor(
     private val checkoutRepository: CheckoutRepository,
     private val paytmRepository: PaytmRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val cartRepository: CartRepository
+    private val cartRepository: CartRepository,
+    private val walletRepository: WalletRepository
 ): ViewModel() {
     val loginId = userPreferencesRepository.loginId.asLiveData()
     val userId = userPreferencesRepository.userId.asLiveData()
@@ -184,6 +186,58 @@ class CheckoutOrderViewModel @Inject constructor(
                 }
                 .collect { response->
                     _checkSum.postValue(Resource.Success(response))
+                }
+        }
+
+    }
+
+
+    private val _walletBalance = MutableLiveData<Resource<Double>>()
+    val walletBalance : LiveData<Resource<Double>> = _walletBalance
+
+
+    private val _pCash = MutableLiveData<Resource<Double>>()
+    val pCash: LiveData<Resource<Double>> = _pCash
+
+
+    fun getWalletBalance(userId: String, roleId: Int) {
+
+        viewModelScope.launch {
+
+            walletRepository
+                .getWalletBalance(userId, roleId, 1)
+                .onStart {
+                    _walletBalance.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _walletBalance.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { _balance->
+                    _walletBalance.postValue(Resource.Success(_balance))
+                }
+        }
+
+    }
+
+
+    fun getPCashBalance(userId: String, roleId: Int) {
+
+        viewModelScope.launch {
+
+            walletRepository
+                .getWalletBalance(userId, roleId, 2)
+                .onStart {
+                    _pCash.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _pCash.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { _balance->
+                    _pCash.postValue(Resource.Success(_balance))
                 }
         }
 

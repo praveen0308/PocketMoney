@@ -14,9 +14,11 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityCheckoutOrderBinding
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
+import com.example.pocketmoney.shopping.model.CustomerOrder
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.Constants.P_MERCHANT_ID
+import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
@@ -51,8 +53,11 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
     private lateinit var ACCOUNT_ID : String
     private lateinit var AMOUNT : String
     private lateinit var userId : String
+    private var roleId = 0
     var bodyData = ""
     var value = 0f
+
+    private lateinit var selectedPaymentMethod:PaymentEnum
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,8 +104,26 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                 2 -> {
 //                    val fragment = navHostFragment.childFragmentManager.fragments[0] as Payment
 //                    viewModel.createCustomerOrder(fragment.getCustomerOrder())
-                    it.isEnabled = false
-                    startPayment()
+                    when(selectedPaymentMethod){
+                        PaymentEnum.WALLET->{
+                            // check if wallet balance > payment amount
+                            viewModel.getWalletBalance(userId,roleId)
+                        }
+                        PaymentEnum.PCASH->{
+                            // check if wallet balance > payment amount
+                            viewModel.getPCashBalance(userId,roleId)
+
+                        }
+                        PaymentEnum.GATEWAY->{
+                            // show some message like redirecting to payment gateway
+                            it.isEnabled = false
+                            startPayment()
+                        }
+                        PaymentEnum.COD->{
+
+                        }
+                    }
+
 
                 }
 
@@ -116,6 +139,16 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
         viewModel.userId.observe(this,{
             userId = it
         })
+
+        viewModel.userRoleID.observe(this,{
+            roleId = it
+        })
+
+
+        viewModel.paymentMethod.observe(this,{
+            selectedPaymentMethod = it
+        })
+
         viewModel.activeStep.observe(this,{
             binding.apply {
                 stepView.go(it,true)
@@ -148,6 +181,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                 binding.btnDeliverHere.isVisible=true
             }
         })
+
         viewModel.orderStatus.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -179,13 +213,8 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                 Status.SUCCESS -> {
                     _result._data?.let {
 
-                        val paytmOrder = PaytmOrder(
-                            ACCOUNT_ID,
-                            P_MERCHANT_ID,
-                            it,
-                            AMOUNT,
-                            "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$ACCOUNT_ID"
-                        )
+                        val paytmOrder = PaytmOrder(ACCOUNT_ID, P_MERCHANT_ID, it, AMOUNT,
+                            Constants.PAYTM_CALLBACK_URL+ACCOUNT_ID)
                         processPaytmTransaction(paytmOrder)
                     }
                     displayLoading(false)
@@ -201,6 +230,54 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                 }
             }
         })
+
+        viewModel.walletBalance.observe(this, { _result ->
+                when (_result.status) {
+                    Status.SUCCESS -> {
+                        _result._data?.let {
+                            if (it < AMOUNT.toDouble()){
+                                showToast("Insufficient Wallet Balance !!!")
+                                binding.btnContinue.isEnabled = true
+
+                            }
+                        }
+                        displayLoading(false)
+                    }
+                    Status.LOADING -> {
+                        displayLoading(true)
+                    }
+                    Status.ERROR -> {
+                        displayLoading(false)
+                        _result.message?.let {
+                            displayError(it)
+                        }
+                    }
+                }
+            })
+
+        viewModel.pCash.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        if (it < AMOUNT.toDouble()){
+                            showToast("Insufficient PCash Balance !!!")
+                            binding.btnContinue.isEnabled = true
+                        }
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
     }
 
 
@@ -245,6 +322,22 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
         }
     }
 
+
+    private fun createCustomerOrder(type:PaymentEnum){
+        /*when(type){
+            PaymentEnum.WALLET->{
+                val order = CustomerOrder(
+                    ShippingAddressId = selectedAddressId,
+                    UserID = userId,
+                    Total = AMOUNT.toDouble(),
+                    Discount =
+
+                )
+            }
+        }*/
+
+    }
+
     private fun processPaytmTransaction(paytmOrder: PaytmOrder) {
         try {
 
@@ -257,6 +350,8 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                             applicationContext,
                             "Payment Transaction response $p0", Toast.LENGTH_LONG
                         ).show()
+
+                        Log.e("PAYTM_TRANS",p0.toString())
                     }
 
                     override fun networkNotAvailable() {

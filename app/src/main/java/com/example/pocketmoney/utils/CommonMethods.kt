@@ -269,6 +269,9 @@ fun extractMobileNumber(number: String): String {
         mobileNum.length > 10 -> {
             mobileNum.substring(mobileNum.length - 10)
         }
+        mobileNum.length <10 ->{
+            return "0000000000"
+        }
         else -> {
             // whatever is appropriate in this case
             Timber.e(IllegalArgumentException("word has fewer than 10 characters!"))

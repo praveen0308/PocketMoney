@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.R
+import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.TemplatePaymentMethodBinding
 import com.example.pocketmoney.databinding.TemplateSavedPaymentMethodBinding
 import com.example.pocketmoney.mlm.model.ModelOperatorPlan
@@ -13,7 +14,8 @@ import com.example.pocketmoney.shopping.model.ModelPaymentMethod
 import java.util.ArrayList
 
 
-class PaymentMethodAdapter(private val methodList:MutableList<Any>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class PaymentMethodAdapter(private val methodList:MutableList<Any>,
+private val paymentMethodInterface: PaymentMethodInterface) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -21,7 +23,7 @@ class PaymentMethodAdapter(private val methodList:MutableList<Any>) : RecyclerVi
             R.layout.template_saved_payment_method->SavedCardViewHolder(
                 TemplateSavedPaymentMethodBinding.inflate(LayoutInflater.from(parent.context),parent,false))
             else->OtherPaymentMethodViewHolder(
-                TemplatePaymentMethodBinding.inflate(LayoutInflater.from(parent.context),parent,false))
+                TemplatePaymentMethodBinding.inflate(LayoutInflater.from(parent.context),parent,false),paymentMethodInterface)
         }
     }
 
@@ -57,7 +59,10 @@ class PaymentMethodAdapter(private val methodList:MutableList<Any>) : RecyclerVi
         }
     }
 
-    inner class OtherPaymentMethodViewHolder(val binding:TemplatePaymentMethodBinding):RecyclerView.ViewHolder(binding.root){
+    inner class OtherPaymentMethodViewHolder(
+        val binding:TemplatePaymentMethodBinding,
+        val mListener:PaymentMethodInterface)
+        :RecyclerView.ViewHolder(binding.root){
 
         init {
 
@@ -66,6 +71,7 @@ class PaymentMethodAdapter(private val methodList:MutableList<Any>) : RecyclerVi
                     val method = methodList[i] as ModelPaymentMethod
                     method.isSelected = i==absoluteAdapterPosition
                 }
+                mListener.onPaymentModeSelected(methodList[absoluteAdapterPosition] as ModelPaymentMethod)
                 notifyDataSetChanged()
             }
         }
@@ -79,5 +85,9 @@ class PaymentMethodAdapter(private val methodList:MutableList<Any>) : RecyclerVi
                 tvPaymentMethodImage.setImageResource(method.imageUrl)
             }
         }
+    }
+
+    interface PaymentMethodInterface{
+        fun onPaymentModeSelected(item:ModelPaymentMethod)
     }
 }

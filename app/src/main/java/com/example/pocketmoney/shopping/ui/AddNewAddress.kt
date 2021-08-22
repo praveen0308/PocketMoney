@@ -23,7 +23,7 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
 
     private lateinit var action : OtherEnum
     private var mID : Int=0
-    private var selectedState:Int=0
+    private var selectedState:String=""
     private var selectedCity:Int=0
     private lateinit var userId:String
 
@@ -45,7 +45,7 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
             val address = binding.etAddress.text.toString()
             val locality = binding.etLocality.text.toString()
             val street = binding.etStreet.text.toString()
-            val countryId = 1
+            val countryId = "IN"
             val stateId = selectedState
             val cityId = selectedCity
             val pincode = binding.etPincode.text.toString()
@@ -61,7 +61,8 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
                 CityID =  cityId.toString(),
                 PostalCode = pincode,
                 UserID = userId,
-                AddressType = "Home"
+                AddressType = "Home",
+                IsCancel = false
             )
 
             if (action==OtherEnum.ADD){
@@ -226,7 +227,7 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
 
         binding.actvState.setOnItemClickListener { parent, view, position, id ->
             val state = parent.getItemAtPosition(position) as ModelState
-            selectedState = state.ID
+            selectedState = state.StateCode
             viewModel.getCitiesByStateCode(state.StateCode)
         }
     }
