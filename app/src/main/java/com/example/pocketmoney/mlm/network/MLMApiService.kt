@@ -193,7 +193,7 @@ interface MLMApiService {
     ):Int
 
     @POST("Wallet/AddCustWalletDetails")
-    suspend fun addCusomterWalletDetails(
+    suspend fun addCustomerWalletDetails(
         @Body pmWalletModel: PMWalletModel
     ): String
 

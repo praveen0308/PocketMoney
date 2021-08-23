@@ -58,7 +58,7 @@ class WalletRepository @Inject constructor(
 
     suspend fun addCustomerWalletDetails(pmWalletModel: PMWalletModel): Flow<String> {
         return flow {
-            val response = mlmApiService.addCusomterWalletDetails(pmWalletModel)
+            val response = mlmApiService.addCustomerWalletDetails(pmWalletModel)
 
             emit(response)
         }.flowOn(Dispatchers.IO)

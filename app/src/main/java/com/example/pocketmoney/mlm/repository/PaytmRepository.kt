@@ -1,5 +1,6 @@
 package com.example.pocketmoney.mlm.repository
 
+import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.mlm.network.MLMApiService
 import com.example.pocketmoney.utils.Constants
@@ -17,6 +18,14 @@ class PaytmRepository @Inject constructor(
     suspend fun initiateTransactionApi(paytmRequestData: PaytmRequestData): Flow<String> {
         return flow {
             val response = mlmApiService.initiateTransactionApi(paytmRequestData)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
+    suspend fun addPaymentTransactionDetails(paymentGatewayTransactionModel: PaymentGatewayTransactionModel): Flow<String> {
+        return flow {
+            val response = mlmApiService.addPaymentTransactionDetails(paymentGatewayTransactionModel)
             emit(response)
         }.flowOn(Dispatchers.IO)
     }
