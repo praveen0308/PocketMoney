@@ -14,7 +14,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityCheckoutOrderBinding
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
-import com.example.pocketmoney.shopping.model.CustomerOrder
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.Constants.P_MERCHANT_ID
@@ -391,7 +390,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
 
     private fun createRandomAccountId(): String {
-        var randomAccountID = "DI"
+        var randomAccountID = "PM"
         val ranChar = 65 + Random().nextInt(90 - 65)
         val ch = ranChar.toChar()
         randomAccountID += ch

@@ -192,6 +192,35 @@ interface MLMApiService {
         @Body requestData : JsonObject
     ):Int
 
+    @POST("Wallet/AddCustWalletDetails")
+    suspend fun addCusomterWalletDetails(
+        @Body pmWalletModel: PMWalletModel
+    ): String
+
+    @POST("Payment/AddPaymentTransDetails")
+    suspend fun addPaymentTransactionDetails(
+        @Body paymentGatewayTransactionModel: PaymentGatewayTransactionModel
+    ): String
+
+    @POST("Wallet/ActionOnWalletRequest")
+    suspend fun actionOnWalletRequest(
+        @Query("requestId") requestId: String,
+        @Query("comment") comment: String,
+        @Query("status") status: String,
+        @Query("paymentmode") paymentMode: String
+    ): Int
+
+
+    @POST("Wallet/AddCompanyTransaction")
+    suspend fun addCompanyTransaction(
+        @Query("TransferBy") transferBy: String,
+        @Query("UserId") userId: String,
+        @Query("amount") amount: Double,
+        @Query("wallet") wallet: Int,
+        @Query("transtype") transType: Int,
+        @Query("referenceId") referenceId: String,
+        @Query("action") action: String
+    ): Int
 
 }
 

@@ -2,6 +2,8 @@ package com.example.pocketmoney.mlm.repository
 
 import com.example.pocketmoney.mlm.model.TransactionModel
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerRequestModel1
+import com.example.pocketmoney.mlm.model.serviceModels.PMWalletModel
+import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.network.MLMApiService
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
@@ -53,4 +55,49 @@ class WalletRepository @Inject constructor(
             emit(response)
         }.flowOn(Dispatchers.IO)
     }
+
+    suspend fun addCustomerWalletDetails(pmWalletModel: PMWalletModel): Flow<String> {
+        return flow {
+            val response = mlmApiService.addCusomterWalletDetails(pmWalletModel)
+
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun addPaymentTransactionDetails(paymentGatewayTransactionModel: PaymentGatewayTransactionModel): Flow<String> {
+        return flow {
+            val response = mlmApiService.addPaymentTransactionDetails(paymentGatewayTransactionModel)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun actionOnWalletRequest(
+        requestId:String,
+        comment:String,
+        status:String,
+        paymentMode:String
+    ): Flow<Int> {
+        return flow {
+            val response = mlmApiService.actionOnWalletRequest(requestId, comment, status, paymentMode)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun addCompanyTransactionDetail(
+        transferBy:String,
+        userId: String,
+        amount:Double,
+        walletType: Int,
+        transType: Int,
+        referenceId: String,
+        action:String
+    ): Flow<Int> {
+        return flow {
+            val response = mlmApiService.addCompanyTransaction(transferBy,userId,amount,
+                walletType,transType, referenceId, action)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
 }

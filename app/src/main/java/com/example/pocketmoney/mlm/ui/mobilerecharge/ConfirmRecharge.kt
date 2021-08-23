@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.FragmentConfirmRechargeBinding
 import com.example.pocketmoney.mlm.model.ModelContact
 import com.example.pocketmoney.mlm.model.serviceModels.MobileOperatorPlan
@@ -47,6 +48,11 @@ class ConfirmRecharge : BaseFragment<FragmentConfirmRechargeBinding>(FragmentCon
 
         binding.btnChangePlan.setOnClickListener {
             findNavController().popBackStack()
+        }
+
+        binding.btnPay.setOnClickListener {
+            val sheet = RechargePaymentSheet()
+            sheet.show(parentFragmentManager,sheet.tag)
         }
     }
 

@@ -1,20 +1,18 @@
 package com.example.pocketmoney.mlm.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.pocketmoney.mlm.model.ModelContact
 import com.example.pocketmoney.mlm.model.ModelOperator
 import com.example.pocketmoney.mlm.model.RechargeEnum
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerComplaintModel
-import com.example.pocketmoney.mlm.model.serviceModels.IdNameModel
-import com.example.pocketmoney.mlm.model.serviceModels.MobileCircleOperator
-import com.example.pocketmoney.mlm.model.serviceModels.MobileOperatorPlan
-import com.example.pocketmoney.mlm.model.serviceModels.SimplePlanResponse
+import com.example.pocketmoney.mlm.model.serviceModels.*
 import com.example.pocketmoney.mlm.repository.RechargeRepository
+import com.example.pocketmoney.mlm.repository.ServiceRepository
+import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
+import com.example.pocketmoney.mlm.repository.WalletRepository
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Resource
+import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,13 +20,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MobileRechargeViewModel @Inject constructor(
-        private val rechargeRepository: RechargeRepository
+    private val rechargeRepository: RechargeRepository,
+    private val walletRepository: WalletRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val serviceRepository: ServiceRepository
 ) :ViewModel() {
+
+    val userId = userPreferencesRepository.userId.asLiveData()
+    val userName = userPreferencesRepository.userName.asLiveData()
+    val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
+
+
+    val selectedPaymentMethod = MutableLiveData(PaymentEnum.WALLET)
 
     private val _contactList: MutableLiveData<DataState<List<ModelContact>>> = MutableLiveData()
     val contactList: LiveData<DataState<List<ModelContact>>>
         get() = _contactList
 
+    val progressStatus = MutableLiveData(false)
 
     fun getContactList(){
         viewModelScope.launch {
@@ -216,4 +225,143 @@ class MobileRechargeViewModel @Inject constructor(
     fun getSelectedRechargePlan():MobileOperatorPlan{
         return _selectedRechargePlan.value!!
     }
+
+    private val _walletBalance = MutableLiveData<Resource<Double>>()
+    val walletBalance : LiveData<Resource<Double>> = _walletBalance
+
+
+    private val _pCash = MutableLiveData<Resource<Double>>()
+    val pCash: LiveData<Resource<Double>> = _pCash
+
+
+    fun getWalletBalance(userId: String, roleId: Int) {
+
+        viewModelScope.launch {
+
+            walletRepository
+                .getWalletBalance(userId, roleId, 1)
+                .onStart {
+                    _walletBalance.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _walletBalance.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { _balance->
+                    _walletBalance.postValue(Resource.Success(_balance))
+                }
+        }
+
+    }
+
+
+    fun getPCashBalance(userId: String, roleId: Int) {
+
+        viewModelScope.launch {
+
+            walletRepository
+                .getWalletBalance(userId, roleId, 2)
+                .onStart {
+                    _pCash.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _pCash.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { _balance->
+                    _pCash.postValue(Resource.Success(_balance))
+                }
+        }
+
+    }
+
+
+
+//    step 1
+    private val _addUsedServiceDetailResponse = MutableLiveData<Resource<Int>>()
+    val addUsedServiceDetailResponse: LiveData<Resource<Int>> = _addUsedServiceDetailResponse
+
+
+    fun addUsedServiceDetail(usedServiceDetailModel: UsedServiceDetailModel) {
+
+        viewModelScope.launch {
+
+            serviceRepository
+                .addUsedServiceDetail(usedServiceDetailModel)
+                .onStart {
+                    _addUsedServiceDetailResponse.postValue(Resource.Loading(true))
+                    progressStatus.postValue(true)
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _addUsedServiceDetailResponse.postValue(Resource.Error(it))
+
+                    }
+                }
+                .collect { response->
+                    if (response>0){
+                        getUsedServiceRequestId(userId.value!!,selectedContact.value!!.contactNumber!!)
+                    }
+                    _addUsedServiceDetailResponse.postValue(Resource.Success(response))
+                }
+        }
+
+    }
+
+    // step 2
+    private val _usedServiceRequestId = MutableLiveData<Resource<String>>()
+    val usedServiceRequestId: LiveData<Resource<String>> = _usedServiceRequestId
+
+
+    fun getUsedServiceRequestId(userId: String,mobileNo: String) {
+
+        viewModelScope.launch {
+
+            serviceRepository
+                .getUsedServiceRequestId(userId, mobileNo)
+                .onStart {
+                    _usedServiceRequestId.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _usedServiceRequestId.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+
+                    _usedServiceRequestId.postValue(Resource.Success(response))
+                }
+        }
+
+    }
+
+
+    // step 3
+    private val _mobileRechargeModel = MutableLiveData<Resource<MobileRechargeModel>>()
+    val mobileRechargeModel: LiveData<Resource<MobileRechargeModel>> = _mobileRechargeModel
+
+    fun callSampurnaRechargeService(mobileRechargeModel: MobileRechargeModel) {
+
+        viewModelScope.launch {
+
+            serviceRepository
+                .callSamupurnaRechargeService(mobileRechargeModel)
+                .onStart {
+                    _mobileRechargeModel.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _mobileRechargeModel.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _mobileRechargeModel.postValue(Resource.Success(response))
+                }
+        }
+
+    }
+
+
 }

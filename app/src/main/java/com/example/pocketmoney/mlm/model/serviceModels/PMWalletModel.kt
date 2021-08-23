@@ -1,0 +1,31 @@
+package com.example.pocketmoney.mlm.model.serviceModels
+
+data class PMWalletModel(
+    val CON_AC_NO: Double? = null,
+    val DEPOSITE_DATE: String? = null,
+    val Filter: String? = null,
+    val FilterType: String? = null,
+    val FromDate: String? = null,
+    val MODE_NO: String? = null,
+    val MODE_TYPE_ID: Int? = null,
+    val MemberID: Double? = null,
+    val NARRATIONS: String? = null,
+    val PAID_AMOUNT: Double? = null,
+    val PAID_DATE: String? = null,
+    val PAID_ID: Double? = null,
+    val REQUEST_ID: String? = null,
+    val RequestStatus: String? = null,
+    val RoleID: Int? = null,
+    val STATUS: String? = null,
+    val TRANS_CAT_ID: Int? = null,
+    val ToDate: String? = null,
+    val TransferAmount: Double? = null,
+    val TransferBy: Double? = null,
+    val TransferComment: String? = null,
+    val TransferDate: String? = null,
+    val TransferFullName: String? = null,
+    val TransferID: String? = null,
+    val TransferTo: Double? = null,
+    val USER_ID: Double? = null,
+    val UserID: Double? = null
+)
