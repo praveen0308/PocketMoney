@@ -18,19 +18,23 @@ enum class OtherEnum{
     ADD,EDIT,DELETE
 
 }
-enum class PaymentStatus(val status: Int)
+
+enum class PaymentModes(val id:Int){
+    Wallet(1),
+    Online(2),
+    CashOnDelivery(3),
+    PCash(4)
+}
+enum class PaymentStatus(val id: Int)
 {
     Pending(1),
     Paid(2),
     PartiallyRefunded(3),
     Refunded(4),
     Voided(5);
-
-    companion object {
-        fun getStatus(status: Int) = values().find{ it.status == status }
-    }
-
 }
+
+
 
 enum class OrderStatus(private val status: Int)
 {

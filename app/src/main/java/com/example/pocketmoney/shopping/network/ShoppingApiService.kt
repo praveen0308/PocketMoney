@@ -117,7 +117,7 @@ interface ShoppingApiService {
     @POST("Checkout/CreateCustomerOrder")
     suspend fun createCustomerOrder(
             @Body customerOrder: CustomerOrder
-    ):Boolean
+    ):String
 
     //Store
     @GET("Store/MainCategories")

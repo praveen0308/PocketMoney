@@ -13,11 +13,16 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityCheckoutOrderBinding
+import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
+import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
+import com.example.pocketmoney.shopping.model.CustomerOrder
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.Constants.P_MERCHANT_ID
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
+import com.example.pocketmoney.utils.myEnums.PaymentModes
+import com.example.pocketmoney.utils.myEnums.PaymentStatus
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
@@ -56,7 +61,9 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
     var bodyData = ""
     var value = 0f
 
+    val shippingCharge = 0.0
     private lateinit var selectedPaymentMethod:PaymentEnum
+    private lateinit var paytmResponseModel: PaytmResponseModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,7 +126,20 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                             startPayment()
                         }
                         PaymentEnum.COD->{
+                            val order = CustomerOrder(
+                                UserID = userId,
+                                Total = AMOUNT.toDouble(),
+                                Discount = 0.0,
+                                Shipping = viewModel.mShippingCharge,
+                                Tax = viewModel.tax,
+                                GrandTotal = viewModel.grandTotal,
+                                Promo = viewModel.discountCoupon,
+                                PaymentStatusId = PaymentStatus.Pending.id,
+                                WalletTypeId = 4,  // COD
+                                PaymentMode = PaymentModes.CashOnDelivery.id,
+                            )
 
+                            viewModel.createCustomerOrder(order)
                         }
                     }
 
@@ -147,6 +167,8 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
         viewModel.paymentMethod.observe(this,{
             selectedPaymentMethod = it
         })
+
+
 
         viewModel.activeStep.observe(this,{
             binding.apply {
@@ -181,14 +203,41 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
             }
         })
 
-        viewModel.orderStatus.observe(this, { _result ->
+        viewModel.orderNumber.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        if (it) {
-                            navController.navigate(R.id.action_payment_to_orderSuccessful)
-                            displayError("Order Successfully !!!")
-                            finish()
+                        if (it !=null) {
+                            when(selectedPaymentMethod){
+                                PaymentEnum.GATEWAY->{
+                                    viewModel.addPaymentTransactionDetail(
+                                        PaymentGatewayTransactionModel(
+                                            UserId = userId,
+                                            OrderId = paytmResponseModel.ORDERID,
+                                            ReferenceTransactionId = it,
+                                            ServiceTypeId = 1,
+                                            WalletTypeId = 1,
+                                            TxnAmount = paytmResponseModel.TXNAMOUNT,
+                                            Currency = paytmResponseModel.CURRENCY,
+                                            TransactionTypeId = 1,
+                                            IsCredit =  false,
+                                            TxnId = paytmResponseModel.TXNID,
+                                            Status = paytmResponseModel.STATUS,
+                                            RespCode = paytmResponseModel.RESPCODE,
+                                            RespMsg = paytmResponseModel.RESPMSG,
+                                            BankTxnId = paytmResponseModel.BANKTXNID,
+                                            BankName = paytmResponseModel.GATEWAYNAME,
+                                            PaymentMode = paytmResponseModel.PAYMENTMODE
+                                        )
+                                    )
+                                }
+                                else->{
+                                    navController.navigate(R.id.action_payment_to_orderSuccessful)
+                                    displayError("Order Successfully !!!")
+                                    finish()
+                                }
+                            }
+
                         } else {
                             displayError("Something went wrong. Try Again !!!")
                         }
@@ -230,6 +279,27 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
             }
         })
 
+        viewModel.addPaymentTransResponse.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+
         viewModel.walletBalance.observe(this, { _result ->
                 when (_result.status) {
                     Status.SUCCESS -> {
@@ -238,6 +308,22 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                                 showToast("Insufficient Wallet Balance !!!")
                                 binding.btnContinue.isEnabled = true
 
+                            }
+                            else{
+                                val order = CustomerOrder(
+                                    UserID = userId,
+                                    Total = AMOUNT.toDouble(),
+                                    Discount = 0.0,
+                                    Shipping = viewModel.mShippingCharge,
+                                    Tax = viewModel.tax,
+                                    GrandTotal = viewModel.grandTotal,
+                                    Promo = viewModel.discountCoupon,
+                                    PaymentStatusId = PaymentStatus.Paid.id, // paid
+                                    WalletTypeId = 1,  // wallet
+                                    PaymentMode = PaymentModes.Wallet.id,   // wallet
+                                )
+
+                                viewModel.createCustomerOrder(order)
                             }
                         }
                         displayLoading(false)
@@ -261,6 +347,21 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                         if (it < AMOUNT.toDouble()){
                             showToast("Insufficient PCash Balance !!!")
                             binding.btnContinue.isEnabled = true
+                        } else{
+                            val order = CustomerOrder(
+                                UserID = userId,
+                                Total = AMOUNT.toDouble(),
+                                Discount = 0.0,
+                                Shipping = viewModel.mShippingCharge,
+                                Tax = viewModel.tax,
+                                GrandTotal = viewModel.grandTotal,
+                                Promo = viewModel.discountCoupon,
+                                PaymentStatusId = PaymentStatus.Paid.id, // paid
+                                WalletTypeId = 2,  // wallet
+                                PaymentMode = PaymentModes.PCash.id,   // wallet
+                            )
+
+                            viewModel.createCustomerOrder(order)
                         }
                     }
                     displayLoading(false)
@@ -276,6 +377,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                 }
             }
         })
+
 
     }
 
@@ -345,12 +447,46 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
 
                     override fun onTransactionResponse(p0: Bundle?) {
-                        Toast.makeText(
-                            applicationContext,
-                            "Payment Transaction response $p0", Toast.LENGTH_LONG
-                        ).show()
 
                         Log.e("PAYTM_TRANS",p0.toString())
+
+                        p0?.let {
+                            paytmResponseModel = PaytmResponseModel(
+                                STATUS = it.getString("STATUS")!!.substring(3),
+                                ORDERID = it.getString("ORDERID"),
+                                CHARGEAMOUNT = it.getString("CHARGEAMOUNT"),
+                                TXNAMOUNT = it.getString("TXNAMOUNT"),
+                                TXNDATE = it.getString("TXNDATE"),
+                                MID = it.getString("MID"),
+                                TXNID = it.getString("TXNID"),
+                                RESPCODE = it.getString("RESPCODE"),
+                                PAYMENTMODE = it.getString("PAYMENTMODE"),
+                                BANKTXNID = it.getString("BANKTXNID"),
+                                CURRENCY = it.getString("CURRENCY"),
+                                GATEWAYNAME = it.getString("GATEWAYNAME"),
+                                RESPMSG = it.getString("RESPMSG")
+
+                            )
+                        }
+
+                        if (paytmResponseModel.STATUS == "SUCCESS"){
+                            val order = CustomerOrder(
+                                ShippingAddressId = viewModel.selectedAddress.value!!.AddressID,
+                                UserID = userId,
+                                Total = AMOUNT.toDouble(),
+                                Discount = 0.0,
+                                Shipping = viewModel.mShippingCharge,
+                                Tax = viewModel.tax,
+                                GrandTotal = viewModel.grandTotal,
+                                Promo = viewModel.discountCoupon,
+                                PaymentStatusId = PaymentStatus.Pending.id, // paid
+                                WalletTypeId = 3,  // wallet
+                                PaymentMode = PaymentModes.Online.id,   // wallet
+                            )
+
+                            viewModel.createCustomerOrder(order)
+                        }
+
                     }
 
                     override fun networkNotAvailable() {

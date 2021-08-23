@@ -157,7 +157,7 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
     override fun onTransactionResponse(p0: Bundle?) {
         p0?.let {
             paytmResponseModel = PaytmResponseModel(
-                STATUS = it.getString("STATUS"),
+                STATUS = it.getString("STATUS")!!.substring(3),
                 ORDERID = it.getString("ORDERID"),
                 CHARGEAMOUNT = it.getString("CHARGEAMOUNT"),
                 TXNAMOUNT = it.getString("TXNAMOUNT"),

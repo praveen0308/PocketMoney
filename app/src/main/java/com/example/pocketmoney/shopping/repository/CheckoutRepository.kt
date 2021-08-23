@@ -1,7 +1,6 @@
 package com.example.pocketmoney.shopping.repository
 
 import com.example.pocketmoney.shopping.model.CustomerOrder
-import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.network.ShoppingApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +15,7 @@ class CheckoutRepository @Inject constructor(
 
     suspend fun createCustomerOrder(
         customerOrder: CustomerOrder
-    ): Flow<Boolean> {
+    ): Flow<String> {
         return flow {
             val response = shoppingApiService.createCustomerOrder(customerOrder)
 
