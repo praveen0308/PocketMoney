@@ -1,8 +1,10 @@
 package com.example.pocketmoney.shopping.viewmodel
 
 import androidx.lifecycle.*
+import com.example.pocketmoney.common.MailMessagingRepository
 import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
+import com.example.pocketmoney.mlm.repository.CustomerRepository
 import com.example.pocketmoney.mlm.repository.PaytmRepository
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.example.pocketmoney.mlm.repository.WalletRepository
@@ -26,7 +28,9 @@ class CheckoutOrderViewModel @Inject constructor(
     private val paytmRepository: PaytmRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val cartRepository: CartRepository,
-    private val walletRepository: WalletRepository
+    private val walletRepository: WalletRepository,
+    private val mailMessagingRepository: MailMessagingRepository
+
 ): ViewModel() {
     val loginId = userPreferencesRepository.loginId.asLiveData()
     val userId = userPreferencesRepository.userId.asLiveData()
@@ -46,6 +50,8 @@ class CheckoutOrderViewModel @Inject constructor(
     var discountAmount = 0.0
     var discountCoupon = ""
     var grandTotal = 0.0
+
+    var OrderNumber = ""
 
     fun setActiveStep(step:Int){
         activeStep.postValue(step)
@@ -88,7 +94,7 @@ class CheckoutOrderViewModel @Inject constructor(
     }
 
     private val _orderNumber = MutableLiveData<Resource<String>>()
-    val orderNumber : LiveData<Resource<String>> = _orderNumber
+    var orderNumber : LiveData<Resource<String>> = _orderNumber
 
     fun createCustomerOrder(customerOrder: CustomerOrder) {
 
@@ -104,8 +110,9 @@ class CheckoutOrderViewModel @Inject constructor(
                         _orderNumber.postValue(Resource.Error(it))
                     }
                 }
-                .collect { status->
-                    _orderNumber.postValue(Resource.Success(status))
+                .collect { response->
+
+                    _orderNumber.postValue(Resource.Success(response))
                 }
         }
 
@@ -275,6 +282,51 @@ class CheckoutOrderViewModel @Inject constructor(
                 }
         }
 
+    }
+
+
+    private val _isPaymentStatusUpdated = MutableLiveData<Resource<Boolean>>()
+    val isPaymentStatusUpdated : LiveData<Resource<Boolean>> = _isPaymentStatusUpdated
+
+    fun updatePaymentStatus(orderNumber:String,paymentStatusId:Int) {
+
+        viewModelScope.launch {
+            checkoutRepository
+                .updatePaymentStatus(orderNumber, paymentStatusId)
+                .onStart {
+                    _isPaymentStatusUpdated.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _isPaymentStatusUpdated.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _isPaymentStatusUpdated.postValue(Resource.Success(response))
+                }
+        }
+    }
+
+    private val _isMessageSent = MutableLiveData<Resource<Boolean>>()
+    val isMessageSent : LiveData<Resource<Boolean>> = _isMessageSent
+
+    fun sendWhatsappMessage(mobileNumber:String,message:String) {
+
+        viewModelScope.launch {
+            mailMessagingRepository
+                .sendWhatsappMessage(mobileNumber, message)
+                .onStart {
+                    _isMessageSent.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _isMessageSent.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _isMessageSent.postValue(Resource.Success(response))
+                }
+        }
     }
 
 }

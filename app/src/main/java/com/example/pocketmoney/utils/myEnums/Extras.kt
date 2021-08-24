@@ -31,7 +31,8 @@ enum class PaymentStatus(val id: Int)
     Paid(2),
     PartiallyRefunded(3),
     Refunded(4),
-    Voided(5);
+    Voided(5),
+    Failed(6)
 }
 
 

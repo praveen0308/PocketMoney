@@ -22,4 +22,14 @@ class CheckoutRepository @Inject constructor(
             emit(response)
         }.flowOn(Dispatchers.IO)
     }
+
+
+    suspend fun updatePaymentStatus(orderNumber: String,paymentStatusId:Int): Flow<Boolean> {
+        return flow {
+            val response = shoppingApiService.updatePaymentStatus(orderNumber, paymentStatusId)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
 }

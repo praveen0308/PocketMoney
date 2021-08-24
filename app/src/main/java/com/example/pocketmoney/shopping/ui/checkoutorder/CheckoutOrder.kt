@@ -30,6 +30,10 @@ import com.paytm.pgsdk.TransactionManager
 import dagger.hilt.android.AndroidEntryPoint
 import dmax.dialog.SpotsDialog
 import java.util.*
+import android.R.string
+
+
+
 
 
 @AndroidEntryPoint
@@ -64,6 +68,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
     val shippingCharge = 0.0
     private lateinit var selectedPaymentMethod:PaymentEnum
     private lateinit var paytmResponseModel: PaytmResponseModel
+    private lateinit var orderNumber : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -208,6 +213,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                 Status.SUCCESS -> {
                     _result._data?.let {
                         if (it !=null) {
+                            orderNumber = it
                             when(selectedPaymentMethod){
                                 PaymentEnum.GATEWAY->{
                                     viewModel.addPaymentTransactionDetail(
@@ -230,9 +236,24 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                                             PaymentMode = paytmResponseModel.PAYMENTMODE
                                         )
                                     )
+
+                                    if (paytmResponseModel.STATUS == "SUCCESS"){
+                                        viewModel.updatePaymentStatus(orderNumber,PaymentStatus.Paid.id)
+                                        val message1: String =
+                                            "Thank you for shopping with pocketmoney, your order placed successfully. Your order number is  " + orderNumber.toString() + " you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
+                                        viewModel.sendWhatsappMessage(userId,message1)
+                                    }else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE"){
+
+                                        val message = "Thank you for shopping with pocketmoney, your order payment has been failed. please revisit pocketmoney to place order again, click https//wwww.pocketmoney.net.in"
+                                        viewModel.updatePaymentStatus(orderNumber,PaymentStatus.Failed.id)
+                                        viewModel.sendWhatsappMessage(userId,message)
+                                    }
                                 }
                                 else->{
                                     navController.navigate(R.id.action_payment_to_orderSuccessful)
+                                    val message1: String =
+                                        "Thank you for shopping with pocketmoney, your order placed successfully. Your order number is  " + orderNumber.toString() + " you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
+                                    viewModel.sendWhatsappMessage(userId,message1)
                                     displayError("Order Successfully !!!")
                                     finish()
                                 }
@@ -450,6 +471,22 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
                         Log.e("PAYTM_TRANS",p0.toString())
 
+                        val order = CustomerOrder(
+                            ShippingAddressId = viewModel.selectedAddress.value!!.AddressID,
+                            UserID = userId,
+                            Total = AMOUNT.toDouble(),
+                            Discount = 0.0,
+                            Shipping = viewModel.mShippingCharge,
+                            Tax = viewModel.tax,
+                            GrandTotal = viewModel.grandTotal,
+                            Promo = viewModel.discountCoupon,
+                            PaymentStatusId = PaymentStatus.Pending.id, // paid
+                            WalletTypeId = 3,  // wallet
+                            PaymentMode = PaymentModes.Online.id,   // wallet
+                        )
+
+                        viewModel.createCustomerOrder(order)
+
                         p0?.let {
                             paytmResponseModel = PaytmResponseModel(
                                 STATUS = it.getString("STATUS")!!.substring(3),
@@ -469,23 +506,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                             )
                         }
 
-                        if (paytmResponseModel.STATUS == "SUCCESS"){
-                            val order = CustomerOrder(
-                                ShippingAddressId = viewModel.selectedAddress.value!!.AddressID,
-                                UserID = userId,
-                                Total = AMOUNT.toDouble(),
-                                Discount = 0.0,
-                                Shipping = viewModel.mShippingCharge,
-                                Tax = viewModel.tax,
-                                GrandTotal = viewModel.grandTotal,
-                                Promo = viewModel.discountCoupon,
-                                PaymentStatusId = PaymentStatus.Pending.id, // paid
-                                WalletTypeId = 3,  // wallet
-                                PaymentMode = PaymentModes.Online.id,   // wallet
-                            )
 
-                            viewModel.createCustomerOrder(order)
-                        }
 
                     }
 

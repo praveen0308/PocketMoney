@@ -146,6 +146,12 @@ interface ShoppingApiService {
             @Query("orderNumber") orderNo: String
     ):ModelOrderDetails
 
+    @POST("Checkout/UpdatePaymentStatus")
+    suspend fun updatePaymentStatus(
+        @Query("orderNumber") orderNumber: String,
+        @Query("paymentStatusid") paymentStatusId: Int
+    ): Boolean
+
 
 
 
