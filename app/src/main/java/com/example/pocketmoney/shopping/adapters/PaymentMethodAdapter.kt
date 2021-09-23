@@ -4,14 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.R
-import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.TemplatePaymentMethodBinding
 import com.example.pocketmoney.databinding.TemplateSavedPaymentMethodBinding
-import com.example.pocketmoney.mlm.model.ModelOperatorPlan
-import com.example.pocketmoney.shopping.model.ModelMasterPaymentMethod
 import com.example.pocketmoney.shopping.model.ModelPaymentCard
 import com.example.pocketmoney.shopping.model.ModelPaymentMethod
-import java.util.ArrayList
 
 
 class PaymentMethodAdapter(private val methodList:MutableList<Any>,

@@ -10,6 +10,7 @@ import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.example.pocketmoney.mlm.repository.WalletRepository
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.model.CustomerOrder
+import com.example.pocketmoney.shopping.model.DiscountModel
 import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.repository.AddressRepository
 import com.example.pocketmoney.shopping.repository.CartRepository
@@ -37,19 +38,32 @@ class CheckoutOrderViewModel @Inject constructor(
     val userName = userPreferencesRepository.userName.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
 
-
     val paymentMethod = MutableLiveData(PaymentEnum.WALLET)
 
     val activeStep = MutableLiveData(0)
 
-
     // Order fields
+    /*
     var totalAmount = 0.0
     var mShippingCharge = 0.0
     var tax = 0.0
     var discountAmount = 0.0
     var discountCoupon = ""
-    var grandTotal = 0.0
+    var grandTotal = (totalAmount + mShippingCharge) - discountAmount
+*/
+
+    var itemQuantity = 0
+    var productOldPrice = 0.0
+    var totalAmount = 0.0
+    var tax = 0.0
+
+    var mShippingCharge = 0.0
+    var saving = 0.0
+    var grandTotal =0.0
+
+    var selectedAddressId = MutableLiveData(0)
+
+    val discountCoupon = ""
 
     var OrderNumber = ""
 
@@ -64,13 +78,15 @@ class CheckoutOrderViewModel @Inject constructor(
         _selectedAddress.postValue(modelAddress)
     }
 
-    private val _amountPayable = MutableLiveData<Double>()
-    val amountPayable: LiveData<Double> = _amountPayable
+    val amountPayable = MutableLiveData<Double>()
+
 
     fun setPayableAmount(amount:Double){
-        _amountPayable.postValue(amount)
+
     }
 
+
+    var shippingAddressList = mutableListOf<ModelAddress>()
 
     private val _customerAddressList: MutableLiveData<Resource<List<ModelAddress>>> = MutableLiveData()
     val customerAddressList: LiveData<Resource<List<ModelAddress>>> = _customerAddressList
@@ -88,6 +104,8 @@ class CheckoutOrderViewModel @Inject constructor(
                     }
                 }
                 .collect { response->
+                    shippingAddressList.clear()
+                    shippingAddressList.addAll(response)
                     _customerAddressList.postValue(Resource.Success(response))
                 }
         }
@@ -158,7 +176,7 @@ class CheckoutOrderViewModel @Inject constructor(
                     }
                 }
                 .collect { charge->
-                    mShippingCharge = charge
+//                    mShippingCharge = charge
                     _shippingCharge.postValue(Resource.Success(charge))
                 }
         }
@@ -235,7 +253,6 @@ class CheckoutOrderViewModel @Inject constructor(
 
     private val _walletBalance = MutableLiveData<Resource<Double>>()
     val walletBalance : LiveData<Resource<Double>> = _walletBalance
-
 
     private val _pCash = MutableLiveData<Resource<Double>>()
     val pCash: LiveData<Resource<Double>> = _pCash
@@ -325,6 +342,51 @@ class CheckoutOrderViewModel @Inject constructor(
                 }
                 .collect { response->
                     _isMessageSent.postValue(Resource.Success(response))
+                }
+        }
+    }
+
+    private val _isValidCoupon = MutableLiveData<Resource<Boolean>>()
+    val isValidCoupon : LiveData<Resource<Boolean>> = _isValidCoupon
+
+    fun validateCouponCode(couponCode:String) {
+
+        viewModelScope.launch {
+            checkoutRepository
+                .validateCoupon(couponCode)
+                .onStart {
+                    _isValidCoupon.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _isValidCoupon.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _isValidCoupon.postValue(Resource.Success(response))
+                }
+        }
+    }
+
+
+    private val _couponDetail = MutableLiveData<Resource<DiscountModel>>()
+    val couponDetail : LiveData<Resource<DiscountModel>> = _couponDetail
+
+    fun getCouponDetails(couponCode:String) {
+
+        viewModelScope.launch {
+            checkoutRepository
+                .getDiscountDetails(couponCode)
+                .onStart {
+                    _couponDetail.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _couponDetail.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _couponDetail.postValue(Resource.Success(response))
                 }
         }
     }

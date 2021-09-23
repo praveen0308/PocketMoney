@@ -7,9 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentMembershipPlanDetailsBinding
+import com.example.pocketmoney.utils.BaseBottomSheetDialogFragment
 import com.example.pocketmoney.utils.BaseFragment
 
-class MembershipPlanDetails : BaseFragment<FragmentMembershipPlanDetailsBinding>(FragmentMembershipPlanDetailsBinding::inflate) {
+class MembershipPlanDetails : BaseBottomSheetDialogFragment<FragmentMembershipPlanDetailsBinding>(FragmentMembershipPlanDetailsBinding::inflate) {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

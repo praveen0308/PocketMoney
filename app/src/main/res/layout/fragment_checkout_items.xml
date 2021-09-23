@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout14"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".shopping.ui.checkoutorder.CheckoutItems"
+    android:paddingTop="24dp"
+    android:paddingBottom="60dp"
+    android:clipToPadding="false">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="60dp"
+        >
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_cart_item_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/template_cart_item"
+            tools:itemCount="2"
+            android:paddingHorizontal="@dimen/dimen_8dp"
+            android:paddingVertical="@dimen/dimen_16dp"
+            android:overScrollMode="never"/>
+        <com.example.pocketmoney.utils.OrderAmountSummary
+            android:id="@+id/orderAmountSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="@dimen/dimen_16dp"
+            />
+
+    </LinearLayout></androidx.core.widget.NestedScrollView>

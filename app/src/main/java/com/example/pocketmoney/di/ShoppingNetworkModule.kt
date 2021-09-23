@@ -1,6 +1,7 @@
 package com.example.pocketmoney.di
 
 import android.content.Context
+import com.example.pocketmoney.shopping.network.OrderApiService
 import com.example.pocketmoney.shopping.network.ShoppingApiService
 import com.example.pocketmoney.shopping.repository.*
 import com.example.pocketmoney.utils.Constants
@@ -40,6 +41,12 @@ object ShoppingNetworkModule {
     @Provides
     fun provideShoppingApiService(retrofit: Retrofit): ShoppingApiService {
         return retrofit.create(ShoppingApiService::class.java)
+    }
+
+
+    @Provides
+    fun provideOrderApiService(retrofit: Retrofit): OrderApiService {
+        return retrofit.create(OrderApiService::class.java)
     }
 
     @Singleton

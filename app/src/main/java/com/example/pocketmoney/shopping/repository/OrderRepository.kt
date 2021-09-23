@@ -3,6 +3,7 @@ package com.example.pocketmoney.shopping.repository
 import com.example.pocketmoney.shopping.model.OrderListItem
 import com.example.pocketmoney.shopping.model.ProductMainCategory
 import com.example.pocketmoney.shopping.model.orderModule.ModelOrderDetails
+import com.example.pocketmoney.shopping.network.OrderApiService
 import com.example.pocketmoney.shopping.network.ShoppingApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class OrderRepository  @Inject constructor(
-        private val shoppingApiService: ShoppingApiService
+        private val shoppingApiService: ShoppingApiService,
+        private val orderApiService: OrderApiService
 ) {
 
     suspend fun getOrderList(userId:String): Flow<List<OrderListItem>> {
@@ -24,6 +26,20 @@ class OrderRepository  @Inject constructor(
     suspend fun getOrderDetails(orderNumber:String): Flow<ModelOrderDetails> {
         return flow {
             val response = shoppingApiService.getOrderDetails(orderNumber)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getOrderTracking(orderNumber:String): Flow<ModelOrderDetails> {
+        return flow {
+            val response = orderApiService.getOrderTracking(orderNumber)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun cancelOrderItem(orderNumber:String,itemId:String): Flow<Boolean> {
+        return flow {
+            val response = orderApiService.cancelOrderItem(orderNumber,itemId)
             emit(response)
         }.flowOn(Dispatchers.IO)
     }

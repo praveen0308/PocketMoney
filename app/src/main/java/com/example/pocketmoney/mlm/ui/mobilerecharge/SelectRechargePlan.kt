@@ -42,7 +42,7 @@ class SelectRechargePlan :
 
 
     //Variables
-    private val args by navArgs<SelectRechargePlanArgs>()
+//    private val args by navArgs<SelectRechargePlanArgs>()
     private var numberOfTab: Int? = -1
     private var specialPlanList = mutableListOf<MobileOperatorPlan>()
     private var mCircle: String = "Mumbai"
@@ -117,7 +117,7 @@ class SelectRechargePlan :
                         mContact.circle = mCircle
                         mContact.operator = mOperator
 
-                        viewModel.getMobileSpecialPlanList(args.mobileNumber, mOperator)
+                        viewModel.getMobileSpecialPlanList(mContact.contactNumber!!, mOperator)
                         populateUiElements()
                     }
                     displayLoading(false)

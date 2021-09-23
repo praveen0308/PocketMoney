@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_dth"
-    app:startDestination="@id/selectOperator">
+    app:startDestination="@id/dthOperator">
 
     <fragment
         android:id="@+id/dthOperator"
@@ -11,25 +11,12 @@
         android:label="fragment_dth_operator"
         tools:layout="@layout/fragment_dth_operator" >
         <action
-            android:id="@+id/action_dthOperator_to_dthRecharge"
-            app:destination="@id/dthRecharge" />
+            android:id="@+id/action_dthOperator_to_dthRechargeHost"
+            app:destination="@id/dthRechargeHost" />
     </fragment>
     <fragment
-        android:id="@+id/dthRecharge"
-        android:name="com.example.pocketmoney.mlm.ui.dth.DthRecharge"
-        android:label="fragment_dth_recharge"
-        tools:layout="@layout/fragment_dth_recharge" />
-    <fragment
-        android:id="@+id/selectOperator"
-        android:name="com.example.pocketmoney.mlm.ui.mobilerecharge.SelectOperator"
-        android:label="fragment_select_operator"
-        tools:layout="@layout/fragment_select_operator" >
-        <action
-            android:id="@+id/action_selectOperator_to_dthRecharge"
-            app:destination="@id/dthRecharge" />
-        <argument
-            android:name="operatorType"
-            app:argType="com.example.pocketmoney.mlm.model.RechargeEnum"
-            android:defaultValue="PREPAID" />
-    </fragment>
+        android:id="@+id/dthRechargeHost"
+        android:name="com.example.pocketmoney.mlm.ui.dth.DthRechargeHost"
+        android:label="fragment_dth_recharge_host"
+        tools:layout="@layout/fragment_dth_recharge_host" />
 </navigation>

@@ -71,23 +71,25 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
         val menuList = mutableListOf<ModelParentMenu>()
 
         val myAccountItemList = mutableListOf<ModelMenuItem>()
-        myAccountItemList.add(
+        /*myAccountItemList.add(
             ModelMenuItem(
                 NavigationEnum.INCOME,
                 "Income",
                 "Growth,Commission",
                 R.drawable.ic_baseline_data_saver_on_24
             )
+        )*/
+/*
+
+        myAccountItemList.add(
+            ModelMenuItem(
+                NavigationEnum.WALLET,
+                "Wallet",
+                "Wallet,P-Cash,My Coupons",
+                R.drawable.ic_person
+            )
         )
-//
-//        myAccountItemList.add(
-//            ModelMenuItem(
-//                NavigationEnum.WALLET,
-//                "Wallet",
-//                "Wallet,P-Cash,My Coupons",
-//                R.drawable.ic_person
-//            )
-//        )
+*/
 
         myAccountItemList.add(
             ModelMenuItem(
@@ -99,15 +101,17 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
         )
 
 
-//        myAccountItemList.add(
-//            ModelMenuItem(
-//                NavigationEnum.PROFILE,
-//                "Wallet",
-//                "Wallet,P-Cash,My Coupons",
-//                R.drawable.ic_person
-//            )
-//        )
-//
+/*
+        myAccountItemList.add(
+            ModelMenuItem(
+                NavigationEnum.PROFILE,
+                "Wallet",
+                "Wallet,P-Cash,My Coupons",
+                R.drawable.ic_person
+            )
+        )
+
+*/
 
 
         myAccountItemList.add(
@@ -140,60 +144,62 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
         val myAccountsMenu = ModelParentMenu("My account", myAccountItemList)
 
 
-//        val settingMenuItemList = mutableListOf<ModelMenuItem>()
-//        settingMenuItemList.add(
-//            ModelMenuItem(
-//                NavigationEnum.PROFILE,
-//                "Profile",
-//                "change and update your profile data",
-//                R.drawable.ic_person
-//            )
-//        )
-//        settingMenuItemList.add(
-//            ModelMenuItem(
-//                NavigationEnum.NOTIFICATION,
-//                "Notifications",
-//                "Change notification settings",
-//                R.drawable.ic_round_notifications_24
-//            )
-//        )
-//        settingMenuItemList.add(
-//            ModelMenuItem(
-//                NavigationEnum.LANGUAGE,
-//                "Languages",
-//                "Choose app language",
-//                R.drawable.ic_round_notifications_24
-//            )
-//        )
-//        settingMenuItemList.add(
-//            ModelMenuItem(
-//                NavigationEnum.ADDRESS_SETTINGS,
-//                "Address",
-//                "Manage your address details",
-//                R.drawable.ic_round_location_on_24
-//            )
-//        )
-//        settingMenuItemList.add(
-//            ModelMenuItem(
-//                NavigationEnum.PAYMENT_METHOD,
-//                "Payment",
-//                "Payment method settings",
-//                R.drawable.ic_round_payment_24
-//            )
-//        )
+/*
+        val settingMenuItemList = mutableListOf<ModelMenuItem>()
+        settingMenuItemList.add(
+            ModelMenuItem(
+                NavigationEnum.PROFILE,
+                "Profile",
+                "change and update your profile data",
+                R.drawable.ic_person
+            )
+        )
+        settingMenuItemList.add(
+            ModelMenuItem(
+                NavigationEnum.NOTIFICATION,
+                "Notifications",
+                "Change notification settings",
+                R.drawable.ic_round_notifications_24
+            )
+        )
+        settingMenuItemList.add(
+            ModelMenuItem(
+                NavigationEnum.LANGUAGE,
+                "Languages",
+                "Choose app language",
+                R.drawable.ic_round_notifications_24
+            )
+        )
+        settingMenuItemList.add(
+            ModelMenuItem(
+                NavigationEnum.ADDRESS_SETTINGS,
+                "Address",
+                "Manage your address details",
+                R.drawable.ic_round_location_on_24
+            )
+        )
+        settingMenuItemList.add(
+            ModelMenuItem(
+                NavigationEnum.PAYMENT_METHOD,
+                "Payment",
+                "Payment method settings",
+                R.drawable.ic_round_payment_24
+            )
+        )
 
-//        val settingMenu = ModelParentMenu("Settings", settingMenuItemList)
+        val settingMenu = ModelParentMenu("Settings", settingMenuItemList)
+*/
 
         val helpMenuItemList = mutableListOf<ModelMenuItem>()
-//        helpMenuItemList.add(ModelMenuItem(NavigationEnum.FAQ, "FAQ", "", R.drawable.ic_round_help_24))
-//        helpMenuItemList.add(
-//            ModelMenuItem(
-//                NavigationEnum.HOW_IT_WORKS,
-//                "How it works?",
-//                "",
-//                R.drawable.ic_round_help_24
-//            )
-//        )
+/*        helpMenuItemList.add(ModelMenuItem(NavigationEnum.FAQ, "FAQ", "", R.drawable.ic_round_help_24))
+        helpMenuItemList.add(
+            ModelMenuItem(
+                NavigationEnum.HOW_IT_WORKS,
+                "How it works?",
+                "",
+                R.drawable.ic_round_help_24
+            )
+        )*/
         helpMenuItemList.add(
             ModelMenuItem(
                 NavigationEnum.HELP_CENTRE,

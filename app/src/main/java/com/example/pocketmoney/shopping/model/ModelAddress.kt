@@ -5,7 +5,7 @@ data class ModelAddress(
     val AddedOn: String?=null,
     val Address1: String?=null,
     val Address2: String?=null,
-    val AddressID: Int?=null,
+    val AddressID: Int=0,
     val AddressType: String?=null,
     val Building: String?=null,
     val CityID: String?=null,

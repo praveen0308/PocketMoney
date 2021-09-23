@@ -84,10 +84,10 @@ class SelectLocation : BaseFragment<FragmentSelectLocationBinding>(FragmentSelec
                 findNavController().popBackStack()
             }
             RechargeEnum.STATE -> {
-                findNavController().navigate(R.id.action_selectOperator_to_dthRecharge)
+//                findNavController().navigate(R.id.action_selectOperator_to_dthRecharge)
             }
             RechargeEnum.BOARD -> {
-                findNavController().navigate(R.id.action_selectOperator_to_dthRecharge)
+//                findNavController().navigate(R.id.action_selectOperator_to_dthRecharge)
             }
         }
 

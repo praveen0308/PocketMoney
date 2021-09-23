@@ -15,6 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PocketMoney">
         <activity
+            android:name=".mlm.ui.payouts.NewPayout"
+            android:exported="true" />
+        <activity
+            android:name=".mlm.ui.mobilerecharge.simpleui.NewRechargeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".shopping.ui.checkoutorder.NewCheckout"
+            android:exported="true" />
+        <activity
             android:name=".mlm.ui.membership.ActivateAccount"
             android:exported="true" />
         <activity android:name=".mlm.ui.mobilerecharge.MobileNumberDetail" /> <!-- <activity android:name=".mlm.ui.mobilerecharge.SelectLocation" /> -->

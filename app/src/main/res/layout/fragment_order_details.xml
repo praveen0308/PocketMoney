@@ -39,38 +39,13 @@
                 layout="@layout/templater_order_detail_header" />
 
             <com.transferwise.sequencelayout.SequenceLayout
+                android:id="@+id/order_tracking_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="12dp"
-                app:progressForegroundColor="@color/colorPrimary">
+                app:progressForegroundColor="@color/colorPrimary"/>
 
-                <com.transferwise.sequencelayout.SequenceStep
 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:anchor="30 Nov"
-                    app:title="Order" />
-
-                <com.transferwise.sequencelayout.SequenceStep
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:title="Packed" />
-
-                <com.transferwise.sequencelayout.SequenceStep
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:active="true"
-                    app:anchor="Today"
-                    app:subtitle="shipping product"
-                    app:title="Shipped"
-                    app:titleTextAppearance="@style/TextAppearance.AppCompat.Title" />
-
-                <com.transferwise.sequencelayout.SequenceStep
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:anchor="2 Dec"
-                    app:title="Expected Delivery" />
-            </com.transferwise.sequencelayout.SequenceLayout>
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"

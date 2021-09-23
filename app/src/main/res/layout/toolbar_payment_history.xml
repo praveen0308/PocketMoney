@@ -54,5 +54,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:strokeColor="@color/colorPrimaryDark"
-        android:layout_margin="0dp"/>
+        android:layout_margin="0dp"
+        android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

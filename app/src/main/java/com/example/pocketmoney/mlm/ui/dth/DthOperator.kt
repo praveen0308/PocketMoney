@@ -29,35 +29,18 @@ class DthOperator : BaseFragment<FragmentDthOperatorBinding>(FragmentDthOperator
 
         setupRecyclerView()
 
-//        viewModel.getOperatorList("DTH")
+        viewModel.getDTHOperators()
 
     }
 
     override fun subscribeObservers(){
-//        viewModel.operatorList.observe(viewLifecycleOwner, { dataState ->
-//            when (dataState) {
-//                is DataState.Success<List<ModelOperator>> -> {
-//                    displayLoading(false)
-//                    populateRecyclerView(dataState.data)
-//                }
-//                is DataState.Loading -> {
-//                    displayLoading(true)
-//
-//                }
-//                is DataState.Error -> {
-//                    displayLoading(false)
-//                    displayError(dataState.exception.message)
-//                }
-//            }
-//        })
+        viewModel.dthOperators.observe(viewLifecycleOwner, {
+            operatorAdapter.setComponentList(it)
+        })
     }
 
 
-    private fun populateRecyclerView(data: List<ModelOperator>) {
-        Timber.d("Response $data")
-        operatorAdapter.setComponentList(data)
 
-    }
     private fun setupRecyclerView() {
         operatorAdapter = OperatorAdapter(this)
         binding.rvDthOperatorList.apply {
@@ -75,11 +58,8 @@ class DthOperator : BaseFragment<FragmentDthOperatorBinding>(FragmentDthOperator
 
 
 
-//    override fun onOperatorClick() {
-//        findNavController().navigate(R.id.action_dthOperator_to_dthRecharge)
-//    }
-
     override fun onOperatorClick(operator: ModelOperator) {
-
+        viewModel.selectedOperator.postValue(operator)
+        findNavController().navigate(R.id.action_dthOperator_to_dthRechargeHost)
     }
 }

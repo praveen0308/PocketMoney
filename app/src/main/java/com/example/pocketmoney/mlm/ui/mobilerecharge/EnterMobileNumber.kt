@@ -64,7 +64,8 @@ class EnterMobileNumber : BaseFragment<FragmentEnterMobileNumberBinding>(Fragmen
 
                     val mContact = mContactList.find { it.contactNumber.equals(number) }
                     viewModel.selectedContact.postValue(mContact)
-                    findNavController().navigate(R.id.action_enterMobileNumber_to_selectRechargePlan)
+//                    findNavController().navigate(R.id.action_enterMobileNumber_to_selectRechargePlan)
+//                    findNavController().navigate(R.id.action_enterMobileNumber_to_enterRechargeAmount)
 
                 }
                 else{
@@ -103,7 +104,7 @@ class EnterMobileNumber : BaseFragment<FragmentEnterMobileNumberBinding>(Fragmen
                     viewModel.selectedContact.postValue(contact)
                 }
 
-                findNavController().navigate(R.id.action_enterMobileNumber_to_selectRechargePlan)
+//                findNavController().navigate(R.id.action_enterMobileNumber_to_enterRechargeAmount)
             }
         }
     }
@@ -180,7 +181,8 @@ class EnterMobileNumber : BaseFragment<FragmentEnterMobileNumberBinding>(Fragmen
 
     override fun onContactClick(contact: ModelContact) {
         viewModel.selectedContact.postValue(contact)
-        findNavController().navigate(R.id.action_enterMobileNumber_to_selectRechargePlan)
+//        findNavController().navigate(R.id.action_enterMobileNumber_to_enterRechargeAmount)
+//        findNavController().navigate(R.id.action_enterMobileNumber_to_selectRechargePlan)
     }
 
 }

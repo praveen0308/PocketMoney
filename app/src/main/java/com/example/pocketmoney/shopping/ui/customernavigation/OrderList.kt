@@ -19,12 +19,8 @@ import com.example.pocketmoney.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderList : Fragment(), ApplicationToolbar.ApplicationToolbarListener, OrderListAdapter.OrderListAdapterInterface {
+class OrderList : BaseFragment<FragmentOrderListBinding>(FragmentOrderListBinding::inflate), ApplicationToolbar.ApplicationToolbarListener, OrderListAdapter.OrderListAdapterInterface {
 
-    //UI
-    private var _binding: FragmentOrderListBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var progressBarHandler: ProgressBarHandler
 
     //ViewModels
     private val shoppingAuthViewModel: ShoppingAuthViewModel by viewModels()
@@ -38,27 +34,14 @@ class OrderList : Fragment(), ApplicationToolbar.ApplicationToolbarListener, Ord
     private lateinit var userID: String
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        progressBarHandler = ProgressBarHandler(requireActivity())
-
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        _binding = FragmentOrderListBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.toolbarOrderList.setApplicationToolbarListener(this)
         setupRvOrderList()
-        subscribeObservers()
 
     }
-    private fun subscribeObservers() {
+    override fun subscribeObservers() {
 
         shoppingAuthViewModel.userID.observe(viewLifecycleOwner, {
             userID = it
@@ -99,21 +82,6 @@ class OrderList : Fragment(), ApplicationToolbar.ApplicationToolbarListener, Ord
         }
     }
 
-    fun initialUIStates() {
-//        binding.layoutSelectedAddress.root.visibility = View.VISIBLE
-    }
-
-    private fun displayLoading(state: Boolean) {
-        if (state) progressBarHandler.show() else progressBarHandler.hide()
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(context, "Unknown error", Toast.LENGTH_LONG).show()
-        }
-    }
 
     override fun onToolbarNavClick() {
         requireActivity().finish()

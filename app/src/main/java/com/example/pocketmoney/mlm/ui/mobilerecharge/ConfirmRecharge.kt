@@ -1,22 +1,18 @@
 package com.example.pocketmoney.mlm.ui.mobilerecharge
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.FragmentConfirmRechargeBinding
 import com.example.pocketmoney.mlm.model.ModelContact
 import com.example.pocketmoney.mlm.model.serviceModels.MobileOperatorPlan
 import com.example.pocketmoney.mlm.viewmodel.MobileRechargeViewModel
 import com.example.pocketmoney.shopping.adapters.ShoppingHomeMasterAdapter
-import com.example.pocketmoney.utils.*
+import com.example.pocketmoney.utils.BaseFragment
+import com.example.pocketmoney.utils.MyCustomToolbar
+import com.example.pocketmoney.utils.getMobileOperatorLogo
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

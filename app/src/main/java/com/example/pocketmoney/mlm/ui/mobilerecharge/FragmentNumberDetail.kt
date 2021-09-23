@@ -37,7 +37,7 @@ class FragmentNumberDetail : BaseFragment<FragmentNumberDetailBinding>(FragmentN
             }
 
             btnChangeOperator.setOnClickListener {
-                findNavController().navigate(R.id.action_fragmentNumberDetail_to_selectOperator2,SelectOperatorArgs(RechargeEnum.PREPAID).toBundle())
+//                findNavController().navigate(R.id.action_fragmentNumberDetail_to_selectOperator2,SelectOperatorArgs(RechargeEnum.PREPAID).toBundle())
             }
 
             btnConfirm.setOnClickListener {

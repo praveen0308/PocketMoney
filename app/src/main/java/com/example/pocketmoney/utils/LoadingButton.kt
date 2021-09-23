@@ -43,6 +43,15 @@ class LoadingButton @kotlin.jvm.JvmOverloads constructor(
 
     fun setState(state:LoadingStates,mText:String="",msg:String=""){
         when(state){
+            LoadingStates.DISABLED->{
+                binding.apply {
+                    btnAction.isEnabled = false
+                    btnAction.setCompoundDrawables(null,null,null,null)
+                    btnAction.text = mText
+                    progressStatus.isVisible = false
+                    tvStatus.text = msg
+                }
+            }
             LoadingStates.NORMAL->{
                 binding.apply {
                     btnAction.isEnabled = true
@@ -97,7 +106,7 @@ class LoadingButton @kotlin.jvm.JvmOverloads constructor(
     }
 
     enum class LoadingStates{
-        LOADING,NORMAL,FAILED,SUCCESS,RETRY
+        LOADING,NORMAL,FAILED,SUCCESS,RETRY,DISABLED
     }
     interface onButtonClick{
         fun onClick()

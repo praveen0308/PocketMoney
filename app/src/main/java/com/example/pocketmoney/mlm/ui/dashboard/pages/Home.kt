@@ -22,7 +22,10 @@ import com.example.pocketmoney.mlm.model.*
 import com.example.pocketmoney.mlm.ui.AddMoneyToWallet
 import com.example.pocketmoney.mlm.ui.dashboard.CustomerWalletActivity
 import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
+import com.example.pocketmoney.mlm.ui.membership.MembershipPlanDetails
 import com.example.pocketmoney.mlm.ui.membership.UpgradeToPro
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.NewRechargeActivity
+import com.example.pocketmoney.mlm.ui.payouts.NewPayout
 import com.example.pocketmoney.mlm.ui.payouts.Payouts
 import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
 import com.example.pocketmoney.mlm.viewmodel.HomeViewModel
@@ -52,6 +55,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
     private var userID: String = ""
     private var roleID: Int = 0
 
+    private var isAccountActive = false
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
         fragmentListener = activity as MainDashboard
@@ -82,10 +86,17 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
             walletDetailVisibility = false
         }
 
-        binding.topLayout.ivUserProfile.setOnClickListener {
+        binding.topLayout.ivUserActivation.setOnClickListener {
 //         fragmentListener.onUserProfileClick()
-            val bottomSheet = UpgradeToPro()
-            bottomSheet.show(parentFragmentManager, bottomSheet.tag)
+            if (isAccountActive){
+                val bottomSheet = MembershipPlanDetails()
+                bottomSheet.show(parentFragmentManager, bottomSheet.tag)
+            }
+            else{
+                val bottomSheet = UpgradeToPro()
+                bottomSheet.show(parentFragmentManager, bottomSheet.tag)
+            }
+
         }
 
     }
@@ -149,7 +160,14 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        if (!it) {
+                        isAccountActive = it
+                        if (isAccountActive){
+                            binding.topLayout.ivUserActivation.setImageResource(R.drawable.ic_diamond)
+
+                        }
+                        else{
+                            binding.topLayout.ivUserActivation.setImageResource(R.drawable.ic_up_arrow)
+
                             val bottomSheet = UpgradeToPro()
                             bottomSheet.show(parentFragmentManager, bottomSheet.tag)
                         }
@@ -257,29 +275,11 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
 
         // Working Services
         val workingServices: MutableList<ModelServiceView> = java.util.ArrayList()
-        workingServices.add(
-            ModelServiceView(
-                "Prepaid",
-                R.drawable.ic_prepaid,
-                RechargeEnum.PREPAID
-            )
-        )
+        workingServices.add(ModelServiceView("Mobile Recharge", R.drawable.ic_prepaid, RechargeEnum.PREPAID))
         workingServices.add(ModelServiceView("DTH", R.drawable.ic_dth, RechargeEnum.DTH))
-        workingServices.add(
-            ModelServiceView(
-                "Bank Transfer",
-                R.drawable.ic_bank,
-                RechargeEnum.BANK_TRANSFER
-            )
-        )
-        workingServices.add(
-            ModelServiceView(
-                "Paytm Wallet Transfer",
-                R.drawable.ic_paytm_logo,
-                RechargeEnum.PAYTM_WALLET_TRANSFER
-            )
-        )
-
+        workingServices.add(  ModelServiceView("Electricity", R.drawable.ic_electricity, RechargeEnum.ELECTRICITY))
+        workingServices.add(ModelServiceView("Send Money", R.drawable.ic_bank, RechargeEnum.SEND_MONEY))
+//        workingServices.add(ModelServiceView("Paytm Wallet Transfer", R.drawable.ic_paytm_logo, RechargeEnum.PAYTM_WALLET_TRANSFER))
 
         val workingServiceCategory = ModelServiceCategory("Featured", workingServices)
 
@@ -288,13 +288,13 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
 
         // Coming Soon
         val comingSoonServices: MutableList<ModelServiceView> = java.util.ArrayList()
-        comingSoonServices.add(
+        /*comingSoonServices.add(
             ModelServiceView(
                 "Postpaid",
                 R.drawable.ic_postpaid,
                 RechargeEnum.POSTPAID
             )
-        )
+        )*/
         comingSoonServices.add(
             ModelServiceView(
                 "Landline",
@@ -302,13 +302,13 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
                 RechargeEnum.LANDLINE
             )
         )
-        comingSoonServices.add(
+        /*comingSoonServices.add(
             ModelServiceView(
                 "Electricity",
                 R.drawable.ic_electricity,
                 RechargeEnum.ELECTRICITY
             )
-        )
+        )*/
         comingSoonServices.add(ModelServiceView("Water", R.drawable.ic_water, RechargeEnum.WATER))
         comingSoonServices.add(
             ModelServiceView(
@@ -366,7 +366,10 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
 
     private fun performActionForServices(action: RechargeEnum) {
         when (action) {
-            RechargeEnum.PREPAID, RechargeEnum.POSTPAID -> findNavController().navigate(R.id.action_home_to_mobileRechargeActivity)
+            RechargeEnum.PREPAID, RechargeEnum.POSTPAID ->{
+//                findNavController().navigate(R.id.action_home_to_mobileRechargeActivity)
+                startActivity(Intent(requireActivity(),NewRechargeActivity::class.java))
+            }
             RechargeEnum.DTH -> findNavController().navigate(R.id.action_home_to_dthActivity)
             RechargeEnum.ELECTRICITY -> findNavController().navigate(R.id.action_home_to_electricityActivity)
             RechargeEnum.SHOPPING -> findNavController().navigate(R.id.action_home_to_shop)
@@ -379,8 +382,8 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
                 startActivity(Intent(requireActivity(), AddMoneyToWallet::class.java))
             }
             RechargeEnum.PAYMENT_HISTORY -> findNavController().navigate(R.id.action_home_to_paymentHistory)
-            RechargeEnum.BANK_TRANSFER, RechargeEnum.PAYTM_WALLET_TRANSFER -> {
-                startActivity(Intent(requireActivity(), Payouts::class.java))
+            RechargeEnum.BANK_TRANSFER, RechargeEnum.PAYTM_WALLET_TRANSFER,RechargeEnum.SEND_MONEY -> {
+                startActivity(Intent(requireActivity(), NewPayout::class.java))
             }
             else -> {
 //                findNavController().navigate(HomeDirections.actionHomeToRechargeActivity(action))

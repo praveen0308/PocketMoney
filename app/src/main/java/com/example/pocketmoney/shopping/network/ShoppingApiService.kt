@@ -152,6 +152,16 @@ interface ShoppingApiService {
         @Query("paymentStatusid") paymentStatusId: Int
     ): Boolean
 
+    @POST("Checkout/ValidateCouponCode")
+    suspend fun validateCouponCode(
+        @Query("couponCode") couponCode: String
+    ): Boolean
+
+
+    @GET("Checkout/GetDiscountDetails")
+    suspend fun getDiscountDetails(
+        @Query("couponCode") couponCode: String
+    ): DiscountModel
 
 
 

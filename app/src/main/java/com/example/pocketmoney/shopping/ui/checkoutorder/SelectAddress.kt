@@ -17,12 +17,14 @@ import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentSelectAddressBinding
 import com.example.pocketmoney.mlm.adapters.SelectAddressAdapter
 import com.example.pocketmoney.shopping.model.ModelAddress
+import com.example.pocketmoney.shopping.repository.CheckoutRepository
 import com.example.pocketmoney.shopping.ui.AddNewAddress
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.utils.BaseFragment
 import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.OtherEnum
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SelectAddress :
@@ -30,6 +32,9 @@ class SelectAddress :
     SelectAddressAdapter.SelectAddressInterface {
 
     private val viewModel by activityViewModels<CheckoutOrderViewModel>()
+
+    @Inject
+    lateinit var checkoutRepository: CheckoutRepository
 
     private lateinit var selectAddressAdapter: SelectAddressAdapter
 
@@ -117,6 +122,7 @@ class SelectAddress :
 
     override fun onAddressSelect(item: ModelAddress) {
         viewModel.setSelectedAddress(item)
+        checkoutRepository.selectedAddressId = item.AddressID!!
     }
 
     override fun onEditClick(item: ModelAddress) {

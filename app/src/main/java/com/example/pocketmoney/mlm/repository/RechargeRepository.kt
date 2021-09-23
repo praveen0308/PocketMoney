@@ -166,9 +166,18 @@ class RechargeRepository @Inject constructor(
         mobileOperatorList.add(ModelOperator("Jio", R.drawable.ic_jio))
         mobileOperatorList.add(ModelOperator("Airtel",R.drawable.ic_airtel))
         mobileOperatorList.add(ModelOperator("VI",R.drawable.ic_vi_vodafone_idea))
-//        mobileOperatorList.add(ModelOperator("Tata Docomo",R.drawable.ict))
+        mobileOperatorList.add(ModelOperator("Idea",R.drawable.ic_vi_vodafone_idea))
+        mobileOperatorList.add(ModelOperator("Vodafone",R.drawable.ic_vi_vodafone_idea))
+
+        mobileOperatorList.add(ModelOperator("Tata Docomo",R.drawable.ic_tata_docomo))
+        mobileOperatorList.add(ModelOperator("Docomo Special",R.drawable.ic_tata_docomo))
+
         mobileOperatorList.add(ModelOperator("BSNL",R.drawable.ic_bsnl))
+        mobileOperatorList.add(ModelOperator("BSNL Special",R.drawable.ic_bsnl))
+
         mobileOperatorList.add(ModelOperator("MTNL",R.drawable.ic_mtnl))
+        mobileOperatorList.add(ModelOperator("MTNL Mumbai Special",R.drawable.ic_mtnl))
+        mobileOperatorList.add(ModelOperator("MTNL Mumbai Topup",R.drawable.ic_mtnl))
 
         return mobileOperatorList
     }

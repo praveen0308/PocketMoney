@@ -12,20 +12,21 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.databinding.FragmentOrderDetailsBinding
 import com.example.pocketmoney.shopping.adapters.OrderItemListAdapter
+import com.example.pocketmoney.shopping.adapters.OrderTrackingAdapter
+import com.example.pocketmoney.shopping.model.OrderTrackingStep
 import com.example.pocketmoney.shopping.model.orderModule.ModelOrderDetails
 import com.example.pocketmoney.shopping.model.orderModule.OrderItemModel
+import com.example.pocketmoney.shopping.model.orderModule.Shipping
 import com.example.pocketmoney.shopping.viewmodel.OrderViewModel
 import com.example.pocketmoney.shopping.viewmodel.ShoppingAuthViewModel
 import com.example.pocketmoney.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderDetails : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
+class OrderDetails :
+    BaseFragment<FragmentOrderDetailsBinding>(FragmentOrderDetailsBinding::inflate),
+    ApplicationToolbar.ApplicationToolbarListener {
 
-    //UI
-    private var _binding: FragmentOrderDetailsBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var progressBarHandler: ProgressBarHandler
 
     //ViewModels
     private val shoppingAuthViewModel: ShoppingAuthViewModel by viewModels()
@@ -33,27 +34,16 @@ class OrderDetails : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
 
     // Adapters
     private lateinit var orderItemListAdapter: OrderItemListAdapter
-
+    private lateinit var orderTrackingAdapter: OrderTrackingAdapter
 
     // Variable
     private lateinit var userID: String
-    private lateinit var modelOrderDetail:ModelOrderDetails
+    private lateinit var modelOrderDetail: ModelOrderDetails
     private val args by navArgs<OrderDetailsArgs>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        progressBarHandler = ProgressBarHandler(requireActivity())
         orderViewModel.getOrderDetails(args.orderNumber)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentOrderDetailsBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,12 +51,11 @@ class OrderDetails : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
         initialUIStates()
         binding.toolbarOrderDetails.setApplicationToolbarListener(this)
         setupRvOrderItemList()
-        subscribeObservers()
 
     }
 
 
-    private fun subscribeObservers() {
+    override fun subscribeObservers() {
 
         shoppingAuthViewModel.userID.observe(viewLifecycleOwner, {
             userID = it
@@ -110,15 +99,17 @@ class OrderDetails : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
     fun initialUIStates() {
         binding.llOrderDetailsContent.visibility = View.GONE
     }
-    private fun populateViews(orderDetail:ModelOrderDetails){
+
+    private fun populateViews(orderDetail: ModelOrderDetails) {
 
         binding.apply {
             llOrderDetailsContent.visibility = View.VISIBLE
             orderDetailHeader.apply {
                 tvOrderNumber.text = orderDetail.OrderListModel.OrderNumber
                 tvOrderDate.text = convertISOTimeToDate(orderDetail.OrderListModel.OrderDate)
-                tvTrackingNumber.text = "NA"
+
             }
+            generateOrderTracking(orderDetail)
             addressView.setModelAddress(orderDetail.ShippingDetailAddress)
             orderItemListAdapter.setOrderItemList(orderDetail.OrderItemListModel.toMutableList())
             tvNumberOfItems.text = "${getTotalItemQuantity(orderDetail.OrderItemListModel)} Items"
@@ -130,28 +121,17 @@ class OrderDetails : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
                 tvTax.text = "₹ ${orderDetail.OrderListModel.Tax}"
                 tvTotalAmount.text = "₹ ${orderDetail.OrderListModel.GrandTotal}"
             }
+
         }
     }
 
-    private fun getTotalItemQuantity(itemList: List<OrderItemModel>):Int{
+    private fun getTotalItemQuantity(itemList: List<OrderItemModel>): Int {
         var qty = 0
-        for (item in itemList){
-            qty+=item.Quantity
+        for (item in itemList) {
+            qty += item.Quantity
         }
 
         return qty
-    }
-
-    private fun displayLoading(state: Boolean) {
-        if (state) progressBarHandler.show() else progressBarHandler.hide()
-    }
-
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(context, "Unknown error", Toast.LENGTH_LONG).show()
-        }
     }
 
     override fun onToolbarNavClick() {
@@ -160,6 +140,56 @@ class OrderDetails : Fragment(), ApplicationToolbar.ApplicationToolbarListener {
 
     override fun onMenuClick() {
 
+    }
+
+    private fun generateOrderTracking(orderDetail: ModelOrderDetails) {
+        if (orderDetail.ShippingDetail.isNotEmpty()) {
+            binding.orderDetailHeader.tvTrackingNumber.text =
+                orderDetail.ShippingDetail[0].TrackingNumber
+            val statusId = orderDetail.ShippingDetail[0].ShippingStatusId
+            val tracking = mutableListOf<OrderTrackingStep>()
+
+            var step = 1
+            tracking.add(
+                OrderTrackingStep(
+                    "Order Received",
+                    convertISOTimeToDate(orderDetail.OrderListModel.OrderDate),
+                    convertISOTimeToAny(orderDetail.OrderListModel.OrderDate, SDF_dM).toString(),
+                    step == statusId!!
+                )
+            )
+            step++
+
+            tracking.add(
+                OrderTrackingStep(
+                    "Shipped",
+                    "Shipped On ${convertTimeStampToDate(orderDetail.ShippingDetail[0].ShippedOn.toString())}",
+                    "",
+                    step == statusId
+                )
+            )
+
+            step++
+            tracking.add(
+                OrderTrackingStep(
+                    "On the way",
+                    "",
+                    "",
+                    step == statusId
+                )
+            )
+            step++
+            tracking.add(
+                OrderTrackingStep(
+                    "Delivered",
+                    "Expected delivery ${convertISOTimeToDate(orderDetail.ShippingDetail[0].DeliveredOn!!)}",
+                    convertISOTimeToAny(orderDetail.OrderListModel.OrderDate, SDF_dM).toString(),
+                    step == statusId
+                )
+            )
+            orderTrackingAdapter = OrderTrackingAdapter(tracking)
+            binding.orderTrackingLayout.setAdapter(orderTrackingAdapter)
+        }
     }
 
 

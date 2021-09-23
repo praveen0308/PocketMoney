@@ -32,32 +32,23 @@ class SelectOperator :
 
     private val dthActivityViewModel by activityViewModels<DTHActivityViewModel>()
 //    private val mobileRechargeViewModel by activityViewModels<MobileRechargeViewModel>()
-    private val mobileNumberDetailViewModel by activityViewModels<MobileNumberDetailViewModel>()
+private val viewModel by activityViewModels<MobileRechargeViewModel>()
 
     private lateinit var operatorAdapter: OperatorAdapter
 
-    private val args by navArgs<SelectOperatorArgs>()
+//    private val args by navArgs<SelectOperatorArgs>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRvOperators()
-        binding.toolbarSelectOperator.setCustomToolbarListener(this)
-        when (args.operatorType) {
-            RechargeEnum.PREPAID -> {
-                mobileNumberDetailViewModel.getMobileOperators()
-            }
-            RechargeEnum.DTH -> {
-                dthActivityViewModel.getDTHOperators()
-            }
-        }
+
+        viewModel.getMobileOperators()
+
     }
 
     override fun subscribeObservers() {
-        dthActivityViewModel.dthOperators.observe(viewLifecycleOwner, {
-            operatorAdapter.setComponentList(it)
-        })
 
-        mobileNumberDetailViewModel.mobileOperators.observe(viewLifecycleOwner, {
+        viewModel.mobileOperators.observe(viewLifecycleOwner, {
             operatorAdapter.setComponentList(it)
         })
 
@@ -80,21 +71,23 @@ class SelectOperator :
     }
 
     override fun onOperatorClick(operator: ModelOperator) {
-        when (args.operatorType) {
+        viewModel.selectedOperator.postValue(operator.name)
+        findNavController().navigateUp()
+      /*  when (args.operatorType) {
             RechargeEnum.PREPAID, RechargeEnum.POSTPAID -> {
                 mobileNumberDetailViewModel.selectedOperator.postValue(operator.name)
                 findNavController().popBackStack()
             }
             RechargeEnum.DTH -> {
                 dthActivityViewModel.selectedOperator.postValue(operator)
-                findNavController().navigate(R.id.action_selectOperator_to_dthRecharge)
+//                findNavController().navigate(R.id.action_selectOperator_to_dthRecharge)
             }
-        }
+        }*/
 
     }
 
     override fun onToolbarNavClick() {
-        requireActivity().finish()
+
     }
 
     override fun onMenuClick() {

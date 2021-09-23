@@ -3,6 +3,8 @@ package com.example.pocketmoney.mlm.repository
 import com.example.pocketmoney.mlm.model.serviceModels.MobileRechargeModel
 import com.example.pocketmoney.mlm.model.serviceModels.UsedServiceDetailModel
 import com.example.pocketmoney.mlm.network.RechargeAPIService
+import com.example.pocketmoney.mlm.ui.payouts.WalletToPaytmTransfer
+import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,7 +14,9 @@ import javax.inject.Inject
 class ServiceRepository @Inject constructor(
     private val rechargeAPIService: RechargeAPIService
 ){
-    suspend fun addUsedServiceDetail(usedServiceDetailModel: UsedServiceDetailModel): Flow<Int> {
+    var selectedPaymentMethod = PaymentEnum.WALLET
+
+    suspend fun addUsedServiceDetail(usedServiceDetailModel: MobileRechargeModel): Flow<Int> {
         return flow {
             val response = rechargeAPIService.addUsedServiceDetail(usedServiceDetailModel)
             emit(response)

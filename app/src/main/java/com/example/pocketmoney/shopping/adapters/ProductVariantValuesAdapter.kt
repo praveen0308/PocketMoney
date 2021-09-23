@@ -104,7 +104,7 @@ class ProductVariantValuesAdapter(
 
         fun createVariantText(variantValue: ProductVariantValue) {
             if (variantValue.Varients_Code == "SIZE"){
-                binding.tvVariantValue.text = variantValue.Varients_Value_Code.take(1)
+                binding.tvVariantValue.text = identifySize(variantValue.Varients_Value_Code)
             }
             else{
                 binding.tvVariantValue.text = variantValue.Varients_Value_Code
@@ -122,7 +122,17 @@ class ProductVariantValuesAdapter(
 
     }
 
-    private fun IdentifyColor(code: String): Int {
+    private fun identifySize(code:String):String
+    {
+        return when(code){
+            "SMALL"->"S"
+            "MEDIUM"->"M"
+            "LARGE"->"L"
+            "XLARGE"->"XL"
+            "XXLARGE"->"XXL"
+            else->code
+        }
+    }    private fun IdentifyColor(code: String): Int {
         return when (code) {
             "RED" -> R.color.Red
             "CYAN" -> R.color.Cyan
@@ -130,8 +140,10 @@ class ProductVariantValuesAdapter(
             "DARKBLUE" -> R.color.DarkBlue
             "LIGHTBLUE" -> R.color.LightBlue
             "PURPLE" -> R.color.Purple
+            "VIOLET" -> R.color.Purple
             "YELLOW" -> R.color.Yellow
             "LIME" -> R.color.Lime
+            "PINK" -> R.color.Magenta
             "MAGENTA" -> R.color.Magenta
             "SILVER" -> R.color.Silver
             "GREY" -> R.color.Grey

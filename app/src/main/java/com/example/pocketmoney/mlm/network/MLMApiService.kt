@@ -187,11 +187,17 @@ interface MLMApiService {
     ): String
 
     @Headers("Content-Type: application/json")
-    @POST("Wallet/TransferB2BBalance")
+    @POST("Wallet/TransferB2BBalanceWithoutEmail")
     suspend fun b2bWalletTransfer(
         @Body requestData : JsonObject
     ):Int
 
+    /*@Headers("Content-Type: application/json")
+    @POST("Wallet/TransferB2BBalance")
+    suspend fun b2bWalletTransfer(
+        @Body requestData : JsonObject
+    ):Int
+*/
     @POST("Wallet/AddCustWalletDetails")
     suspend fun addCustomerWalletDetails(
         @Body pmWalletModel: PMWalletModel

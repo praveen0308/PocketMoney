@@ -50,22 +50,22 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
     // Variable
     private var selectedAddressId: Int = 0
-
+    private lateinit var gatewayOrderId : String
+    private lateinit var AMOUNT : String
+    private lateinit var userId : String
+    private var roleId = 0
+    
     // Navigation
     private lateinit var navController: NavController
     private lateinit var navGraph: NavGraph
     private lateinit var navHostFragment: NavHostFragment
 
+    
+    
 
-    private lateinit var ORDER_ID: String
-    private lateinit var ACCOUNT_ID : String
-    private lateinit var AMOUNT : String
-    private lateinit var userId : String
-    private var roleId = 0
-    var bodyData = ""
-    var value = 0f
 
-    val shippingCharge = 0.0
+
+
     private lateinit var selectedPaymentMethod:PaymentEnum
     private lateinit var paytmResponseModel: PaytmResponseModel
     private lateinit var orderNumber : String
@@ -282,8 +282,8 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                 Status.SUCCESS -> {
                     _result._data?.let {
 
-                        val paytmOrder = PaytmOrder(ACCOUNT_ID, P_MERCHANT_ID, it, AMOUNT,
-                            Constants.PAYTM_CALLBACK_URL+ACCOUNT_ID)
+                        val paytmOrder = PaytmOrder(gatewayOrderId, P_MERCHANT_ID, it, AMOUNT,
+                            Constants.PAYTM_CALLBACK_URL+gatewayOrderId)
                         processPaytmTransaction(paytmOrder)
                     }
                     displayLoading(false)
@@ -332,6 +332,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                             }
                             else{
                                 val order = CustomerOrder(
+                                    ShippingAddressId=selectedAddressId,
                                     UserID = userId,
                                     Total = AMOUNT.toDouble(),
                                     Discount = 0.0,
@@ -342,6 +343,7 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
                                     PaymentStatusId = PaymentStatus.Paid.id, // paid
                                     WalletTypeId = 1,  // wallet
                                     PaymentMode = PaymentModes.Wallet.id,   // wallet
+
                                 )
 
                                 viewModel.createCustomerOrder(order)
@@ -421,11 +423,11 @@ class CheckoutOrder : BaseActivity<ActivityCheckoutOrderBinding>(ActivityCheckou
 
 
     fun startPayment() {
-        ACCOUNT_ID = createRandomAccountId()
-        ORDER_ID = createRandomOrderId()
+        gatewayOrderId = createRandomOrderId()
+//        ORDER_ID = createRandomOrderId()
         viewModel.initiateTransactionApi(
             PaytmRequestData(
-                account= ACCOUNT_ID,
+                account= gatewayOrderId,
                 amount = AMOUNT,
                 callbackurl = Constants.PAYTM_CALLBACK_URL,
                 userid = userId

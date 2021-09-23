@@ -6,10 +6,7 @@ import com.example.pocketmoney.mlm.model.ModelOperator
 import com.example.pocketmoney.mlm.model.RechargeEnum
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerComplaintModel
 import com.example.pocketmoney.mlm.model.serviceModels.*
-import com.example.pocketmoney.mlm.repository.RechargeRepository
-import com.example.pocketmoney.mlm.repository.ServiceRepository
-import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
-import com.example.pocketmoney.mlm.repository.WalletRepository
+import com.example.pocketmoney.mlm.repository.*
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Resource
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
@@ -23,7 +20,8 @@ class MobileRechargeViewModel @Inject constructor(
     private val rechargeRepository: RechargeRepository,
     private val walletRepository: WalletRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val serviceRepository: ServiceRepository
+    private val serviceRepository: ServiceRepository,
+    private val paytmRepository: PaytmRepository
 ) :ViewModel() {
 
     val userId = userPreferencesRepository.userId.asLiveData()
@@ -32,6 +30,13 @@ class MobileRechargeViewModel @Inject constructor(
 
 
     val selectedPaymentMethod = MutableLiveData(PaymentEnum.WALLET)
+    var rechargeAmount = MutableLiveData<Int>()
+
+    var requestId = ""
+
+    val rechargeMobileNo  = MutableLiveData<String>()
+    val selectedOperator = MutableLiveData<String>()
+    val selectedCircle  = MutableLiveData<String>("Mumbai")
 
     private val _contactList: MutableLiveData<DataState<List<ModelContact>>> = MutableLiveData()
     val contactList: LiveData<DataState<List<ModelContact>>>
@@ -41,7 +46,6 @@ class MobileRechargeViewModel @Inject constructor(
 
     fun getContactList(){
         viewModelScope.launch {
-
             rechargeRepository.getContactList()
                     .onEach { dataState ->
                         _contactList.value = dataState
@@ -69,7 +73,7 @@ class MobileRechargeViewModel @Inject constructor(
         }
     }
 
-    val selectedMobileOperator = MutableLiveData<ModelOperator>()
+//    val selectedMobileOperator = MutableLiveData<ModelOperator>()
 
     private val _mobileOperators = MutableLiveData<List<ModelOperator>>()
     val mobileOperators: LiveData<List<ModelOperator>> = _mobileOperators
@@ -278,13 +282,36 @@ class MobileRechargeViewModel @Inject constructor(
     }
 
 
+    private val _checkSum = MutableLiveData<Resource<String>>()
+    val checkSum : LiveData<Resource<String>> = _checkSum
+
+    fun initiateTransactionApi(paytmRequestData: PaytmRequestData) {
+
+        viewModelScope.launch {
+
+            paytmRepository
+                .initiateTransactionApi(paytmRequestData)
+                .onStart {
+                    _checkSum.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _checkSum.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _checkSum.postValue(Resource.Success(response))
+                }
+        }
+
+    }
 
 //    step 1
     private val _addUsedServiceDetailResponse = MutableLiveData<Resource<Int>>()
     val addUsedServiceDetailResponse: LiveData<Resource<Int>> = _addUsedServiceDetailResponse
 
 
-    fun addUsedServiceDetail(usedServiceDetailModel: UsedServiceDetailModel) {
+    fun addUsedServiceDetail(usedServiceDetailModel: MobileRechargeModel) {
 
         viewModelScope.launch {
 
@@ -302,7 +329,7 @@ class MobileRechargeViewModel @Inject constructor(
                 }
                 .collect { response->
                     if (response>0){
-                        getUsedServiceRequestId(userId.value!!,selectedContact.value!!.contactNumber!!)
+                        getUsedServiceRequestId(userId.value!!,rechargeMobileNo.value!!)
                     }
                     _addUsedServiceDetailResponse.postValue(Resource.Success(response))
                 }
@@ -362,6 +389,49 @@ class MobileRechargeViewModel @Inject constructor(
         }
 
     }
+    private val _addPaymentTransResponse = MutableLiveData<Resource<String>>()
+    val addPaymentTransResponse : LiveData<Resource<String>> = _addPaymentTransResponse
 
+    fun addPaymentTransactionDetail(paymentGatewayTransactionModel: PaymentGatewayTransactionModel) {
+
+        viewModelScope.launch {
+            paytmRepository
+                .addPaymentTransactionDetails(paymentGatewayTransactionModel)
+                .onStart {
+                    _addPaymentTransResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _addPaymentTransResponse.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _addPaymentTransResponse.postValue(Resource.Success(response))
+                }
+        }
+    }
+
+
+    private val _walletChargeDeducted = MutableLiveData<Resource<Int>>()
+    val walletChargeDeducted : LiveData<Resource<Int>> = _walletChargeDeducted
+
+    fun walletChargeDeduct(userId: String,walletId:Int,amount:Double,requestId:String,serviceId:Int) {
+
+        viewModelScope.launch {
+            walletRepository
+                .walletChargeDeduction(userId, walletId, amount, requestId, serviceId)
+                .onStart {
+                    _walletChargeDeducted.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _walletChargeDeducted.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _walletChargeDeducted.postValue(Resource.Success(response))
+                }
+        }
+    }
 
 }

@@ -27,4 +27,10 @@ interface OrderApiService {
         @Query("orderNumber") orderNo: String
     ): ModelOrderDetails
 
+    @GET("Order/CancelOrderItem")
+    suspend fun cancelOrderItem(
+        @Query("orderNumber") orderNo: String,
+        @Query("itemId") itemId: String
+    ): Boolean
+
 }

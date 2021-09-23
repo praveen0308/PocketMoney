@@ -2,6 +2,7 @@ package com.example.pocketmoney.shopping.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.databinding.TemplateAddressListItemBinding
 import com.example.pocketmoney.shopping.model.ModelAddress
@@ -24,7 +25,7 @@ class AddressAdapter(private val mListener: AddressAdapterListener) : RecyclerVi
         return addressList.size
     }
 
-    fun setAddressList(addressList: MutableList<ModelAddress>) {
+    fun setAddressList(addressList: List<ModelAddress>) {
         this.addressList.clear()
         this.addressList.addAll(addressList)
         notifyDataSetChanged()
@@ -37,30 +38,38 @@ class AddressAdapter(private val mListener: AddressAdapterListener) : RecyclerVi
         : RecyclerView.ViewHolder(binding.root), MyAddressView.MyAddressViewInterface {
 
         init {
-
-            itemView.setOnClickListener {
-                for (i in 0 until addressList.size){
-                    addressList[i].isSelected = i==absoluteAdapterPosition
-                }
-                notifyDataSetChanged()
+            binding.btnEdit.setOnClickListener {
+                addressAdapterListener.onEditButtonClick(addressList[absoluteAdapterPosition])
             }
-//            when (source) {
-//                ShoppingEnum.CHECKOUT -> {
-//                    binding.btnDeliverHere.visibility = View.VISIBLE
-//                    binding.btnDeliverHere.text = itemView.context.getString(R.string.deliver_here)
-//                }
-//                ShoppingEnum.MY_ACCOUNT -> {
-//                    binding.btnDeliverHere.visibility = View.GONE
-//                }
-//            }
-//
-            binding.addressView.setMyAddressViewListener(this)
+
+            binding.btnRemove.setOnClickListener {
+                addressAdapterListener.onRemoveButtonClick(addressList[absoluteAdapterPosition])
+            }
+
         }
 
-        fun createAddressView(modelAddress: ModelAddress) {
+        fun createAddressView(item: ModelAddress) {
 
             binding.apply {
-                addressView.setModelAddress(modelAddress)
+                tvName.text = item.Name
+                val sbAddress = StringBuilder()
+                item.AddressType?.let {
+                    cpAddressType.isVisible = true
+                    cpAddressType.text = it
+                }
+                sbAddress.append(item.Address1).append(", ")
+                sbAddress.append(item.Street).append(", ")
+                sbAddress.append(item.Locality).append(", ")
+                sbAddress.append(item.CityName).append(" - ")
+                sbAddress.append(item.PostalCode).append(", ")
+                sbAddress.append(item.StateName).append(", ")
+                sbAddress.append(item.CountryName)
+
+                tvAddress.text = sbAddress.toString()
+
+                tvMobileNumber.text = item.MobileNo
+
+
 
             }
         }
@@ -73,6 +82,7 @@ class AddressAdapter(private val mListener: AddressAdapterListener) : RecyclerVi
     interface AddressAdapterListener {
         fun onActionButtonClick(modelAddress: ModelAddress)
         fun onEditButtonClick(modelAddress: ModelAddress)
+        fun onRemoveButtonClick(modelAddress: ModelAddress)
     }
 
 

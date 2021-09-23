@@ -11,6 +11,7 @@ import com.example.pocketmoney.databinding.FragmentOrderSummaryBinding
 import com.example.pocketmoney.shopping.adapters.CartItemListAdapter
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.model.ModelAddress
+import com.example.pocketmoney.shopping.repository.CheckoutRepository
 import com.example.pocketmoney.shopping.ui.BuyProduct
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.utils.BaseFragment
@@ -18,6 +19,7 @@ import com.example.pocketmoney.utils.ModelOrderAmountSummary
 import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class OrderSummary : BaseFragment<FragmentOrderSummaryBinding>(FragmentOrderSummaryBinding::inflate), CartItemListAdapter.CartItemListAdapterListener {
@@ -25,6 +27,9 @@ class OrderSummary : BaseFragment<FragmentOrderSummaryBinding>(FragmentOrderSumm
 
     //ViewModels
     private val viewModel by activityViewModels<CheckoutOrderViewModel>()
+
+    @Inject
+    lateinit var checkoutRepository: CheckoutRepository
 
     // Adapters
     private lateinit var cartItemListAdapter: CartItemListAdapter
@@ -91,7 +96,9 @@ class OrderSummary : BaseFragment<FragmentOrderSummaryBinding>(FragmentOrderSumm
                 Status.SUCCESS -> {
                     _result._data?.let {
                         shippingCharge=it
+                        checkoutRepository.shippingCharge = it
                         viewModel.getCartItems(userID)
+
                     }
                     displayLoading(false)
                 }
@@ -154,7 +161,7 @@ class OrderSummary : BaseFragment<FragmentOrderSummaryBinding>(FragmentOrderSumm
         cartItemListAdapter = CartItemListAdapter(this)
         binding.apply {
             rvCartItemList.apply {
-                setHasFixedSize(true)
+               setHasFixedSize(true)
                 layoutManager = LinearLayoutManager(context)
                 adapter = cartItemListAdapter
             }

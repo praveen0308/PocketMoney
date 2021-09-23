@@ -9,7 +9,7 @@ data class ModelOrderDetails(
     val Orders: Any,
     val Product_Image: Any,
     val Product_Item: Any,
-    val ShippingDetail: List<Any>,
+    val ShippingDetail: List<Shipping>,
     val ShippingDetailAddress: ShippingDetailAddress,
     val ShippingItem: List<Any>
 )

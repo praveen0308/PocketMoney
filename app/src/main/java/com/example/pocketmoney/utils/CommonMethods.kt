@@ -21,6 +21,7 @@ import java.util.*
 
 private val SDF_YMD_WITH_DASH = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 val SDF_d_M_y = SimpleDateFormat("dd MMM yyyy", Locale.US)
+val SDF_dM = SimpleDateFormat("dd MMM", Locale.US)
 fun convertISOTimeToDateTime(isoTime: String): String? {
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
     var convertedDate: Date? = null
@@ -38,6 +39,20 @@ fun convertISOTimeToDateTime(isoTime: String): String? {
 
 fun convertISOTimeToDate(isoTime: String): String? {
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+    var convertedDate: Date? = null
+    var formattedDate: String? = null
+    try {
+        convertedDate = sdf.parse(isoTime)
+        formattedDate = SimpleDateFormat("MMM dd,yyyy").format(convertedDate)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+    }
+
+    return formattedDate
+}
+
+fun convertTimeStampToDate(isoTime: String): String? {
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     var convertedDate: Date? = null
     var formattedDate: String? = null
     try {
@@ -252,6 +267,24 @@ fun getMobileOperatorLogo(id: String): Int {
     mobileOperators["BSNL"] = R.drawable.ic_bsnl
     mobileOperators["MTNL"] = R.drawable.ic_mtnl
     return mobileOperators[id]!!
+
+}
+
+fun getMobileOperatorCode(operator: String): Int {
+    val mobileOperatorCodes = hashMapOf<String,Int>()
+    mobileOperatorCodes["Jio"] = 167
+    mobileOperatorCodes["Airtel"] = 1
+    mobileOperatorCodes["Idea"] = 4
+    mobileOperatorCodes["Vodafone"] = 5
+    mobileOperatorCodes["VI"] = 5
+    mobileOperatorCodes["Tata Docomo"] = 13
+    mobileOperatorCodes["Docomo Special"] = 31
+    mobileOperatorCodes["BSNL"] = 2
+    mobileOperatorCodes["BSNL Special"] = 32
+    mobileOperatorCodes["MTNL"] = 8
+    mobileOperatorCodes["MTNL Mumbai Special"] = 57
+    mobileOperatorCodes["MTNL Mumbai Topup"] = 56
+    return mobileOperatorCodes[operator]!!
 
 }
 

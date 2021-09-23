@@ -1,6 +1,7 @@
 package com.example.pocketmoney.mlm.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -97,12 +98,12 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-
+                        RequestId = it
                         viewModel.addPaymentTransactionDetail(
                             PaymentGatewayTransactionModel(
                                 UserId = userId,
                                 OrderId = paytmResponseModel.ORDERID,
-                                ReferenceTransactionId = it,
+                                ReferenceTransactionId = RequestId,
                                 ServiceTypeId = 1,
                                 WalletTypeId = 1,
                                 TxnAmount = paytmResponseModel.TXNAMOUNT,
@@ -118,6 +119,56 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
                                 PaymentMode = paytmResponseModel.PAYMENTMODE
                             )
                         )
+
+
+
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+        viewModel.addPaymentTransResponse.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        if (paytmResponseModel.STATUS == "SUCCESS"){
+                            viewModel.actionOnWalletDetail(RequestId, "Updated as online payment success","Approve",paytmResponseModel.PAYMENTMODE.toString())
+                            viewModel.addCompanyTransactionResponse(userId,userId,paytmResponseModel.TXNAMOUNT!!.toDouble(),1,8,it,"0")
+                        }else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE"){
+
+                            viewModel.actionOnWalletDetail(RequestId, "Updated as online payment failed","Rejected",paytmResponseModel.PAYMENTMODE.toString())
+                        }
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+        viewModel.actionOnWalletDetailResponse.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        showToast("Money added successfully !!!!")
+                        finish()
                     }
                     displayLoading(false)
                 }
@@ -133,6 +184,7 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
             }
         })
     }
+
 
     private fun processPaytmTransaction(paytmOrder: PaytmOrder) {
         try {
@@ -155,9 +207,10 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
     }
 
     override fun onTransactionResponse(p0: Bundle?) {
+        Log.d("PAYTM_TRANSACTION",p0.toString())
         p0?.let {
             paytmResponseModel = PaytmResponseModel(
-                STATUS = it.getString("STATUS")!!.substring(3),
+                STATUS = it.getString("STATUS")!!.substring(4),
                 ORDERID = it.getString("ORDERID"),
                 CHARGEAMOUNT = it.getString("CHARGEAMOUNT"),
                 TXNAMOUNT = it.getString("TXNAMOUNT"),
@@ -173,21 +226,23 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
 
             )
         }
+        Log.d("PAYTM_TRANSACTION",paytmResponseModel.toString())
 
-
-        val transactionStatus = p0!!.getString("STATUS")!!.substring(3)
-        showToast(transactionStatus)
+        val transactionStatus = p0!!.getString("STATUS")!!.substring(4)
+//        showToast(transactionStatus)
         if (transactionStatus=="SUCCESS"){
-        viewModel.addCustomerWalletDetails(PMWalletModel(
-            USER_ID = userId.toDouble(),
-            MODE_TYPE_ID = 5,
-            PAID_AMOUNT = AMOUNT.toDouble(),
-            PAID_DATE = getTodayDate(),
-            CON_AC_NO = (23225151).toDouble(),
-            MODE_NO = "PAYTM GATEWAY",
-            NARRATIONS = "Initiated transaction adding money in wallet"
 
-        ))}
+            viewModel.addCustomerWalletDetails(PMWalletModel(
+                USER_ID = userId.toDouble(),
+                MODE_TYPE_ID = 5,
+                PAID_AMOUNT = AMOUNT.toDouble(),
+                PAID_DATE = getTodayDate(),
+                CON_AC_NO = (23225151).toDouble(),
+                MODE_NO = "PAYTM GATEWAY",
+                NARRATIONS = "Initiated transaction adding money in wallet"
+
+            ))
+        }
     }
 
     override fun networkNotAvailable() {

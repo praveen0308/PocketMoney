@@ -111,7 +111,7 @@ class RechargePaymentSheet : BaseBottomSheetDialogFragment<FragmentRechargePayme
                             binding.btnMakePayment.isEnabled = true
 
                         }else{
-                            viewModel.addUsedServiceDetail(
+                            /*viewModel.addUsedServiceDetail(
                                 UsedServiceDetailModel(
                                     UserID = userId,
                                     MobileNo = viewModel.selectedContact.value!!.contactNumber,
@@ -124,7 +124,7 @@ class RechargePaymentSheet : BaseBottomSheetDialogFragment<FragmentRechargePayme
                                     Status = "Received",
                                     TransTypeID = 9
                                 )
-                            )
+                            )*/
                         }
                     }
                     displayLoading(false)
@@ -150,7 +150,7 @@ class RechargePaymentSheet : BaseBottomSheetDialogFragment<FragmentRechargePayme
                             binding.btnMakePayment.isEnabled = true
 
                         }else{
-                            viewModel.addUsedServiceDetail(
+                            /*viewModel.addUsedServiceDetail(
                                 UsedServiceDetailModel(
                                     UserID = userId,
                                     MobileNo = viewModel.selectedContact.value!!.contactNumber,
@@ -163,7 +163,7 @@ class RechargePaymentSheet : BaseBottomSheetDialogFragment<FragmentRechargePayme
                                     Status = "Received",
                                     TransTypeID = 9
                                 )
-                            )
+                            )*/
                         }
                     }
                     displayLoading(false)
@@ -178,7 +178,11 @@ class RechargePaymentSheet : BaseBottomSheetDialogFragment<FragmentRechargePayme
                     }
                 }
             }
+
+
+
         })
+
 
         viewModel.progressStatus.observe(viewLifecycleOwner,{
             displayLoading(it)

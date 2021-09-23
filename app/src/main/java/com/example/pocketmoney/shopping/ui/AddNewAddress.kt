@@ -113,6 +113,7 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
                     _result._data?.let {
                         cities.clear()
                         cities.addAll(it)
+
                         populateCityAdapter(cities)
                     }
                     displayLoading(false)
@@ -200,27 +201,37 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
 
     }
 
-    private fun populateAddressDetails(it: ModelAddress) {
-        states
+    private fun populateAddressDetails(modelAddress: ModelAddress) {
+
         binding.apply {
-            etFullName.setText(it.Name)
-            etMobileNumber.setText(it.MobileNo)
-            etLocality.setText(it.Locality)
-            etAddress.setText(it.Address1)
-            etStreet.setText(it.Street)
-            etPincode.setText(it.PostalCode)
-            actvState.setText(states.find { state->
-                state.StateCode==it.StateID!!
-            }!!.State1)
-            viewModel.getCitiesByStateCode(it.StateID!!)
-            actvCity.setText(cities.find { city->
-                city.ID==it.CityID!!.toInt()
-            }!!.City1)
+            etFullName.setText(modelAddress.Name)
+            etMobileNumber.setText(modelAddress.MobileNo)
+            etLocality.setText(modelAddress.Locality)
+            etAddress.setText(modelAddress.Address1)
+            etStreet.setText(modelAddress.Street)
+            etPincode.setText(modelAddress.PostalCode)
+            val mState = states.find { state->
+                state.StateCode == modelAddress.StateID!!
+            }
+            mState?.let {state->
+                actvState.setText(state.State1)
+                viewModel.getCitiesByStateCode(state.StateCode)
+                val mCity = cities.find { city->
+                    city.ID == Integer.parseInt(modelAddress.CityID)
+                }
+
+                mCity?.let {city->
+                    actvCity.setText(city.City1)
+
+                }
+            }
+
+
         }
     }
 
     private fun populateStateAdapter(stateList:MutableList<ModelState>){
-        val arrayAdapter = ArrayAdapter(this, android.R.layout.select_dialog_item, stateList)
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, stateList)
         //actv is the AutoCompleteTextView from your layout file
         binding.actvState.threshold = 1 //start searching for values after typing first character
         binding.actvState.setAdapter(arrayAdapter)
@@ -233,7 +244,7 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
     }
 
     private fun populateCityAdapter(cityList:MutableList<ModelCity>){
-        val arrayAdapter = ArrayAdapter(this, android.R.layout.select_dialog_item, cityList)
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, cityList)
         binding.actvCity.threshold = 1 //start searching for values after typing first character
         binding.actvCity.setAdapter(arrayAdapter)
 

@@ -25,6 +25,8 @@ enum class PaymentModes(val id:Int){
     CashOnDelivery(3),
     PCash(4)
 }
+
+
 enum class PaymentStatus(val id: Int)
 {
     Pending(1),
@@ -117,7 +119,10 @@ enum class PaymentHistoryFilterEnum{
     ALL_TRANSACTION,CATEGORIES,TIME
 }
 
-enum class DateTimeEnum{
+enum class PlanType{
+    NORMAL_PLAN,SPECIAL_PLAN
+}
 
+enum class DateTimeEnum{
     LAST_WEEK,LAST_MONTH,LAST_3_MONTH,LAST_6_MONTH,CUSTOM
 }

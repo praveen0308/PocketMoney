@@ -24,4 +24,16 @@ interface CustomerService {
         @Query("walletTypeid") walletTypeId: Int
     ): Int
 
+    @POST("Customer/AddServiceComplains")
+    suspend fun addServiceComplaint(
+        @Query("requestId") requestId: String,
+        @Query("transId") transactionId: String,
+        @Query("userid") userId: String,
+        @Query("comment") comment:String
+    ): String
+
+    @POST("Customer/GetComplainChat")
+    suspend fun getComplaintChat(
+        @Query("id") id: String,
+    ): Int
 }

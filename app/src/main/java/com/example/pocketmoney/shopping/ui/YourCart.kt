@@ -9,6 +9,7 @@ import com.example.pocketmoney.databinding.ActivityYourCartBinding
 import com.example.pocketmoney.shopping.adapters.CartItemListAdapter
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.ui.checkoutorder.CheckoutOrder
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout
 import com.example.pocketmoney.shopping.viewmodel.CartViewModel
 import com.example.pocketmoney.utils.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +35,8 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
         binding.toolbarYourCart.setApplicationToolbarListener(this)
         setUpCartItemRecyclerView()
         binding.btnCheckout.setOnClickListener {
-            startActivity(Intent(this, CheckoutOrder::class.java))
+//            startActivity(Intent(this, CheckoutOrder::class.java))
+            startActivity(Intent(this, NewCheckout::class.java))
         }
 
     }
@@ -104,7 +106,7 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
     private fun initialUiState() {
         binding.btnCheckout.visibility = View.GONE
         binding.emptyView.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
+//        binding.progressBar.visibility = View.GONE
         binding.layoutCartSummary.visibility = View.GONE
     }
 

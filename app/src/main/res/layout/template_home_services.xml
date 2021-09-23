@@ -24,7 +24,7 @@
 
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
-        android:singleLine="true"
+        android:gravity="center_horizontal"
         android:scrollHorizontally="true"
 
         android:text="@string/recharge_pay_bills"

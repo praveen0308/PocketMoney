@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.pocketmoney.common.MailMessagingService
 import com.example.pocketmoney.mlm.network.CustomerService
 import com.example.pocketmoney.mlm.network.MLMApiService
+import com.example.pocketmoney.mlm.network.PaymentService
 import com.example.pocketmoney.mlm.network.RechargeAPIService
 import com.example.pocketmoney.mlm.repository.*
 import dagger.Module
@@ -33,9 +34,16 @@ object MLMNetworkModule {
     }
 
     @Provides
+    fun providePaymentApiService(retrofit: Retrofit): PaymentService {
+        return retrofit.create(PaymentService::class.java)
+    }
+
+
+    @Provides
     fun provideMailMessagingService(retrofit: Retrofit): MailMessagingService {
         return retrofit.create(MailMessagingService::class.java)
     }
+
 
     @Provides
     fun provideUserAuthenticationRepo(mlmApiService: MLMApiService):AccountRepository{
@@ -48,8 +56,8 @@ object MLMNetworkModule {
     }
 
     @Provides
-    fun getWalletRepository(mlmApiService: MLMApiService):WalletRepository{
-        return WalletRepository(mlmApiService)
+    fun getWalletRepository(mlmApiService: MLMApiService,rechargeAPIService: RechargeAPIService):WalletRepository{
+        return WalletRepository(mlmApiService,rechargeAPIService)
     }
 
     @Provides
@@ -67,5 +75,11 @@ object MLMNetworkModule {
     @Provides
     fun provideServiceRepository(rechargeAPIService: RechargeAPIService): ServiceRepository {
         return ServiceRepository(rechargeAPIService)
+    }
+
+    @Singleton
+    @Provides
+    fun provideUtilRepository(): UtilRepository {
+        return UtilRepository()
     }
 }

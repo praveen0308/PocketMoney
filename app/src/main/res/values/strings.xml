@@ -240,6 +240,7 @@ You, while providing your personal information over the Platform or any partner 
     <string name="using_coupon">Using Coupon</string>
     <string name="using_wallet">Using Wallet</string>
     <string name="using_payment">Using Payment</string>
+    <string name="recharge">Recharge</string>
 
 
 </resources>

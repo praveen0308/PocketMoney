@@ -12,28 +12,18 @@ import com.example.pocketmoney.databinding.FragmentDthRechargeBinding
 import com.example.pocketmoney.mlm.viewmodel.DTHActivityViewModel
 import com.example.pocketmoney.utils.BaseFragment
 import com.example.pocketmoney.utils.MyCustomToolbar
+import dagger.hilt.android.AndroidEntryPoint
 
-class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRechargeBinding::inflate),
-    MyCustomToolbar.MyCustomToolbarListener {
+@AndroidEntryPoint
+class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRechargeBinding::inflate){
 
     private val viewModel by activityViewModels<DTHActivityViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbarDthRecharge.setCustomToolbarListener(this)
+
     }
     override fun subscribeObservers() {
-        viewModel.selectedOperator.observe(viewLifecycleOwner,{
-            binding.toolbarDthRecharge.setToolbarLogo(it.imageUrl as Int)
-            binding.toolbarDthRecharge.setToolbarTitle(it.name.toString())
-        })
-    }
-
-    override fun onToolbarNavClick() {
-        findNavController().popBackStack()
-    }
-
-    override fun onMenuClick() {
 
     }
 

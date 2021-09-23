@@ -3,11 +3,14 @@ package com.example.pocketmoney.mlm.ui.coupons
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.FragmentGenerateCouponBinding
 import com.example.pocketmoney.mlm.viewmodel.ManageCouponsViewModel
 import com.example.pocketmoney.utils.BaseBottomSheetDialogFragment
+import com.example.pocketmoney.utils.myEnums.PaymentEnum
 
-class GenerateCoupon : BaseBottomSheetDialogFragment<FragmentGenerateCouponBinding>(FragmentGenerateCouponBinding::inflate) {
+class GenerateCoupon : BaseBottomSheetDialogFragment<FragmentGenerateCouponBinding>(FragmentGenerateCouponBinding::inflate),
+    PaymentMethods.PaymentMethodsInterface {
 
     private val viewModel by viewModels<ManageCouponsViewModel>()
 
@@ -21,6 +24,11 @@ class GenerateCoupon : BaseBottomSheetDialogFragment<FragmentGenerateCouponBindi
             btnDecrement.setOnClickListener {
                 viewModel.decrementNoOfCoupons()
             }
+
+            btnPay.setOnClickListener {
+                val sheet = PaymentMethods(this@GenerateCoupon)
+                sheet.show(parentFragmentManager,sheet.tag)
+            }
         }
     }
     override fun subscribeObservers() {
@@ -28,6 +36,10 @@ class GenerateCoupon : BaseBottomSheetDialogFragment<FragmentGenerateCouponBindi
             binding.tvNoOfCoupons.text = it.toString()
             binding.btnPay.text = "Pay ₹${it*300}"
         })
+    }
+
+    override fun onPaymentMethodSelected(method: PaymentEnum) {
+
     }
 
 
