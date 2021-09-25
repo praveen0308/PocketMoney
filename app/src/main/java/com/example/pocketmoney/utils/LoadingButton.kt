@@ -31,10 +31,10 @@ class LoadingButton @kotlin.jvm.JvmOverloads constructor(
         )
 
         val btnText = attr.getString(R.styleable.LoadingButton_android_text)
-        attr.recycle()
+
         binding.btnAction.text = btnText
 
-
+        attr.recycle()
     }
 
     fun setButtonClick(onClickListener: OnClickListener){
@@ -46,6 +46,7 @@ class LoadingButton @kotlin.jvm.JvmOverloads constructor(
             LoadingStates.DISABLED->{
                 binding.apply {
                     btnAction.isEnabled = false
+                    btnAction.setBackgroundColor(ContextCompat.getColor(context,R.color.Silver))
                     btnAction.setCompoundDrawables(null,null,null,null)
                     btnAction.text = mText
                     progressStatus.isVisible = false

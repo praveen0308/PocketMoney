@@ -102,7 +102,9 @@ class BeneficiaryList : BaseFragment<FragmentBeneficiaryListBinding>(FragmentBen
     }
 
     override fun onTransferClick(beneficiary: Beneficiary) {
-
+        viewModel.selectedBeneficiary.postValue(beneficiary)
+        val sheet = PayoutTransferMoney()
+        sheet.show(parentFragmentManager,sheet.tag)
     }
 
     override fun onBeneficiaryClick(beneficiary: Beneficiary) {

@@ -8,9 +8,11 @@ import com.example.pocketmoney.mlm.model.payoutmodels.BankModel
 import com.example.pocketmoney.mlm.model.payoutmodels.Beneficiary
 import com.example.pocketmoney.mlm.model.payoutmodels.PayoutCustomer
 import com.example.pocketmoney.mlm.model.payoutmodels.PayoutTransaction
+import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.mlm.repository.AccountRepository
 import com.example.pocketmoney.mlm.repository.PayoutRepository
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
+import com.example.pocketmoney.mlm.repository.WalletRepository
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +24,8 @@ import javax.inject.Inject
 class PayoutViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val payoutRepository: PayoutRepository
+    private val payoutRepository: PayoutRepository,
+    private val walletRepository: WalletRepository
 
 ) : ViewModel() {
 
@@ -34,6 +37,33 @@ class PayoutViewModel @Inject constructor(
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
 
     val payoutType = MutableLiveData(1)
+    val selectedBeneficiary = MutableLiveData<Beneficiary>()
+
+    fun getWalletBalance(userId: String, roleId: Int) {
+
+        viewModelScope.launch {
+
+            walletRepository
+                .getWalletBalance(userId, roleId, 1)
+                .onStart {
+                    _walletBalance.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _walletBalance.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { _balance->
+                    _walletBalance.postValue(Resource.Success(_balance))
+                }
+        }
+
+    }
+
+
+    private val _walletBalance = MutableLiveData<Resource<Double>>()
+    val walletBalance : LiveData<Resource<Double>> = _walletBalance
+
 
     private val _addPayoutCustomer = MutableLiveData<Resource<Int>>()
     val addPayoutCustomer: LiveData<Resource<Int>> = _addPayoutCustomer
@@ -176,4 +206,73 @@ class PayoutViewModel @Inject constructor(
         }
     }
 
+
+    private val _bankTransferResponse = MutableLiveData<Resource<Int>>()
+    val bankTransferResponse: LiveData<Resource<Int>> = _bankTransferResponse
+
+    fun initiateBankTransfer(customerId:String,paytmRequestData: PaytmRequestData) {
+
+        viewModelScope.launch {
+
+            payoutRepository
+                .initiateBankTransfer(customerId,paytmRequestData)
+                .onStart {
+                    _bankTransferResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _bankTransferResponse.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response ->
+                    _bankTransferResponse.postValue(Resource.Success(response))
+                }
+        }
+    }
+
+    private val _upiTransferResponse = MutableLiveData<Resource<Int>>()
+    val upiTransferResponse: LiveData<Resource<Int>> = _upiTransferResponse
+
+    fun initiateUpiTransfer(customerId:String,paytmRequestData: PaytmRequestData) {
+
+        viewModelScope.launch {
+
+            payoutRepository
+                .initiateUpiTransfer(customerId,paytmRequestData)
+                .onStart {
+                    _upiTransferResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _upiTransferResponse.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response ->
+                    _upiTransferResponse.postValue(Resource.Success(response))
+                }
+        }
+    }
+
+    private val _paytmTransferResponse = MutableLiveData<Resource<Int>>()
+    val paytmTransferResponse: LiveData<Resource<Int>> = _paytmTransferResponse
+
+    fun initiatePaytmTransfer(customerId:String,paytmRequestData: PaytmRequestData) {
+
+        viewModelScope.launch {
+
+            payoutRepository
+                .initiateWalletTransfer(customerId,paytmRequestData)
+                .onStart {
+                    _paytmTransferResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _paytmTransferResponse.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response ->
+                    _paytmTransferResponse.postValue(Resource.Success(response))
+                }
+        }
+    }
 }

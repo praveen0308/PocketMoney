@@ -15,17 +15,20 @@ import com.example.pocketmoney.mlm.model.payoutmodels.PayoutCustomer
 import com.example.pocketmoney.mlm.ui.dashboard.CustomerProfileDetails
 import com.example.pocketmoney.mlm.viewmodel.PayoutViewModel
 import com.example.pocketmoney.shopping.model.ModelCity
+import com.example.pocketmoney.utils.ApplicationToolbar
 import com.example.pocketmoney.utils.BaseActivity
 import com.example.pocketmoney.utils.Status
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBinding::inflate) {
+class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBinding::inflate),
+    ApplicationToolbar.ApplicationToolbarListener {
     private val viewModel by viewModels<PayoutViewModel>()
     var btnState = "SEARCH"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.toolbarActivityPayout.setApplicationToolbarListener(this)
         setupViewPager()
         populatePayoutTypes()
         binding.etSearchView.doAfterTextChanged {
@@ -173,5 +176,13 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
         override fun getItemCount(): Int {
             return 2
         }
+    }
+
+    override fun onToolbarNavClick() {
+        finish()
+    }
+
+    override fun onMenuClick() {
+
     }
 }
