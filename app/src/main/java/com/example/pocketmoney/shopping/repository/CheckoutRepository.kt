@@ -1,5 +1,6 @@
 package com.example.pocketmoney.shopping.repository
 
+import androidx.lifecycle.MutableLiveData
 import com.example.pocketmoney.shopping.model.CustomerOrder
 import com.example.pocketmoney.shopping.model.DiscountModel
 import com.example.pocketmoney.shopping.network.ShoppingApiService
@@ -14,18 +15,20 @@ class CheckoutRepository @Inject constructor(
     val shoppingApiService: ShoppingApiService
 ) {
 
-
-    var itemQuantity = 0
+/*
     var productOldPrice = 0.0
     var totalAmount = 0.0
     var tax = 0.0
-    var discountAmount = 0.0
+
     var shippingCharge = 0.0
     var saving = productOldPrice - totalAmount
     var grandTotal = (totalAmount + shippingCharge + tax) - discountAmount
+*/
 
     var selectedAddressId = 0
-    var couponCode = ""
+    var appliedCouponCode = MutableLiveData("")
+    var appliedDiscount = 0.0
+
 
     var selectedPaymentMethod = PaymentEnum.WALLET
 

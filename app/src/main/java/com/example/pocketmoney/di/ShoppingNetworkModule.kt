@@ -14,7 +14,9 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -28,7 +30,8 @@ object ShoppingNetworkModule {
     val httpClient = OkHttpClient.Builder()
 
     httpClient.addInterceptor(logging)
-
+    .readTimeout(60, TimeUnit.SECONDS)
+    .connectTimeout(60, TimeUnit.SECONDS)
 
     return Retrofit.Builder().baseUrl(Constants.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())

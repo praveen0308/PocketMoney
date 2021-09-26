@@ -1,13 +1,9 @@
 package com.example.pocketmoney.shopping.ui.checkoutorder
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentApplyDiscountCouponBinding
 import com.example.pocketmoney.shopping.model.DiscountModel
 import com.example.pocketmoney.shopping.repository.CheckoutRepository
@@ -57,7 +53,7 @@ class ApplyDiscountCoupon : BaseBottomSheetDialogFragment<FragmentApplyDiscountC
                         isValidCoupon = it
 
                         if (isValidCoupon){
-                            checkoutRepository.couponCode = couponCode
+                            checkoutRepository.appliedCouponCode = couponCode
                             binding.imageView22.isVisible = false
                             binding.textView41.isVisible = false
                             viewModel.getCouponDetails(binding.etCouponPin.text.toString().trim())
@@ -89,9 +85,9 @@ class ApplyDiscountCoupon : BaseBottomSheetDialogFragment<FragmentApplyDiscountC
                         populateCouponDetails(it)
                         if (isValidCoupon){
                             if (it.IsFixed){
-                                checkoutRepository.discountAmount = it.Amount!!
+                                checkoutRepository.appliedDiscount = it.Amount!!
                             }else{
-                                checkoutRepository.discountAmount = calculatePercentageAmount(checkoutRepository.totalAmount,it.Amount!!)
+//                                checkoutRepository.appliedDiscount = calculatePercentageAmount(checkoutRepository.totalAmount,it.Amount!!)
                             }
 
                             binding.btnAction.setState(LoadingButton.LoadingStates.SUCCESS,"Apply")

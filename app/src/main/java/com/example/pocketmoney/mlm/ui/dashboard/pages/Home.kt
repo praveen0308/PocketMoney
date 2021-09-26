@@ -105,6 +105,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
         viewModel.userId.observe(viewLifecycleOwner, {
             userID = it
 
+
         })
         viewModel.userRoleID.observe(viewLifecycleOwner, {
             roleID = it

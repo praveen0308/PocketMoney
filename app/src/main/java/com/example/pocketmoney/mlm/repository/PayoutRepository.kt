@@ -1,10 +1,7 @@
 package com.example.pocketmoney.mlm.repository
 
 import com.example.pocketmoney.mlm.model.CustomerDetailResponse
-import com.example.pocketmoney.mlm.model.payoutmodels.BankModel
-import com.example.pocketmoney.mlm.model.payoutmodels.Beneficiary
-import com.example.pocketmoney.mlm.model.payoutmodels.PayoutCustomer
-import com.example.pocketmoney.mlm.model.payoutmodels.PayoutTransaction
+import com.example.pocketmoney.mlm.model.payoutmodels.*
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.mlm.network.PaymentService
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +54,7 @@ class PayoutRepository @Inject constructor(val paymentService: PaymentService){
     }
 
 
-    suspend fun initiateBankTransfer(beneficiaryId: String,paytmRequestData: PaytmRequestData): Flow<Int> {
+    suspend fun initiateBankTransfer(beneficiaryId: String,paytmRequestData: PaytmRequestData): Flow<PayoutTransactionResponse> {
         return flow {
             val response = paymentService.initiateBankTransfer(beneficiaryId, paytmRequestData)
 
@@ -65,7 +62,7 @@ class PayoutRepository @Inject constructor(val paymentService: PaymentService){
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun initiateWalletTransfer(beneficiaryId: String,paytmRequestData: PaytmRequestData): Flow<Int> {
+    suspend fun initiateWalletTransfer(beneficiaryId: String,paytmRequestData: PaytmRequestData): Flow<PayoutTransactionResponse> {
         return flow {
             val response = paymentService.initiateWalletTransfer(beneficiaryId, paytmRequestData)
 
@@ -73,7 +70,7 @@ class PayoutRepository @Inject constructor(val paymentService: PaymentService){
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun initiateUpiTransfer(beneficiaryId: String,paytmRequestData: PaytmRequestData): Flow<Int> {
+    suspend fun initiateUpiTransfer(beneficiaryId: String,paytmRequestData: PaytmRequestData): Flow<PayoutTransactionResponse> {
         return flow {
             val response = paymentService.initiateUPITransfer(beneficiaryId, paytmRequestData)
 

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.example.pocketmoney.common.AuthInterceptorSheet
 
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
@@ -72,6 +73,12 @@ abstract class BaseFragment<VB : ViewBinding>(
     protected fun showToast(msg: String){
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
+
+    protected fun checkAuthorization(){
+        val sheet = AuthInterceptorSheet()
+        sheet.show(parentFragmentManager,sheet.tag)
+    }
+
 
     protected fun showAlertDialog(message: String?,dialogClickListener:DialogInterface.OnClickListener){
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)

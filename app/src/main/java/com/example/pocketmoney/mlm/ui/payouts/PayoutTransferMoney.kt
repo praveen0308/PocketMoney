@@ -24,6 +24,7 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
 
     private var userID: String = ""
     private var roleID: Int = 0
+    private var walletBalance: Double = 0.0
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,30 +36,36 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
                 binding.tilAmount.error = null
                 binding.btnSubmit.setState(LoadingButton.LoadingStates.NORMAL,"Transfer")
             }else{
-                when (payoutType) {
-                    // Bank transfer
+                if (text.toString().toDouble()>walletBalance){
+                    binding.tilAmount.error = "You can only transfer money in your wallet."
+                    binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED,"Transfer")
+                }else{
+                    when (payoutType) {
+                        // Bank transfer
 
-                    1 -> {
+                        1 -> {
 
-                        if (text.toString().toDouble()>=100){
-                            binding.tilAmount.error = null
-                            binding.btnSubmit.setState(LoadingButton.LoadingStates.NORMAL,"Transfer")
-                        }else{
-                            binding.tilAmount.error = "You can not transfer less than ₹100"
-                            binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED,"Transfer")
+                            if (text.toString().toDouble()>=100){
+                                binding.tilAmount.error = null
+                                binding.btnSubmit.setState(LoadingButton.LoadingStates.NORMAL,"Transfer")
+                            }else{
+                                binding.tilAmount.error = "You can not transfer less than ₹100"
+                                binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED,"Transfer")
+                            }
                         }
-                    }
-                    else->{
-                        if (text.toString().toDouble()>=10){
-                            binding.tilAmount.error = null
-                            binding.btnSubmit.setState(LoadingButton.LoadingStates.NORMAL,"Transfer")
-                        }else{
-                            binding.tilAmount.error = "You can not transfer less than ₹10"
-                            binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED,"Transfer")
+                        else->{
+                            if (text.toString().toDouble()>=10){
+                                binding.tilAmount.error = null
+                                binding.btnSubmit.setState(LoadingButton.LoadingStates.NORMAL,"Transfer")
+                            }else{
+                                binding.tilAmount.error = "You can not transfer less than ₹10"
+                                binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED,"Transfer")
+                            }
                         }
-                    }
 
+                    }
                 }
+
             }
 
 
@@ -72,36 +79,40 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             when (payoutType) {
                 // Bank transfer
                 1 -> {
-                    viewModel.initiateBankTransfer(viewModel.customerNumber.value!!,
+                    viewModel.initiateBankTransfer(beneficiary.BeneficiaryID.toString(),
                     PaytmRequestData(
                         account = beneficiary.Account,
                         ifsc = beneficiary.IFSCCode,
                         amount = amount,
                         email = beneficiary.BeneficiaryName,
-                        transfermode = "IMPS"
+                        transfermode = "IMPS",
+                        userid = userID
 
                     )
                     )
                 }
                 // Upi Transfer
                 2 -> {
-                    viewModel.initiateBankTransfer(viewModel.customerNumber.value!!,
+                    viewModel.initiateUpiTransfer(beneficiary.BeneficiaryID.toString(),
                         PaytmRequestData(
                             account = beneficiary.Account,
                             amount = amount,
                             email = beneficiary.BeneficiaryName,
-                            transfermode = "UPI"
+                            transfermode = "UPI",
+                            userid = userID
+
                         )
                     )
                 }
                 // Paytm transfer
                 3 -> {
-                    viewModel.initiateBankTransfer(viewModel.customerNumber.value!!,
+                    viewModel.initiatePaytmTransfer(beneficiary.BeneficiaryID.toString(),
                         PaytmRequestData(
                             account = beneficiary.Account,
                             amount = amount,
                             email = beneficiary.BeneficiaryName,
-                            transfermode = "PAYTMWALLET"
+                            transfermode = "PAYTMWALLET",
+                            userid = userID
                         )
                     )
                 }
@@ -126,6 +137,7 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
+                        walletBalance=it
                         binding.tvWalletBalance.text = "Wallet Balance : $it"
                     }
 
@@ -199,12 +211,13 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
                 }
                 Status.LOADING -> {
                     displayLoading(true)
-                    binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,"Processing...")
+                    binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,msg = "Processing...")
                 }
                 Status.ERROR -> {
                     displayLoading(false)
                     _result.message?.let {
                         displayError(it)
+                        binding.btnSubmit.setState(LoadingButton.LoadingStates.RETRY,"Retry")
                     }
                 }
             }
@@ -221,12 +234,13 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
                 }
                 Status.LOADING -> {
                     displayLoading(true)
-                    binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,"Processing...")
+                    binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,msg = "Processing...")
                 }
                 Status.ERROR -> {
                     displayLoading(false)
                     _result.message?.let {
                         displayError(it)
+                        binding.btnSubmit.setState(LoadingButton.LoadingStates.RETRY,"Retry")
                     }
                 }
             }
@@ -243,12 +257,13 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
                 }
                 Status.LOADING -> {
                     displayLoading(true)
-                    binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,"Processing...")
+                    binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,msg = "Processing...")
                 }
                 Status.ERROR -> {
                     displayLoading(false)
                     _result.message?.let {
                         displayError(it)
+                        binding.btnSubmit.setState(LoadingButton.LoadingStates.RETRY,"Retry")
                     }
                 }
             }

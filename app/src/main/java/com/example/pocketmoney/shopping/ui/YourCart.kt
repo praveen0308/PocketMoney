@@ -4,15 +4,21 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.ActivityYourCartBinding
 import com.example.pocketmoney.shopping.adapters.CartItemListAdapter
 import com.example.pocketmoney.shopping.model.CartModel
-import com.example.pocketmoney.shopping.ui.checkoutorder.CheckoutOrder
+import com.example.pocketmoney.shopping.model.DiscountModel
+import com.example.pocketmoney.shopping.repository.CheckoutRepository
 import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout
 import com.example.pocketmoney.shopping.viewmodel.CartViewModel
 import com.example.pocketmoney.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::inflate), CartItemListAdapter.CartItemListAdapterListener, ApplicationToolbar.ApplicationToolbarListener {
@@ -22,6 +28,8 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
     // ViewModels
     private val viewModel: CartViewModel by viewModels()
 
+    @Inject
+    lateinit var checkoutRepository:CheckoutRepository
     // Adapters
     private lateinit var cartItemListAdapter: CartItemListAdapter
 
@@ -32,13 +40,30 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
         super.onCreate(savedInstanceState)
 
         initialUiState()
+
         binding.toolbarYourCart.setApplicationToolbarListener(this)
         setUpCartItemRecyclerView()
+        binding.etCouponCode.doOnTextChanged { text, start, before, count ->
+            viewModel.couponCode.postValue(text.toString())
+
+        }
+        binding.btnSearch.setOnClickListener {
+            viewModel.validateCouponCode(viewModel.couponCode.value!!)
+
+        }
         binding.btnCheckout.setOnClickListener {
 //            startActivity(Intent(this, CheckoutOrder::class.java))
             startActivity(Intent(this, NewCheckout::class.java))
         }
 
+        binding.discountLayout.btnApply.setOnClickListener {
+            checkoutRepository.appliedCouponCode.postValue(viewModel.couponCode.value!!)
+            binding.discountLayout.btnApply.apply {
+                setTextColor(ContextCompat.getColor(context,R.color.Green))
+                text = "Applied"
+                icon = ContextCompat.getDrawable(this@YourCart,R.drawable.ic_round_check_24)
+            }
+        }
     }
 
     override fun subscribeObservers() {
@@ -46,6 +71,11 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
         viewModel.userID.observe(this, {
             userID = it
             viewModel.getCartItems(userID)
+        })
+        viewModel.couponCode.observe(this,{
+            binding.discountLayout.root.isVisible = false
+            binding.btnSearch.isEnabled = !it.isNullOrEmpty()
+
         })
         viewModel.cartItems.observe(this, { _result ->
             when (_result.status) {
@@ -87,11 +117,53 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
             }
         })
 
+        viewModel.isValidCoupon.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+
+        viewModel.couponDetail.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        populateCouponDetails(it)
+//
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
 
     }
 
     private fun cartIsEmpty(cartList: List<CartModel>) {
-        if (cartList.size == 0) {
+        if (cartList.isEmpty()) {
             binding.btnCheckout.visibility = View.GONE
             binding.emptyView.visibility = View.VISIBLE
             cartItemListAdapter.setCartItemList(cartList)
@@ -125,10 +197,10 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
     private fun populateValues(cartList: List<CartModel>) {
 
         binding.layoutCartSummary.visibility = View.VISIBLE
-        var itemQuantity: Int = 0
-        var productOldPrice: Double = 0.0
-        var saving: Double = 0.0
-        var totalPrice: Double = 0.0
+        var itemQuantity = 0
+        var productOldPrice = 0.0
+        var saving = 0.0
+        var totalPrice = 0.0
 
         for (item in cartList) {
             itemQuantity += item.Quantity
@@ -148,6 +220,21 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
         )
         binding.layoutCartSummary.setVisibilityStatus(0)
 
+    }
+    private fun populateCouponDetails(discountModel: DiscountModel) {
+        binding.discountLayout.root.isVisible=true
+        binding.discountLayout.apply {
+            if (discountModel.IsFixed){
+                tvDiscountAmount.text = "₹${discountModel.Amount}"
+            }else{
+                tvDiscountAmount.text = "${discountModel.Amount}%"
+            }
+            tvDiscountCode.text = discountModel.Code.toString()
+            tvDiscountName.text = discountModel.Name.toString()
+            tvDiscountValidity.text = "${convertISOTimeToAny(discountModel.Starts_At.toString(),
+                SDF_dM)} - ${convertISOTimeToAny(discountModel.Ends_At.toString(),
+                SDF_dM)}"
+        }
     }
 
 

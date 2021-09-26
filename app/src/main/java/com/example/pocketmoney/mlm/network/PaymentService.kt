@@ -1,9 +1,6 @@
 package com.example.pocketmoney.mlm.network
 
-import com.example.pocketmoney.mlm.model.payoutmodels.BankModel
-import com.example.pocketmoney.mlm.model.payoutmodels.Beneficiary
-import com.example.pocketmoney.mlm.model.payoutmodels.PayoutCustomer
-import com.example.pocketmoney.mlm.model.payoutmodels.PayoutTransaction
+import com.example.pocketmoney.mlm.model.payoutmodels.*
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -42,19 +39,19 @@ interface PaymentService {
     suspend fun initiateBankTransfer(
         @Query("BeneficiaryID") beneficiaryId : String,
         @Body paytmRequestData: PaytmRequestData
-    ): Int
+    ): PayoutTransactionResponse
 
     @POST("Payment/InitiateWalletTransfer")
     suspend fun initiateWalletTransfer(
         @Query("BeneficiaryID") beneficiaryId : String,
         @Body paytmRequestData: PaytmRequestData
-    ): Int
+    ): PayoutTransactionResponse
 
     @POST("Payment/InitiateUPITransfer")
     suspend fun initiateUPITransfer(
         @Query("BeneficiaryID") beneficiaryId : String,
         @Body paytmRequestData: PaytmRequestData
-    ): Int
+    ): PayoutTransactionResponse
 
     @GET("Payment/GetBankIFSC")
     suspend fun getBankIFSC(): List<BankModel>

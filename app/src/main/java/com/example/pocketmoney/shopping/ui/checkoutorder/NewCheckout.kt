@@ -1,13 +1,9 @@
 package com.example.pocketmoney.shopping.ui.checkoutorder
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
-import androidx.core.view.isVisible
-import androidx.navigation.Navigation
-import com.example.pocketmoney.R
 import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.ActivityNewCheckoutBinding
 import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
@@ -66,7 +62,56 @@ class NewCheckout : BaseActivity<ActivityNewCheckoutBinding>(ActivityNewCheckout
         viewModel.userRoleID.observe(this,{
             roleId = it
         })
+        checkoutRepository.appliedCouponCode.observe(this,{
+            if (!it.isNullOrEmpty()){
 
+            }
+        })
+
+        viewModel.isValidCoupon.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+        viewModel.couponDetail.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        if (it.IsFixed){
+
+                        }else{
+
+                        }
+//
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
         viewModel.checkSum.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -149,7 +194,7 @@ class NewCheckout : BaseActivity<ActivityNewCheckoutBinding>(ActivityNewCheckout
             }
         })
 
-        viewModel.checkSum.observe(this, { _result ->
+      /*  viewModel.checkSum.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -171,7 +216,7 @@ class NewCheckout : BaseActivity<ActivityNewCheckoutBinding>(ActivityNewCheckout
                     }
                 }
             }
-        })
+        })*/
 
         viewModel.addPaymentTransResponse.observe(this, { _result ->
             when (_result.status) {
@@ -230,7 +275,6 @@ class NewCheckout : BaseActivity<ActivityNewCheckoutBinding>(ActivityNewCheckout
             }
         })
 
-
         viewModel.walletBalance.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -272,7 +316,6 @@ class NewCheckout : BaseActivity<ActivityNewCheckoutBinding>(ActivityNewCheckout
                 }
             }
         })
-
         viewModel.pCash.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -368,7 +411,7 @@ class NewCheckout : BaseActivity<ActivityNewCheckoutBinding>(ActivityNewCheckout
                     ShippingAddressId=viewModel.selectedAddressId.value,
                     UserID = userId,
                     Total = viewModel.grandTotal,
-                    Discount = checkoutRepository.discountAmount,
+                    Discount = checkoutRepository.appliedDiscount,
                     Shipping = viewModel.mShippingCharge,
                     Tax = viewModel.tax,
                     GrandTotal = viewModel.grandTotal,

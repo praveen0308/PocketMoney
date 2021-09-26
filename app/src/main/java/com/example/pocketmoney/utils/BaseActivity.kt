@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.example.pocketmoney.R
+import com.example.pocketmoney.common.AuthInterceptorSheet
 
 
 abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (LayoutInflater) -> B) : AppCompatActivity() {
@@ -43,6 +44,11 @@ abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (Layout
 
     protected fun showToast(msg: String){
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    protected fun checkAuthorization(){
+        val sheet = AuthInterceptorSheet()
+        sheet.show(supportFragmentManager,sheet.tag)
     }
 
     protected fun showAlertDialog(message: String?,dialogClickListener: DialogInterface.OnClickListener){

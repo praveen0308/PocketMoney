@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.viewbinding.ViewBinding
+import com.example.pocketmoney.common.AuthInterceptorSheet
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
@@ -54,6 +55,11 @@ abstract class BaseBottomSheetDialogFragment<VB: ViewBinding>(
 
     protected fun displayRefreshing(loading: Boolean) {
 //        binding.swipeRefreshLayout.isRefreshing = loading
+    }
+
+    protected fun checkAuthorization(){
+        val sheet = AuthInterceptorSheet()
+        sheet.show(parentFragmentManager,sheet.tag)
     }
 
     protected fun displayError(message: String?) {

@@ -2,13 +2,9 @@ package com.example.pocketmoney.shopping.ui.checkoutorder
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentCheckoutItemsBinding
 import com.example.pocketmoney.shopping.adapters.CartItemListAdapter
 import com.example.pocketmoney.shopping.model.CartModel
@@ -136,7 +132,7 @@ class CheckoutItems : BaseFragment<FragmentCheckoutItemsBinding>(FragmentCheckou
         }
 
         viewModel.saving = viewModel.productOldPrice - viewModel.totalAmount
-        viewModel.grandTotal = (viewModel.totalAmount + viewModel.mShippingCharge + viewModel.tax) - checkoutRepository.discountAmount
+        viewModel.grandTotal = (viewModel.totalAmount + viewModel.mShippingCharge + viewModel.tax) - checkoutRepository.appliedDiscount
 
         binding.orderAmountSummary.setAmountSummary(
             ModelOrderAmountSummary(
@@ -145,7 +141,7 @@ class CheckoutItems : BaseFragment<FragmentCheckoutItemsBinding>(FragmentCheckou
                 viewModel.saving,
                 viewModel.totalAmount,
                 viewModel.mShippingCharge,
-                checkoutRepository.discountAmount,
+                checkoutRepository.appliedDiscount,
                 viewModel.tax,
                 viewModel.grandTotal
 

@@ -4,10 +4,7 @@ import androidx.lifecycle.*
 import com.example.pocketmoney.mlm.model.ModelCustomerDetail
 import com.example.pocketmoney.mlm.model.UserMenu
 import com.example.pocketmoney.mlm.model.UserModel
-import com.example.pocketmoney.mlm.model.payoutmodels.BankModel
-import com.example.pocketmoney.mlm.model.payoutmodels.Beneficiary
-import com.example.pocketmoney.mlm.model.payoutmodels.PayoutCustomer
-import com.example.pocketmoney.mlm.model.payoutmodels.PayoutTransaction
+import com.example.pocketmoney.mlm.model.payoutmodels.*
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.mlm.repository.AccountRepository
 import com.example.pocketmoney.mlm.repository.PayoutRepository
@@ -207,15 +204,15 @@ class PayoutViewModel @Inject constructor(
     }
 
 
-    private val _bankTransferResponse = MutableLiveData<Resource<Int>>()
-    val bankTransferResponse: LiveData<Resource<Int>> = _bankTransferResponse
+    private val _bankTransferResponse = MutableLiveData<Resource<PayoutTransactionResponse>>()
+    val bankTransferResponse: LiveData<Resource<PayoutTransactionResponse>> = _bankTransferResponse
 
-    fun initiateBankTransfer(customerId:String,paytmRequestData: PaytmRequestData) {
+    fun initiateBankTransfer(beneficiaryID:String,paytmRequestData: PaytmRequestData) {
 
         viewModelScope.launch {
 
             payoutRepository
-                .initiateBankTransfer(customerId,paytmRequestData)
+                .initiateBankTransfer(beneficiaryID,paytmRequestData)
                 .onStart {
                     _bankTransferResponse.postValue(Resource.Loading(true))
                 }
@@ -230,15 +227,15 @@ class PayoutViewModel @Inject constructor(
         }
     }
 
-    private val _upiTransferResponse = MutableLiveData<Resource<Int>>()
-    val upiTransferResponse: LiveData<Resource<Int>> = _upiTransferResponse
+    private val _upiTransferResponse = MutableLiveData<Resource<PayoutTransactionResponse>>()
+    val upiTransferResponse: LiveData<Resource<PayoutTransactionResponse>> = _upiTransferResponse
 
-    fun initiateUpiTransfer(customerId:String,paytmRequestData: PaytmRequestData) {
+    fun initiateUpiTransfer(beneficiaryID:String,paytmRequestData: PaytmRequestData) {
 
         viewModelScope.launch {
 
             payoutRepository
-                .initiateUpiTransfer(customerId,paytmRequestData)
+                .initiateUpiTransfer(beneficiaryID,paytmRequestData)
                 .onStart {
                     _upiTransferResponse.postValue(Resource.Loading(true))
                 }
@@ -253,15 +250,15 @@ class PayoutViewModel @Inject constructor(
         }
     }
 
-    private val _paytmTransferResponse = MutableLiveData<Resource<Int>>()
-    val paytmTransferResponse: LiveData<Resource<Int>> = _paytmTransferResponse
+    private val _paytmTransferResponse = MutableLiveData<Resource<PayoutTransactionResponse>>()
+    val paytmTransferResponse: LiveData<Resource<PayoutTransactionResponse>> = _paytmTransferResponse
 
-    fun initiatePaytmTransfer(customerId:String,paytmRequestData: PaytmRequestData) {
+    fun initiatePaytmTransfer(beneficiaryID:String,paytmRequestData: PaytmRequestData) {
 
         viewModelScope.launch {
 
             payoutRepository
-                .initiateWalletTransfer(customerId,paytmRequestData)
+                .initiateWalletTransfer(beneficiaryID,paytmRequestData)
                 .onStart {
                     _paytmTransferResponse.postValue(Resource.Loading(true))
                 }
