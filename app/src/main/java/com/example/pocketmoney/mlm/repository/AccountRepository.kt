@@ -4,6 +4,7 @@ import com.example.pocketmoney.mlm.model.ModelCustomerDetail
 import com.example.pocketmoney.mlm.model.UserMenu
 import com.example.pocketmoney.mlm.model.UserModel
 import com.example.pocketmoney.mlm.network.MLMApiService
+import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -101,5 +102,13 @@ class AccountRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-
+    suspend fun getDashboardData(
+        userId: String,
+        roleId: Int
+    ): Flow<JsonObject> {
+        return flow {
+            val response = mlmApiService.getDashboardData(userId,roleId)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
 }

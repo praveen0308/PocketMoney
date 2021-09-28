@@ -1,5 +1,6 @@
 package com.example.pocketmoney.mlm.ui.welcome
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentOnBoardingScreenBinding
 import com.example.pocketmoney.mlm.adapters.OnBoardingAdapter
 import com.example.pocketmoney.mlm.model.ModelOnBoardingItem
+import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
 import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
 import com.example.pocketmoney.mlm.viewmodel.OnBoardingScreenViewModel
 import com.example.pocketmoney.utils.BaseFragment
@@ -100,7 +102,11 @@ class OnBoardingScreen : BaseFragment<FragmentOnBoardingScreenBinding>(FragmentO
 
     private fun goToLoginPage(){
         viewModel.updateWelcomeStatus(Constants.ONBOARDING_DONE)
-        findNavController().navigate(OnBoardingScreenDirections.actionOnBoardingScreenToLoginFragment())
+        val intent = Intent(requireActivity(), MainDashboard::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        requireActivity().finish()
+//        findNavController().navigate(OnBoardingScreenDirections.actionOnBoardingScreenToLoginFragment())
     }
 
     override fun subscribeObservers() {

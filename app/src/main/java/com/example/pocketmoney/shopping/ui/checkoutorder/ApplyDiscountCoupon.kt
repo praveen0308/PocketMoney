@@ -53,7 +53,7 @@ class ApplyDiscountCoupon : BaseBottomSheetDialogFragment<FragmentApplyDiscountC
                         isValidCoupon = it
 
                         if (isValidCoupon){
-                            checkoutRepository.appliedCouponCode = couponCode
+                            checkoutRepository.appliedCouponCode.postValue(couponCode)
                             binding.imageView22.isVisible = false
                             binding.textView41.isVisible = false
                             viewModel.getCouponDetails(binding.etCouponPin.text.toString().trim())

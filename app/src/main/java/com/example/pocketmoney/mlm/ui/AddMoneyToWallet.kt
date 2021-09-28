@@ -12,6 +12,7 @@ import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
 import com.example.pocketmoney.mlm.viewmodel.AddMoneyToWalletViewModel
 import com.example.pocketmoney.utils.*
+import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
 import com.paytm.pgsdk.TransactionManager
@@ -22,15 +23,15 @@ import timber.log.Timber
 class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityAddMoneyToWalletBinding::inflate),
     ApplicationToolbar.ApplicationToolbarListener, PaytmPaymentTransactionCallback {
 
-    private lateinit var ACCOUNT_ID : String
-    private lateinit var AMOUNT : String
+    private lateinit var gatewayOrderId : String
+    private lateinit var mAmount : String
     private lateinit var userId : String
 
     private val viewModel by viewModels<AddMoneyToWalletViewModel>()
 
     private lateinit var paytmResponseModel: PaytmResponseModel
 
-    private var RequestId : String = ""
+    private var requestId : String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,13 +47,13 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
         }
 
 
-        binding.btnPay.setOnClickListener {
-            ACCOUNT_ID = createRandomOrderId()
-            AMOUNT = binding.etAmount.text.toString()
+        binding.btnPay.setButtonClick {
+            gatewayOrderId = createRandomOrderId()
+            mAmount = binding.etAmount.text.toString()
             viewModel.initiateTransactionApi(
                 PaytmRequestData(
-                    account= ACCOUNT_ID,
-                    amount = AMOUNT,
+                    account= gatewayOrderId,
+                    amount = mAmount,
                     callbackurl = Constants.PAYTM_CALLBACK_URL,
                     userid = userId
                 )
@@ -65,27 +66,27 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
         viewModel.userId.observe(this,{
             userId = it
         })
+
+        // step 1
         viewModel.checkSum.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-
                         val paytmOrder = PaytmOrder(
-                            ACCOUNT_ID,
+                            gatewayOrderId,
                             Constants.P_MERCHANT_ID,
                             it,
-                            AMOUNT,
-                            "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$ACCOUNT_ID"
+                            mAmount,
+                            "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$gatewayOrderId"
                         )
                         processPaytmTransaction(paytmOrder)
                     }
-                    displayLoading(false)
                 }
                 Status.LOADING -> {
-                    displayLoading(true)
+                    respondButton(LoadingButton.LoadingStates.LOADING,msg = "Processing..")
                 }
                 Status.ERROR -> {
-                    displayLoading(false)
+                    respondButton(LoadingButton.LoadingStates.NORMAL,msg = "Pay..")
                     _result.message?.let {
                         displayError(it)
                     }
@@ -93,17 +94,17 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
             }
         })
 
-
+        // step 2
         viewModel.addCustWalletDetailResponse.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        RequestId = it
+                        requestId = it
                         viewModel.addPaymentTransactionDetail(
                             PaymentGatewayTransactionModel(
                                 UserId = userId,
                                 OrderId = paytmResponseModel.ORDERID,
-                                ReferenceTransactionId = RequestId,
+                                ReferenceTransactionId = requestId,
                                 ServiceTypeId = 1,
                                 WalletTypeId = 1,
                                 TxnAmount = paytmResponseModel.TXNAMOUNT,
@@ -119,17 +120,13 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
                                 PaymentMode = paytmResponseModel.PAYMENTMODE
                             )
                         )
-
-
-
                     }
-                    displayLoading(false)
                 }
                 Status.LOADING -> {
-                    displayLoading(true)
+                    respondButton(LoadingButton.LoadingStates.LOADING,msg = "Processing..")
                 }
                 Status.ERROR -> {
-                    displayLoading(false)
+                    respondButton(LoadingButton.LoadingStates.NORMAL,msg = "Pay..")
                     _result.message?.let {
                         displayError(it)
                     }
@@ -137,25 +134,24 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
             }
         })
 
+        // step 3
         viewModel.addPaymentTransResponse.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
                         if (paytmResponseModel.STATUS == "SUCCESS"){
-                            viewModel.actionOnWalletDetail(RequestId, "Updated as online payment success","Approve",paytmResponseModel.PAYMENTMODE.toString())
+                            viewModel.actionOnWalletDetail(requestId, "Updated as online payment success","Approve",paytmResponseModel.PAYMENTMODE.toString())
                             viewModel.addCompanyTransactionResponse(userId,userId,paytmResponseModel.TXNAMOUNT!!.toDouble(),1,8,it,"0")
                         }else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE"){
-
-                            viewModel.actionOnWalletDetail(RequestId, "Updated as online payment failed","Rejected",paytmResponseModel.PAYMENTMODE.toString())
+                            viewModel.actionOnWalletDetail(requestId, "Updated as online payment failed","Rejected",paytmResponseModel.PAYMENTMODE.toString())
                         }
                     }
-                    displayLoading(false)
                 }
                 Status.LOADING -> {
-                    displayLoading(true)
+                    respondButton(LoadingButton.LoadingStates.LOADING,msg = "Processing..")
                 }
                 Status.ERROR -> {
-                    displayLoading(false)
+                    respondButton(LoadingButton.LoadingStates.NORMAL,msg = "Pay..")
                     _result.message?.let {
                         displayError(it)
                     }
@@ -167,16 +163,25 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        showToast("Money added successfully !!!!")
-                        finish()
+                        if (paytmResponseModel.STATUS == "SUCCESS"){
+                            showSuccessfulDialog("Money added successfully !!!!",dialogListener = object : MyDialogListener{
+                                override fun onDismiss() {
+                                    finish()
+                                }
+                            })
+
+                        }else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE"){
+                            showToast("Failed !!!")
+                        }
+
                     }
-                    displayLoading(false)
+                    respondButton(LoadingButton.LoadingStates.NORMAL,msg = "Pay..")
                 }
                 Status.LOADING -> {
-                    displayLoading(true)
+                    respondButton(LoadingButton.LoadingStates.LOADING,msg = "Processing..")
                 }
                 Status.ERROR -> {
-                    displayLoading(false)
+                    respondButton(LoadingButton.LoadingStates.NORMAL,msg = "Pay..")
                     _result.message?.let {
                         displayError(it)
                     }
@@ -184,11 +189,12 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
             }
         })
     }
-
+    private fun respondButton(state: LoadingButton.LoadingStates, mText:String="", msg:String=""){
+        binding.btnPay.setState(state, mText, msg)
+    }
 
     private fun processPaytmTransaction(paytmOrder: PaytmOrder) {
         try {
-
             val transactionManager =
                 TransactionManager(paytmOrder, this)
             transactionManager.setAppInvokeEnabled(false)
@@ -207,7 +213,7 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
     }
 
     override fun onTransactionResponse(p0: Bundle?) {
-        Log.d("PAYTM_TRANSACTION",p0.toString())
+        Timber.d("onTransactionResponse : ${p0.toString()}")
         p0?.let {
             paytmResponseModel = PaytmResponseModel(
                 STATUS = it.getString("STATUS")!!.substring(4),
@@ -226,51 +232,65 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
 
             )
         }
-        Log.d("PAYTM_TRANSACTION",paytmResponseModel.toString())
+        when(paytmResponseModel.STATUS){
+            "SUCCESS"->{
+                viewModel.addCustomerWalletDetails(PMWalletModel(
+                    USER_ID = userId.toDouble(),
+                    MODE_TYPE_ID = 5,
+                    PAID_AMOUNT = mAmount.toDouble(),
+                    PAID_DATE = getTodayDate(),
+                    CON_AC_NO = (23225151).toDouble(),
+                    MODE_NO = "PAYTM GATEWAY",
+                    NARRATIONS = "Initiated transaction adding money in wallet"
 
-        val transactionStatus = p0!!.getString("STATUS")!!.substring(4)
-//        showToast(transactionStatus)
-        if (transactionStatus=="SUCCESS"){
-
-            viewModel.addCustomerWalletDetails(PMWalletModel(
-                USER_ID = userId.toDouble(),
-                MODE_TYPE_ID = 5,
-                PAID_AMOUNT = AMOUNT.toDouble(),
-                PAID_DATE = getTodayDate(),
-                CON_AC_NO = (23225151).toDouble(),
-                MODE_NO = "PAYTM GATEWAY",
-                NARRATIONS = "Initiated transaction adding money in wallet"
-
-            ))
+                ))
+            }
+            "FAILURE"->{
+                showToast("Transaction Failed !!!")
+            }
+            "CANCELLED"->{
+                showToast("Transaction Cancelled !!!")
+            }
+            else->{
+                showToast("Something went wrong !!!")
+            }
         }
+
+
     }
-
     override fun networkNotAvailable() {
-
+        respondButton(LoadingButton.LoadingStates.NORMAL,"Make Payment")
+        Timber.d("networkNotAvailable : No Internet :(")
     }
 
     override fun onErrorProceed(p0: String?) {
-
+        respondButton(LoadingButton.LoadingStates.NORMAL,"Make Payment")
+        Timber.d("onErrorProceed : ${p0.toString()}")
     }
 
     override fun clientAuthenticationFailed(p0: String?) {
-
+        respondButton(LoadingButton.LoadingStates.NORMAL,"Make Payment")
+        Timber.d("clientAuthenticationFailed : ${p0.toString()}")
     }
 
     override fun someUIErrorOccurred(p0: String?) {
-
+        respondButton(LoadingButton.LoadingStates.NORMAL,"Make Payment")
+        Timber.d("someUIErrorOccurred : ${p0.toString()}")
     }
 
     override fun onErrorLoadingWebPage(p0: Int, p1: String?, p2: String?) {
-
+        respondButton(LoadingButton.LoadingStates.NORMAL,"Make Payment")
+        Timber.d("onErrorLoadingWebPage : $p0 \n $p1 \n $p2")
     }
 
     override fun onBackPressedCancelTransaction() {
-
+        respondButton(LoadingButton.LoadingStates.NORMAL,"Make Payment")
+        Timber.d("onBackPressedCancelTransaction : Back pressed :(")
     }
 
     override fun onTransactionCancel(p0: String?, p1: Bundle?) {
-        Timber.d(p0)
-        showToast("Transaction Cancelled !!!")
+        respondButton(LoadingButton.LoadingStates.NORMAL,"Make Payment")
+        Timber.d("onTransactionResponse : ${p0.toString()} \n ${p1.toString()}")
     }
+
 }

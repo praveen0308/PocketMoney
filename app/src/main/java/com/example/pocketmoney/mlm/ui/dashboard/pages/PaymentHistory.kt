@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.pocketmoney.common.TransactionDetailActivity
 import com.example.pocketmoney.databinding.FragmentPaymentHistoryBinding
 import com.example.pocketmoney.mlm.adapters.PaymentHistoryAdapter
 import com.example.pocketmoney.mlm.model.TransactionModel
@@ -22,7 +23,8 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPaymentHistoryBinding::inflate), SwipeRefreshLayout.OnRefreshListener {
+class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPaymentHistoryBinding::inflate), SwipeRefreshLayout.OnRefreshListener,
+    PaymentHistoryAdapter.PaymentHistoryInterface {
 
     // Ui
 
@@ -180,6 +182,8 @@ class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPayme
             if (userID != "" && roleID != 0) {
                 viewModel.getWalletBalance(userID, roleID)
                 requestTransactionHistory(userID, roleID, getDateRange(DateTimeEnum.LAST_MONTH), getTodayDate())
+            }else{
+                checkAuthorization()
             }
 
         })
@@ -241,7 +245,7 @@ class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPayme
     }
 
     private fun setupRecyclerView() {
-        paymentHistoryAdapter = PaymentHistoryAdapter()
+        paymentHistoryAdapter = PaymentHistoryAdapter(this)
         binding.rvTransactionHistory.apply {
             setHasFixedSize(true)
             val layoutManager = LinearLayoutManager(context)
@@ -263,5 +267,11 @@ class PaymentHistory : BaseFragment<FragmentPaymentHistoryBinding>(FragmentPayme
     override fun onDestroyView() {
         super.onDestroyView()
         progressBarHandler.hide()
+    }
+
+    override fun onPaymentHistoryClick(transactionModel: TransactionModel) {
+        val intent = Intent(requireActivity(),TransactionDetailActivity::class.java)
+        intent.putExtra("TransactionID",transactionModel.Trans_Id)
+        startActivity(intent)
     }
 }

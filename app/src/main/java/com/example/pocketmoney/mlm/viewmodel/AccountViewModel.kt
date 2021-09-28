@@ -9,6 +9,7 @@ import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.example.pocketmoney.mlm.repository.WalletRepository
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Resource
+import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -218,6 +219,33 @@ class AccountViewModel @Inject constructor(
         }
 
     }
+
+
+    private val _dashboardData = MutableLiveData<Resource<JsonObject>>()
+    val dashboardData: LiveData<Resource<JsonObject>> = _dashboardData
+
+
+    fun getDashboardData(userId: String, roleId: Int) {
+
+        viewModelScope.launch {
+
+            accountRepository
+                .getDashboardData(userId, roleId)
+                .onStart {
+                    _dashboardData.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _dashboardData.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _dashboardData.postValue(Resource.Success(response))
+                }
+        }
+
+    }
+
 
 
 }

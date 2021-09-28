@@ -27,11 +27,14 @@ import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBinding::inflate), ShoppingHomeCategoriesAdapter.ProductClickListener, ApplicationToolbar.ApplicationToolbarListener, ProductVariantValuesAdapter.ProductVariantValuesAdapterListener {
+class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBinding::inflate),
+    ShoppingHomeCategoriesAdapter.ProductClickListener,
+    ApplicationToolbar.ApplicationToolbarListener,
+    ProductVariantValuesAdapter.ProductVariantValuesAdapterListener {
 
     // ViewModels
     private val viewModel by viewModels<BuyProductViewModel>()
-    
+
 
     // Adapters
     private lateinit var shoppingHomeParentAdapter: ShoppingHomeMasterAdapter
@@ -43,13 +46,14 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
     // Variable
     private var productId: Int = 0
     private var productItemId: Int = 0
-    private var userID: String= ""
+    private var userID: String = ""
     private var cartItemCount: Int = 0
 
     override fun onResume() {
         super.onResume()
-        if (userID!=""){
-        viewModel.getCartItemCount(userID)}
+        if (userID != "") {
+            viewModel.getCartItemCount(userID)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +64,11 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
         viewModel.getProductVariantValues(productId)
 
         binding.btnAddToCart.setOnClickListener {
-            viewModel.addToCart(productItemId, userID, 1)
+            if (userID.isEmpty()) {
+                checkAuthorization()
+            } else {
+                viewModel.addToCart(productItemId, userID, 1)
+            }
         }
 
         binding.buyProductToolbar.setApplicationToolbarListener(this)
@@ -74,8 +82,10 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
     override fun subscribeObservers() {
 
         viewModel.userId.observe(this, {
-            userID = it
-            viewModel.getCartItemCount(userID)
+            if (!it.isNullOrEmpty()) {
+                userID = it
+                viewModel.getCartItemCount(userID)
+            }
         })
         viewModel.productDetail.observe(this, { dataState ->
             when (dataState) {
@@ -230,10 +240,11 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                 tvProductName.text = productModel.ProductName
                 tvProductPrice.text = "₹ ${productModel.Price}"
                 tvProductOldPrice.text = "₹ ${productModel.OldPrice}"
-                tvProductOldPrice.paintFlags = tvProductOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                tvProductOldPrice.paintFlags =
+                    tvProductOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 tvProductSavedMoney.text = "You Save ₹ ${productModel.Saving}"
 
-                rtbProductRating.visibility=View.VISIBLE
+                rtbProductRating.visibility = View.VISIBLE
                 rtbProductRating.rating = 0F
                 tvProductRatingsCount.text = "(0)"
             }
@@ -312,9 +323,9 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
     private fun prepareHomeData(response: List<ProductModel>): List<HomeContentMaster> {
         val contentList: MutableList<HomeContentMaster> = ArrayList()
         val latestProducts = HomeContentMaster(
-                response,
-                MyEnums.LATEST_PRODUCT,
-                "You might also like"
+            response,
+            MyEnums.LATEST_PRODUCT,
+            "You might also like"
         )
         contentList.add(latestProducts)
         return contentList
@@ -359,7 +370,8 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                 variantIds = variantIds + productVariantList[i].VariantID.toString() + ","
                 for (j in 0 until productVariantList[i].variantValueList!!.size) {
                     if (productVariantList[i].variantValueList!![j].isSelected!!) {
-                        variantValueIds = variantValueIds + productVariantList[i].variantValueList!![j].Varients_Value_Id.toString() + ","
+                        variantValueIds =
+                            variantValueIds + productVariantList[i].variantValueList!![j].Varients_Value_Id.toString() + ","
                         break
                     }
                 }

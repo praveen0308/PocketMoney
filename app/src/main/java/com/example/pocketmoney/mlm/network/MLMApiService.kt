@@ -228,6 +228,12 @@ interface MLMApiService {
         @Query("action") action: String
     ): Int
 
+    @GET("Account/CustomerDashboardData")
+    suspend fun getDashboardData(
+        @Query("userId") userId: String,
+        @Query("roleId") roleId: Int
+    ): JsonObject
+
 }
 
 

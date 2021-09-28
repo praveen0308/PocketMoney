@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/colorPrimaryDark"
-    app:cardCornerRadius="@dimen/dimen_10dp">
+    app:cardBackgroundColor="#B7DAFD"
+    app:cardCornerRadius="@dimen/dimen_15dp"
+    android:layout_margin="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -13,6 +14,7 @@
         android:padding="@dimen/dimen_16dp"
         >
 
+<!--
 
         <TextView
             android:id="@+id/tv_title"
@@ -23,14 +25,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
+-->
 
         <TextView
             android:id="@+id/tv_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="50"
-            android:textSize="@dimen/dimen_18sp"
-            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="28sp"
+            android:gravity="center"
+            android:textColor="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/tv_subtitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -42,8 +47,10 @@
             android:id="@+id/tv_subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="Wallet"
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/black"
+            android:textSize="@dimen/dimen_18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

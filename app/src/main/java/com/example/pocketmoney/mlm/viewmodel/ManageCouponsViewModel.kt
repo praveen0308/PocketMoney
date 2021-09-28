@@ -1,14 +1,24 @@
 package com.example.pocketmoney.mlm.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.example.pocketmoney.mlm.repository.CustomerRepository
+import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
+import com.example.pocketmoney.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ManageCouponsViewModel @Inject constructor(
-
+    private val customerRepository: CustomerRepository,
+    val userPreferencesRepository: UserPreferencesRepository
 ): ViewModel(){
+
+    val userId = userPreferencesRepository.userId.asLiveData()
+    val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
 
     val message = MutableLiveData<String>()
 
@@ -29,5 +39,26 @@ class ManageCouponsViewModel @Inject constructor(
         }
     }
 
-    fun getNoOfCoupons():Int = noOfCoupons.value!!
+    private val _generateCouponResponse = MutableLiveData<Resource<Int>>()
+    val generateCouponResponse: LiveData<Resource<Int>> = _generateCouponResponse
+
+
+    fun generateNewCoupons(userId: String,walletId:Int,count:Int) {
+        viewModelScope.launch {
+            customerRepository
+                .generateNewCoupon(userId,walletId, count)
+                .onStart {
+                    _generateCouponResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _generateCouponResponse.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _generateCouponResponse.postValue(Resource.Success(response))
+                }
+        }
+
+    }
 }

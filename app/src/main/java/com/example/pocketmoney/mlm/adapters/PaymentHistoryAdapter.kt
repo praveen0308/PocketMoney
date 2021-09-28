@@ -10,12 +10,12 @@ import com.example.pocketmoney.databinding.TemplatePaymentHistoryType2Binding
 import com.example.pocketmoney.mlm.model.TransactionModel
 import com.example.pocketmoney.utils.convertISOTimeToDateTime
 
-class PaymentHistoryAdapter:RecyclerView.Adapter<PaymentHistoryAdapter.PaymentHistoryViewHolder>() {
+class PaymentHistoryAdapter(val paymentHistoryInterface: PaymentHistoryInterface):RecyclerView.Adapter<PaymentHistoryAdapter.PaymentHistoryViewHolder>() {
 
     private val paymentsList = mutableListOf<TransactionModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentHistoryViewHolder {
-        return PaymentHistoryViewHolder(TemplatePaymentHistoryType2Binding.inflate(LayoutInflater.from(parent.context),parent,false))
+        return PaymentHistoryViewHolder(TemplatePaymentHistoryType2Binding.inflate(LayoutInflater.from(parent.context),parent,false),paymentHistoryInterface)
     }
 
     override fun onBindViewHolder(holder: PaymentHistoryViewHolder, position: Int) {
@@ -32,8 +32,13 @@ class PaymentHistoryAdapter:RecyclerView.Adapter<PaymentHistoryAdapter.PaymentHi
         notifyDataSetChanged()
     }
 
-    inner class PaymentHistoryViewHolder(val binding:TemplatePaymentHistoryType2Binding):RecyclerView.ViewHolder(binding.root){
+    inner class PaymentHistoryViewHolder(val binding:TemplatePaymentHistoryType2Binding,private val mListener:PaymentHistoryInterface):RecyclerView.ViewHolder(binding.root){
 
+        init {
+            itemView.setOnClickListener {
+                mListener.onPaymentHistoryClick(paymentsList[absoluteAdapterPosition])
+            }
+        }
         fun createPaymentHistoryItem(transactionModel: TransactionModel){
             binding.apply {
                 tvSubTitle.text = transactionModel.Trans_Category
@@ -57,5 +62,8 @@ class PaymentHistoryAdapter:RecyclerView.Adapter<PaymentHistoryAdapter.PaymentHi
     }
 
 
+    interface PaymentHistoryInterface{
+        fun onPaymentHistoryClick(transactionModel: TransactionModel)
+    }
 
 }

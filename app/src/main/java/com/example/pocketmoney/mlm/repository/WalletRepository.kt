@@ -1,11 +1,13 @@
 package com.example.pocketmoney.mlm.repository
 
+import com.example.pocketmoney.mlm.model.TransactionDetailModel
 import com.example.pocketmoney.mlm.model.TransactionModel
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerRequestModel1
 import com.example.pocketmoney.mlm.model.serviceModels.PMWalletModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.network.MLMApiService
 import com.example.pocketmoney.mlm.network.RechargeAPIService
+import com.example.pocketmoney.mlm.network.WalletService
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +18,8 @@ import javax.inject.Inject
 
 class WalletRepository @Inject constructor(
         private val mlmApiService: MLMApiService,
-        private val rechargeAPIService: RechargeAPIService
+        private val rechargeAPIService: RechargeAPIService,
+        private val walletService: WalletService
 ) {
 
     suspend fun getWalletBalance(
@@ -49,6 +52,15 @@ class WalletRepository @Inject constructor(
             emit(response)
         }.flowOn(Dispatchers.IO)
     }
+
+
+    suspend fun viewTransactionDetail(transactionId:String): Flow<TransactionDetailModel> {
+        return flow {
+            val response = walletService.viewTransactionDetails(transactionId)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
 
     suspend fun transferB2BWallet(requestData : JsonObject): Flow<Int> {
         return flow {

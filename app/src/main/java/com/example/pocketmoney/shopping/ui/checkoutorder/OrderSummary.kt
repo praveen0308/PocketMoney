@@ -96,7 +96,7 @@ class OrderSummary : BaseFragment<FragmentOrderSummaryBinding>(FragmentOrderSumm
                 Status.SUCCESS -> {
                     _result._data?.let {
                         shippingCharge=it
-                        checkoutRepository.shippingCharge = it
+//                        checkoutRepository.shippingCharge = it
                         viewModel.getCartItems(userID)
 
                     }

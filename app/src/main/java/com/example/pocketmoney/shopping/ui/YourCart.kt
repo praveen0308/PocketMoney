@@ -21,7 +21,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::inflate), CartItemListAdapter.CartItemListAdapterListener, ApplicationToolbar.ApplicationToolbarListener {
+class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::inflate),
+    CartItemListAdapter.CartItemListAdapterListener, ApplicationToolbar.ApplicationToolbarListener {
 
     //Ui
 
@@ -29,7 +30,8 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
     private val viewModel: CartViewModel by viewModels()
 
     @Inject
-    lateinit var checkoutRepository:CheckoutRepository
+    lateinit var checkoutRepository: CheckoutRepository
+
     // Adapters
     private lateinit var cartItemListAdapter: CartItemListAdapter
 
@@ -59,9 +61,9 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
         binding.discountLayout.btnApply.setOnClickListener {
             checkoutRepository.appliedCouponCode.postValue(viewModel.couponCode.value!!)
             binding.discountLayout.btnApply.apply {
-                setTextColor(ContextCompat.getColor(context,R.color.Green))
+                setTextColor(ContextCompat.getColor(context, R.color.Green))
                 text = "Applied"
-                icon = ContextCompat.getDrawable(this@YourCart,R.drawable.ic_round_check_24)
+                icon = ContextCompat.getDrawable(this@YourCart, R.drawable.ic_round_check_24)
             }
         }
     }
@@ -69,10 +71,15 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
     override fun subscribeObservers() {
 
         viewModel.userID.observe(this, {
-            userID = it
-            viewModel.getCartItems(userID)
+            if (it.isNullOrEmpty()) {
+                checkAuthorization()
+            } else {
+                userID = it
+                viewModel.getCartItems(userID)
+            }
+
         })
-        viewModel.couponCode.observe(this,{
+        viewModel.couponCode.observe(this, {
             binding.discountLayout.root.isVisible = false
             binding.btnSearch.isEnabled = !it.isNullOrEmpty()
 
@@ -212,28 +219,38 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
 
 
         binding.layoutCartSummary.setAmountSummary(
-                ModelOrderAmountSummary(
-                        itemQuantity,
-                        productOldPrice,
-                        saving,
-                        totalPrice)
+            ModelOrderAmountSummary(
+                itemQuantity,
+                productOldPrice,
+                saving,
+                totalPrice
+            )
         )
         binding.layoutCartSummary.setVisibilityStatus(0)
 
     }
+
     private fun populateCouponDetails(discountModel: DiscountModel) {
-        binding.discountLayout.root.isVisible=true
+        binding.discountLayout.root.isVisible = true
         binding.discountLayout.apply {
-            if (discountModel.IsFixed){
+            if (discountModel.IsFixed) {
                 tvDiscountAmount.text = "₹${discountModel.Amount}"
-            }else{
+            } else {
                 tvDiscountAmount.text = "${discountModel.Amount}%"
             }
             tvDiscountCode.text = discountModel.Code.toString()
             tvDiscountName.text = discountModel.Name.toString()
-            tvDiscountValidity.text = "${convertISOTimeToAny(discountModel.Starts_At.toString(),
-                SDF_dM)} - ${convertISOTimeToAny(discountModel.Ends_At.toString(),
-                SDF_dM)}"
+            tvDiscountValidity.text = "${
+                convertISOTimeToAny(
+                    discountModel.Starts_At.toString(),
+                    SDF_dM
+                )
+            } - ${
+                convertISOTimeToAny(
+                    discountModel.Ends_At.toString(),
+                    SDF_dM
+                )
+            }"
         }
     }
 

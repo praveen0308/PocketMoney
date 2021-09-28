@@ -27,7 +27,9 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate), ShoppingHomeCategoriesAdapter.ProductClickListener, ApplicationToolbar.ApplicationToolbarListener {
+class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate),
+    ShoppingHomeCategoriesAdapter.ProductClickListener,
+    ApplicationToolbar.ApplicationToolbarListener {
 
 
     // Adapter
@@ -51,7 +53,7 @@ class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate), Sh
 
     override fun onResume() {
         super.onResume()
-        if (userID!="") {
+        if (userID != "") {
             viewModel.getCartItemCount(userID)
         }
     }
@@ -77,7 +79,7 @@ class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate), Sh
                 Status.SUCCESS -> {
                     _result._data?.let {
                         populateRecyclerView(it)
-                    displayLoading(false)
+                        displayLoading(false)
                     }
                 }
                 Status.LOADING -> {
@@ -94,8 +96,10 @@ class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate), Sh
 
 
         viewModel.userId.observe(viewLifecycleOwner, {
-            userID = it
-            viewModel.getCartItemCount(userID)
+            if (!it.isNullOrEmpty()) {
+                userID = it
+                viewModel.getCartItemCount(userID)
+            }
         })
 
         viewModel.cartItemCount.observe(viewLifecycleOwner, { _result ->
@@ -183,7 +187,8 @@ class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate), Sh
     }
 
     override fun onProductClick(viewType: MyEnums?, id: Int) {
-        Toast.makeText(requireActivity().applicationContext, id.toString(), Toast.LENGTH_LONG).show()
+        Toast.makeText(requireActivity().applicationContext, id.toString(), Toast.LENGTH_LONG)
+            .show()
     }
 
     override fun onProductClick(productID: Int, itemID: Int) {

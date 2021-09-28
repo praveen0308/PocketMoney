@@ -12,30 +12,31 @@ import com.example.pocketmoney.databinding.FragmentLoginBinding
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository.Companion.LOGIN_DONE
 import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
 import com.example.pocketmoney.mlm.viewmodel.LoginViewModel
+import com.example.pocketmoney.utils.BaseBottomSheetDialogFragment
 import com.example.pocketmoney.utils.BaseFragment
 import com.example.pocketmoney.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import dmax.dialog.SpotsDialog
 
 @AndroidEntryPoint
-class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
+class LoginFragment : BaseBottomSheetDialogFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
 
 
     private val viewModel : LoginViewModel by viewModels()
 
     private lateinit var dialog: android.app.AlertDialog
 
-    private lateinit var navController:NavController
+//    private lateinit var navController:NavController
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
+//        navController = Navigation.findNavController(view)
 
         createProgressDialog()
 
         binding.btnRegister.setOnClickListener {
-            navController.navigate(R.id.action_loginFragment_to_registerFragment)
+//            navController.navigate(R.id.action_loginFragment_to_registerFragment)
         }
 
         binding.btnSignIn.setOnClickListener{

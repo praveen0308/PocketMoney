@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
@@ -19,6 +20,7 @@ import com.example.pocketmoney.databinding.FragmentHomeBinding
 import com.example.pocketmoney.mlm.HomeParentItemListener
 import com.example.pocketmoney.mlm.adapters.HomeParentAdapter
 import com.example.pocketmoney.mlm.model.*
+import com.example.pocketmoney.mlm.repository.WalletRepository
 import com.example.pocketmoney.mlm.ui.AddMoneyToWallet
 import com.example.pocketmoney.mlm.ui.dashboard.CustomerWalletActivity
 import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
@@ -38,6 +40,8 @@ import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.MyEnums
 import com.example.pocketmoney.utils.setAmount
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -47,6 +51,8 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
     // ViewModel
     private val viewModel by viewModels<HomeViewModel>()
 
+    @Inject
+    lateinit var walletRepo : WalletRepository
     // Interface
     private lateinit var fragmentListener: HomeFragmentListener
 
@@ -103,9 +109,11 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
 
     override fun subscribeObservers() {
         viewModel.userId.observe(viewLifecycleOwner, {
-            userID = it
-
-
+            if (it.isNullOrEmpty()){
+                checkAuthorization()
+            }else{
+                userID = it
+            }
         })
         viewModel.userRoleID.observe(viewLifecycleOwner, {
             roleID = it

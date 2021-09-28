@@ -1,5 +1,6 @@
 package com.example.pocketmoney.mlm.repository
 
+import com.example.pocketmoney.mlm.model.ComplainModel
 import com.example.pocketmoney.mlm.model.CustomerDetailResponse
 import com.example.pocketmoney.mlm.model.mlmModels.*
 import com.example.pocketmoney.mlm.network.CustomerService
@@ -119,5 +120,27 @@ class CustomerRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun addServiceComplain(requestId: String,transactionId:String,userId:String,comment:String): Flow<String> {
+        return flow {
+            val response = customerService.addServiceComplaint(requestId, transactionId, userId, comment)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
+    suspend fun getComplaintChat(transactionId: String): Flow<List<ComplainModel>> {
+        return flow {
+            val response = customerService.getComplaintChat(transactionId)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
+    suspend fun generateNewCoupon(userId: String,walletId:Int,count:Int): Flow<Int> {
+        return flow {
+            val response = customerService.generateNewCoupon(userId, walletId, count)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
 
 }

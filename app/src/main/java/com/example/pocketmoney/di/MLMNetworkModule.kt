@@ -2,10 +2,7 @@ package com.example.pocketmoney.di
 
 import android.content.Context
 import com.example.pocketmoney.common.MailMessagingService
-import com.example.pocketmoney.mlm.network.CustomerService
-import com.example.pocketmoney.mlm.network.MLMApiService
-import com.example.pocketmoney.mlm.network.PaymentService
-import com.example.pocketmoney.mlm.network.RechargeAPIService
+import com.example.pocketmoney.mlm.network.*
 import com.example.pocketmoney.mlm.repository.*
 import dagger.Module
 import dagger.Provides
@@ -38,6 +35,11 @@ object MLMNetworkModule {
         return retrofit.create(PaymentService::class.java)
     }
 
+    @Provides
+    fun provideWalletApiService(retrofit: Retrofit): WalletService {
+        return retrofit.create(WalletService::class.java)
+    }
+
 
     @Provides
     fun provideMailMessagingService(retrofit: Retrofit): MailMessagingService {
@@ -56,8 +58,8 @@ object MLMNetworkModule {
     }
 
     @Provides
-    fun getWalletRepository(mlmApiService: MLMApiService,rechargeAPIService: RechargeAPIService):WalletRepository{
-        return WalletRepository(mlmApiService,rechargeAPIService)
+    fun getWalletRepository(mlmApiService: MLMApiService,rechargeAPIService: RechargeAPIService,walletService: WalletService):WalletRepository{
+        return WalletRepository(mlmApiService,rechargeAPIService,walletService)
     }
 
     @Provides

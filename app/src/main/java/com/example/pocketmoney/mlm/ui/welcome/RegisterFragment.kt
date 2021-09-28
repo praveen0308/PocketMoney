@@ -13,6 +13,7 @@ import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentRegisterBinding
 import com.example.pocketmoney.mlm.model.ModelCustomerDetail
 import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
+import com.example.pocketmoney.utils.BaseBottomSheetDialogFragment
 import com.example.pocketmoney.utils.CustomValidator
 import com.example.pocketmoney.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,12 +21,9 @@ import dmax.dialog.SpotsDialog
 
 
 @AndroidEntryPoint
-class RegisterFragment : Fragment() {
+class RegisterFragment : BaseBottomSheetDialogFragment<FragmentRegisterBinding>(FragmentRegisterBinding::inflate) {
 
-    private var _binding: FragmentRegisterBinding? = null
-    // This property is only valid between onCreateView and
-// onDestroyView.
-    private val binding get() = _binding!!
+
     private lateinit var dialog: android.app.AlertDialog
 
     private lateinit var validator:CustomValidator
@@ -34,23 +32,9 @@ class RegisterFragment : Fragment() {
     private val accountViewModel : AccountViewModel by viewModels()
 
     // Variables
-    private lateinit var userID : String
+    private var userID : String = ""
     private var roleID : Int=0
     private lateinit var customerDetail: ModelCustomerDetail
-
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        _binding = FragmentRegisterBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -104,7 +88,6 @@ class RegisterFragment : Fragment() {
 
         }
 
-
     }
 
     private fun initiateFieldsValidation(){
@@ -118,7 +101,7 @@ class RegisterFragment : Fragment() {
         }
 
     }
-    private fun subscribeObservers() {
+    override fun subscribeObservers() {
 
         accountViewModel.sponsorName.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
@@ -213,21 +196,10 @@ class RegisterFragment : Fragment() {
 
     }
 
-    private fun displayLoading(state: Boolean) {
-        binding.progressBar.visibility = if (state) View.VISIBLE else View.GONE
-    }
-
 
     private fun displaySubmitting(state: Boolean) {
         if (state) dialog.show() else dialog.dismiss()
 
-    }
-    private fun displayError(message: String?) {
-        if (message != null) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(context, "Unknown error", Toast.LENGTH_LONG).show()
-        }
     }
 
 }

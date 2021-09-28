@@ -22,6 +22,7 @@ import java.util.*
 private val SDF_YMD_WITH_DASH = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 val SDF_d_M_y = SimpleDateFormat("dd MMM yyyy", Locale.US)
 val SDF_dM = SimpleDateFormat("dd MMM", Locale.US)
+val SDF_dmyhms = SimpleDateFormat("dd-MM-yy HH:mm:ss", Locale.US)
 fun convertISOTimeToDateTime(isoTime: String): String? {
     val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
     var convertedDate: Date? = null
@@ -345,8 +346,8 @@ fun lcm(vararg input: Int): Int {
 
  fun createRandomOrderId(): String {
     val timeSeed = System.nanoTime()
-    val randSeed = Math.random() * 1000
+    val randSeed = Math.random() * 1234
     val midSeed = (timeSeed * randSeed).toLong()
-    val s = midSeed.toString() + ""
+    val s = midSeed.toString()
     return s.substring(0, 9)
 }

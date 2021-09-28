@@ -46,11 +46,19 @@ class GrowthNCommissionHome :
             if (userID != "" && roleID != 0) {
 
                 // For fetching growth
-                val requestModel1 = CustomerRequestModel1(
+                /*val requestModel1 = CustomerRequestModel1(
                     UserID = userID.toLong(), RoleID = roleID
                 )
-                viewModel.getCustomerGrowth(requestModel1)
+                viewModel.getCustomerGrowth(requestModel1)*/
+            // For fetching commission
+                val requestModel2 = GrowthComissionRequestModel(
+                    userID, roleID
+                )
+                viewModel.getGrowthCommission(requestModel2)
 
+            }
+            else{
+                checkAuthorization()
             }
         })
 
@@ -67,11 +75,6 @@ class GrowthNCommissionHome :
                             )
                         )
 
-                        // For fetching commission
-                        val requestModel2 = GrowthComissionRequestModel(
-                            userID, roleID
-                        )
-                        viewModel.getGrowthCommission(requestModel2)
 
                     }
                     displayLoading(false)
@@ -91,6 +94,7 @@ class GrowthNCommissionHome :
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
+                        incomeList.clear()
                         incomeList.add(
                             IncomeModel(
                                 "Commission",
@@ -139,7 +143,7 @@ class GrowthNCommissionHome :
                 subType = NavigationEnum.DIRECT_COMMISSION
             )
         )
-        menuList.add(
+     /*   menuList.add(
             GrowthCommissionDataModel(
                 1,
                 "Update Commission",
@@ -148,7 +152,7 @@ class GrowthNCommissionHome :
                 type = NavigationEnum.COMMISSION,
                 subType = NavigationEnum.UPDATE_COMMISSION
             )
-        )
+        )*/
         menuList.add(
             GrowthCommissionDataModel(
                 2,

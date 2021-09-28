@@ -3,6 +3,7 @@ package com.example.pocketmoney.mlm.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.databinding.TemplateSectionedRvBinding
 import com.example.pocketmoney.mlm.model.IncomeModel
@@ -83,7 +84,8 @@ class IncomeAdapter(private val mListener: GrowthNCommissionAdapter.GrowthNCommi
                 else{
                     templateSectionedRvRecyclerview.apply {
                         setHasFixedSize(true)
-                        layoutManager = GridLayoutManager(context,2)
+                        layoutManager = LinearLayoutManager(context)
+//                        layoutManager = GridLayoutManager(context,2)
 
                         val mAdapter =GrowthNCommissionAdapter(mListener)
                         mAdapter.setGrowthCommissionDataModelList(item.itemList)

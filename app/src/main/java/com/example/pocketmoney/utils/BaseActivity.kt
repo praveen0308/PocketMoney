@@ -2,8 +2,12 @@ package com.example.pocketmoney.utils
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -62,6 +66,34 @@ abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (Layout
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.frame_layout, fragment)
         fragmentTransaction.commit()
+    }
+
+    fun showSuccessfulDialog(title:String,actionText:String="",dialogListener: MyDialogListener){
+        val dialogBuilder = AlertDialog.Builder(this)
+
+        val inflater = this.layoutInflater
+        val dialogView: View = inflater.inflate(R.layout.layout_successful_popup, null)
+        dialogBuilder.setView(dialogView)
+        dialogBuilder.setCancelable(false)
+
+
+        val btnOkay = dialogView.findViewById<Button>(R.id.btn_action)
+        val lav = dialogView.findViewById<Button>(R.id.lav_success)
+        val tvTitle = dialogView.findViewById<Button>(R.id.tv_dialog_title)
+
+        tvTitle.text = title
+        if (actionText.isNotEmpty()){
+            btnOkay.text = actionText
+        }
+        val alertDialog = dialogBuilder.create()
+        alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
+
+
+        btnOkay.setOnClickListener {
+            alertDialog.dismiss()
+            dialogListener.onDismiss()
+        }
     }
 
 }

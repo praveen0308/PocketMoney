@@ -11,15 +11,16 @@ import android.view.View
 import android.widget.ImageView
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.R
+import com.example.pocketmoney.common.ModelTitleValue
 import com.example.pocketmoney.databinding.FragmentAccountBinding
-import com.example.pocketmoney.databinding.TemplateUserQrPopupBinding
 import com.example.pocketmoney.mlm.adapters.AccountSettingChildAdapter
 import com.example.pocketmoney.mlm.adapters.AccountSettingParentAdapter
+import com.example.pocketmoney.mlm.adapters.DashboardItemAdapter
 import com.example.pocketmoney.mlm.model.ModelMenuItem
 import com.example.pocketmoney.mlm.model.ModelParentMenu
 import com.example.pocketmoney.mlm.ui.MainActivity
@@ -29,19 +30,21 @@ import com.example.pocketmoney.mlm.viewmodel.AccountViewModel
 import com.example.pocketmoney.utils.BaseFragment
 import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.NavigationEnum
-import com.example.pocketmoney.utils.setAmount
+import com.google.gson.JsonObject
 import com.google.zxing.WriterException
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inflate),
-    AccountSettingChildAdapter.AccountSettingChildInterface {
+    AccountSettingChildAdapter.AccountSettingChildInterface,
+    DashboardItemAdapter.DashboardItemInterface {
 
     //ViewModels
     private val viewModel by viewModels<AccountViewModel>()
 
     // Adapters
     private lateinit var accountSettingParentAdapter: AccountSettingParentAdapter
+    private lateinit var dashboardItemAdapter: DashboardItemAdapter
 
     // Variable
     private lateinit var userName:String
@@ -51,7 +54,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerView()
-
+setupRvDashboardItems()
         binding.ivQrCode.setOnClickListener {
             val showQrCode = ShowQrCode(requireContext())
             showQrCode.showPopup()
@@ -67,20 +70,29 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
         }
     }
 
+    private fun setupRvDashboardItems(){
+        dashboardItemAdapter = DashboardItemAdapter(this)
+        binding.rvDashboardItems.apply {
+            setHasFixedSize(true)
+            layoutManager = GridLayoutManager(context,2)
+            adapter = dashboardItemAdapter
+        }
+    }
+
     private fun getAccountMenuList(): List<ModelParentMenu> {
         val menuList = mutableListOf<ModelParentMenu>()
 
         val myAccountItemList = mutableListOf<ModelMenuItem>()
-        /*myAccountItemList.add(
+        myAccountItemList.add(
             ModelMenuItem(
                 NavigationEnum.INCOME,
-                "Income",
-                "Growth,Commission",
+                "Commission",
+                "Track your income",
                 R.drawable.ic_baseline_data_saver_on_24
             )
-        )*/
+        )
 /*
-
+1
         myAccountItemList.add(
             ModelMenuItem(
                 NavigationEnum.WALLET,
@@ -110,7 +122,6 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 R.drawable.ic_person
             )
         )
-
 */
 
 
@@ -118,11 +129,12 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
             ModelMenuItem(
                 NavigationEnum.PROFILE,
                 "Profile",
-                "change and update your profile data",
+                "Manage your profile data",
                 R.drawable.ic_person
             )
         )
 
+/*
         myAccountItemList.add(
             ModelMenuItem(
                 NavigationEnum.DOWNLINE,
@@ -131,6 +143,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 R.drawable.ic_baseline_device_hub_24
             )
         )
+*/
 
         myAccountItemList.add(
             ModelMenuItem(
@@ -191,7 +204,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
 */
 
         val helpMenuItemList = mutableListOf<ModelMenuItem>()
-/*        helpMenuItemList.add(ModelMenuItem(NavigationEnum.FAQ, "FAQ", "", R.drawable.ic_round_help_24))
+        /*        helpMenuItemList.add(ModelMenuItem(NavigationEnum.FAQ, "FAQ", "", R.drawable.ic_round_help_24))
         helpMenuItemList.add(
             ModelMenuItem(
                 NavigationEnum.HOW_IT_WORKS,
@@ -318,38 +331,16 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
         viewModel.userRoleID.observe(viewLifecycleOwner, {
             roleID = it
             if (userId!="" && roleID!=0){
-                viewModel.getWalletBalance(userId,roleID)
-                viewModel.getPCashBalance(userId,roleID)
+                viewModel.getDashboardData(userId,roleID)
             }
 
         })
-        viewModel.walletBalance.observe(viewLifecycleOwner,{ _result ->
-            when(_result.status)
-            {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                       createWalletLayout(it.toString())
-                    }
 
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-        viewModel.pCash.observe(viewLifecycleOwner, { _result ->
-            when(_result.status)
-            {
+        viewModel.dashboardData.observe(this, { _result ->
+            when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        createPcashLayout(it.toString())
+                        populateDashboardItems(it)
                     }
                     displayLoading(false)
                 }
@@ -364,9 +355,20 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 }
             }
         })
-
     }
 
+    private fun populateDashboardItems(it: JsonObject) {
+        val dashboardItems = mutableListOf<ModelTitleValue>()
+        dashboardItems.add(ModelTitleValue("Wallet",it.get("BusinessWallet").toString(),NavigationEnum.WALLET))
+        dashboardItems.add(ModelTitleValue("PCash",it.get("IncomeWallet").toString(),NavigationEnum.P_CASH))
+        dashboardItems.add(ModelTitleValue("Downline",it.get("DownlineTeamCount").toString(),NavigationEnum.DOWNLINE))
+        dashboardItems.add(ModelTitleValue("Direct Team",it.get("DirectTeamCount").toString(),NavigationEnum.DOWNLINE))
+
+        dashboardItemAdapter.setModelTitleValueList(dashboardItems)
+
+
+    }
+/*
     private fun createWalletLayout(amount : String){
         binding.layoutWallet.root.isVisible = true
         binding.layoutWallet.root.setCardBackgroundColor(ContextCompat.getColor(requireContext(),
@@ -393,7 +395,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
             intent.putExtra("FILTER","INCOME")
             startActivity(intent)
         }
-    }
+    }*/
 
 
     inner class ShowQrCode(context: Context) : Dialog(context) {
@@ -435,5 +437,23 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
     override fun onDestroyView() {
         super.onDestroyView()
         progressBarHandler.hide()
+    }
+
+    override fun onItemClick(item: ModelTitleValue) {
+        when(item.mType){
+            NavigationEnum.WALLET->{
+                val intent = Intent(requireActivity(), CustomerWalletActivity::class.java)
+                intent.putExtra("FILTER","BUSINESS")
+                startActivity(intent)
+            }
+            NavigationEnum.P_CASH->{
+                val intent = Intent(requireActivity(), CustomerWalletActivity::class.java)
+                intent.putExtra("FILTER","INCOME")
+                startActivity(intent)
+            }
+            NavigationEnum.DOWNLINE->{
+
+            }
+        }
     }
 }

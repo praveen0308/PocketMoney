@@ -14,7 +14,8 @@ import com.example.pocketmoney.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SplashScreen : BaseFragment<FragmentSplashScreenBinding>(FragmentSplashScreenBinding::inflate) {
+class SplashScreen :
+    BaseFragment<FragmentSplashScreenBinding>(FragmentSplashScreenBinding::inflate) {
 
     private val viewModel by viewModels<SplashScreenViewModel>()
 
@@ -33,12 +34,17 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>(FragmentSplashScr
     private fun performNavigation() {
         viewModel.welcomeStatus.observe(viewLifecycleOwner, {
 
-            when(it){
+            when (it) {
                 Constants.NEW_USER -> navController.navigate(SplashScreenDirections.actionSplashScreenToOnBoardingScreen())
-                Constants.ONBOARDING_DONE -> navController.navigate(SplashScreenDirections.actionSplashScreenToLoginFragment())
+                Constants.ONBOARDING_DONE -> {
+                    navController.navigate(SplashScreenDirections.actionSplashScreenToMainDashboard())
+                    requireActivity().finish()
+//                    navController.navigate(SplashScreenDirections.actionSplashScreenToLoginFragment())
+                }
                 Constants.LOGIN_DONE -> {
                     navController.navigate(SplashScreenDirections.actionSplashScreenToMainDashboard())
                     requireActivity().finish()
+
                 }
 
             }

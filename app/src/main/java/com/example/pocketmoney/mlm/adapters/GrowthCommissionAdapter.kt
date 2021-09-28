@@ -54,7 +54,7 @@ class GrowthCommissionAdapter(private val growthCommissionAdapterInterface: Grow
 
         fun createMenuItem(item: GrowthCommissionDataModel) {
             binding.apply {
-                tvTitle.text = item.title
+                tvSubtitle.text = item.title
 //                tvSubtitle.text = item.subtitle
                 tvValue.text = item.count.toString()
 //                if (item.isSelected) {
