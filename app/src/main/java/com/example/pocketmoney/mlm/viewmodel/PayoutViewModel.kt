@@ -87,8 +87,8 @@ class PayoutViewModel @Inject constructor(
     }
 
 
-    private val _payoutCustomer = MutableLiveData<Resource<PayoutCustomer>>()
-    val payoutCustomer: LiveData<Resource<PayoutCustomer>> = _payoutCustomer
+    private val _payoutCustomer = MutableLiveData<Resource<PayoutCustomer?>>()
+    val payoutCustomer: LiveData<Resource<PayoutCustomer?>> = _payoutCustomer
 
     fun searchPayoutCustomer(customerId:String) {
 

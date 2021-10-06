@@ -4,15 +4,24 @@ import androidx.lifecycle.*
 import com.example.pocketmoney.mlm.model.ModelContact
 import com.example.pocketmoney.mlm.model.ModelOperator
 import com.example.pocketmoney.mlm.model.RechargeEnum
-import com.example.pocketmoney.mlm.model.mlmModels.CustomerComplaintModel
 import com.example.pocketmoney.mlm.model.serviceModels.*
 import com.example.pocketmoney.mlm.repository.*
-import com.example.pocketmoney.utils.DataState
-import com.example.pocketmoney.utils.Resource
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.ADDING_USED_SERVICE_DETAIL
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.CHECKING_WALLET_BALANCE
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.CHECKSUM_RECEIVED
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.ERROR
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.INSUFFICIENT_BALANCE
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.LOADING
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.PENDING
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.RECHARGE_FAILED
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.RECHARGE_SUCCESSFUL
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.START_PAYMENT_GATEWAY
+import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,13 +45,19 @@ class MobileRechargeViewModel @Inject constructor(
 
     val rechargeMobileNo  = MutableLiveData<String>()
     val selectedOperator = MutableLiveData<String>()
-    val selectedCircle  = MutableLiveData<String>("Mumbai")
+    val selectedCircle  = MutableLiveData("Maharashtra")
+    lateinit var recharge : MobileRechargeModel
+
+    val progressStatus = MutableLiveData<Int>()
+
+    var transactionToken = ""
+    lateinit var paytmResponseModel: PaytmResponseModel
 
     private val _contactList: MutableLiveData<DataState<List<ModelContact>>> = MutableLiveData()
     val contactList: LiveData<DataState<List<ModelContact>>>
         get() = _contactList
 
-    val progressStatus = MutableLiveData(false)
+//    val progressStatus = MutableLiveData(false)
 
     fun getContactList(){
         viewModelScope.launch {
@@ -79,15 +94,11 @@ class MobileRechargeViewModel @Inject constructor(
     val mobileOperators: LiveData<List<ModelOperator>> = _mobileOperators
 
     fun getMobileOperators() {
-
         viewModelScope.launch {
             _mobileOperators.postValue(rechargeRepository.getOperators(RechargeEnum.PREPAID))
 
         }
-
     }
-
-
 
     private val _circleNOperatorOfMobileNo = MutableLiveData<Resource<MobileCircleOperator>>()
     val circleNOperatorOfMobileNo: LiveData<Resource<MobileCircleOperator>> = _circleNOperatorOfMobileNo
@@ -233,32 +244,51 @@ class MobileRechargeViewModel @Inject constructor(
     private val _walletBalance = MutableLiveData<Resource<Double>>()
     val walletBalance : LiveData<Resource<Double>> = _walletBalance
 
-
-    private val _pCash = MutableLiveData<Resource<Double>>()
-    val pCash: LiveData<Resource<Double>> = _pCash
-
-
     fun getWalletBalance(userId: String, roleId: Int) {
-
         viewModelScope.launch {
-
             walletRepository
                 .getWalletBalance(userId, roleId, 1)
                 .onStart {
+                    progressStatus.postValue(CHECKING_WALLET_BALANCE)
                     _walletBalance.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _walletBalance.postValue(Resource.Error(it))
+                        progressStatus.postValue(ERROR)
+                        _walletBalance.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error occurred while fetching wallet balance")
+                        Timber.e("Exception : $it")
+
                     }
                 }
                 .collect { _balance->
+                    if(_balance<rechargeAmount.value!!){
+                        progressStatus.postValue(INSUFFICIENT_BALANCE)
+                        _walletBalance.postValue(Resource.Error("Insufficient Wallet Balance !!!"))
+                        Timber.d("Insufficient Wallet Balance !!!")
+
+                    }else{
+                        recharge = MobileRechargeModel()
+                        recharge.UserID = userId
+                        recharge.MobileNo = rechargeMobileNo.value!!
+                        recharge.ServiceTypeID = 1
+                        recharge.WalletTypeID = 1
+                        recharge.OperatorCode = getMobileOperatorCode(selectedOperator.value!!).toString()
+                        recharge.RechargeAmt = rechargeAmount.value!!.toDouble()
+                        recharge.ServiceField1 = ""
+                        recharge.ServiceProviderID = 3
+                        recharge.Status = "Received"
+                        recharge.TransTypeID = 9
+
+                        addUsedServiceDetail(recharge)
+                        progressStatus.postValue(ADDING_USED_SERVICE_DETAIL)
+                    }
                     _walletBalance.postValue(Resource.Success(_balance))
                 }
         }
-
     }
-
+    private val _pCash = MutableLiveData<Resource<Double>>()
+    val pCash: LiveData<Resource<Double>> = _pCash
 
     fun getPCashBalance(userId: String, roleId: Int) {
 
@@ -267,14 +297,37 @@ class MobileRechargeViewModel @Inject constructor(
             walletRepository
                 .getWalletBalance(userId, roleId, 2)
                 .onStart {
+                    progressStatus.postValue(CHECKING_WALLET_BALANCE)
                     _pCash.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _pCash.postValue(Resource.Error(it))
+                        _pCash.postValue(Resource.Error("Something went wrong !!!"))
+                        progressStatus.postValue(ERROR)
+                        Timber.d("Error occurred while fetching wallet balance")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { _balance->
+                    if(_balance<rechargeAmount.value!!){
+                        progressStatus.postValue(INSUFFICIENT_BALANCE)
+                        _pCash.postValue(Resource.Error("Insufficient Wallet Balance !!!"))
+                    }else{
+                        recharge = MobileRechargeModel()
+                        recharge.UserID = userId
+                        recharge.MobileNo = rechargeMobileNo.value!!
+                        recharge.ServiceTypeID = 1
+                        recharge.WalletTypeID = 4
+                        recharge.OperatorCode = getMobileOperatorCode(selectedOperator.value!!).toString()
+                        recharge.RechargeAmt = rechargeAmount.value!!.toDouble()
+                        recharge.ServiceField1 = ""
+                        recharge.ServiceProviderID = 3
+                        recharge.Status = "Received"
+                        recharge.TransTypeID = 9
+
+                        addUsedServiceDetail(recharge)
+                        progressStatus.postValue(ADDING_USED_SERVICE_DETAIL)
+                    }
                     _pCash.postValue(Resource.Success(_balance))
                 }
         }
@@ -283,7 +336,7 @@ class MobileRechargeViewModel @Inject constructor(
 
 
     private val _checkSum = MutableLiveData<Resource<String>>()
-    val checkSum : LiveData<Resource<String>> = _checkSum
+    var checkSum : LiveData<Resource<String>> = _checkSum
 
     fun initiateTransactionApi(paytmRequestData: PaytmRequestData) {
 
@@ -292,14 +345,20 @@ class MobileRechargeViewModel @Inject constructor(
             paytmRepository
                 .initiateTransactionApi(paytmRequestData)
                 .onStart {
+                    progressStatus.postValue(LOADING)
                     _checkSum.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _checkSum.postValue(Resource.Error(it))
+                        _checkSum.postValue(Resource.Error("Something went wrong !!!"))
+                        progressStatus.postValue(ERROR)
+                        Timber.d("Error occurred while generation of checksum.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response->
+                    progressStatus.postValue(CHECKSUM_RECEIVED)
+                    transactionToken = response
                     _checkSum.postValue(Resource.Success(response))
                 }
         }
@@ -312,24 +371,26 @@ class MobileRechargeViewModel @Inject constructor(
 
 
     fun addUsedServiceDetail(usedServiceDetailModel: MobileRechargeModel) {
-
         viewModelScope.launch {
-
             serviceRepository
                 .addUsedServiceDetail(usedServiceDetailModel)
                 .onStart {
+                    progressStatus.postValue(LOADING)
                     _addUsedServiceDetailResponse.postValue(Resource.Loading(true))
-                    progressStatus.postValue(true)
+//                    progressStatus.postValue(true)
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _addUsedServiceDetailResponse.postValue(Resource.Error(it))
+                        _addUsedServiceDetailResponse.postValue(Resource.Error("Something went wrong !!!"))
+                        progressStatus.postValue(ERROR)
+                        Timber.d("Error occurred while adding used service detail.")
+                        Timber.e("Exception : $it")
 
                     }
                 }
                 .collect { response->
                     if (response>0){
-                        getUsedServiceRequestId(userId.value!!,rechargeMobileNo.value!!)
+                        getUsedServiceRequestId(usedServiceDetailModel.UserID!!,rechargeMobileNo.value!!)
                     }
                     _addUsedServiceDetailResponse.postValue(Resource.Success(response))
                 }
@@ -341,24 +402,30 @@ class MobileRechargeViewModel @Inject constructor(
     private val _usedServiceRequestId = MutableLiveData<Resource<String>>()
     val usedServiceRequestId: LiveData<Resource<String>> = _usedServiceRequestId
 
-
     fun getUsedServiceRequestId(userId: String,mobileNo: String) {
-
         viewModelScope.launch {
-
             serviceRepository
                 .getUsedServiceRequestId(userId, mobileNo)
                 .onStart {
+                    progressStatus.postValue(LOADING)
                     _usedServiceRequestId.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _usedServiceRequestId.postValue(Resource.Error(it))
+                        _usedServiceRequestId.postValue(Resource.Error("Something went wrong !!!"))
+                        progressStatus.postValue(ERROR)
+                        Timber.d("Error occurred while getting used service request id.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response->
-
+                    recharge.RequestID = response
                     _usedServiceRequestId.postValue(Resource.Success(response))
+                    if (serviceRepository.selectedPaymentMethod==PaymentEnum.PAYTM){
+                        progressStatus.postValue(START_PAYMENT_GATEWAY)
+                    }else{
+                        callSampurnaRechargeService(recharge)
+                    }
                 }
         }
 
@@ -372,18 +439,44 @@ class MobileRechargeViewModel @Inject constructor(
     fun callSampurnaRechargeService(mobileRechargeModel: MobileRechargeModel) {
 
         viewModelScope.launch {
-
             serviceRepository
                 .callSamupurnaRechargeService(mobileRechargeModel)
                 .onStart {
+                    progressStatus.postValue(LOADING)
                     _mobileRechargeModel.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _mobileRechargeModel.postValue(Resource.Error(it))
+                        _mobileRechargeModel.postValue(Resource.Error("Something went wrong !!!"))
+                        progressStatus.postValue(ERROR)
+                        Timber.d("Error occurred while calling SampurnaRechargeService.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response->
+                    when(response.Status){
+                        "SUCCESS"->{
+                            if (serviceRepository.selectedPaymentMethod==PaymentEnum.PAYTM){
+                                if (paytmResponseModel.PAYMENTMODE != "UPI"){
+                                    val amountDeduct = (paytmResponseModel.TXNAMOUNT?.toDouble() ?: 0.0) * 2 / 100
+                                    walletChargeDeduct(mobileRechargeModel.UserID!!,2,amountDeduct,recharge.RequestID!!,18)
+                                }else{
+                                    progressStatus.postValue(RECHARGE_SUCCESSFUL)
+                                }
+                            }else{
+                                progressStatus.postValue(RECHARGE_SUCCESSFUL)
+
+                            }
+
+                        }
+                        "FAILED"->{
+                            progressStatus.postValue(RECHARGE_FAILED)
+                        }
+                        "PENDING"->{
+                            progressStatus.postValue(PENDING)
+                        }
+                    }
+
                     _mobileRechargeModel.postValue(Resource.Success(response))
                 }
         }
@@ -398,14 +491,27 @@ class MobileRechargeViewModel @Inject constructor(
             paytmRepository
                 .addPaymentTransactionDetails(paymentGatewayTransactionModel)
                 .onStart {
+                    progressStatus.postValue(LOADING)
                     _addPaymentTransResponse.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _addPaymentTransResponse.postValue(Resource.Error(it))
+                        _addPaymentTransResponse.postValue(Resource.Error("Something went wrong !!!"))
+                        progressStatus.postValue(ERROR)
+                        Timber.d("Error occurred while calling SampurnaRechargeService.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response->
+                    if (paytmResponseModel.STATUS == "SUCCESS"){
+                        Timber.d("Payment Gateway response was successful.")
+                        callSampurnaRechargeService(recharge)
+                    }else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE"){
+                        Timber.d("Payment Gateway response was failed.")
+                        progressStatus.postValue(RECHARGE_FAILED)
+                        _addPaymentTransResponse.postValue(Resource.Error("Payment failed !!!"))
+
+                    }
                     _addPaymentTransResponse.postValue(Resource.Success(response))
                 }
         }
@@ -421,14 +527,19 @@ class MobileRechargeViewModel @Inject constructor(
             walletRepository
                 .walletChargeDeduction(userId, walletId, amount, requestId, serviceId)
                 .onStart {
+                    progressStatus.postValue(LOADING)
                     _walletChargeDeducted.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _walletChargeDeducted.postValue(Resource.Error(it))
+                        _walletChargeDeducted.postValue(Resource.Error("Something went wrong !!!"))
+                        progressStatus.postValue(ERROR)
+                        Timber.d("Error occurred while wallet charge deduction.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response->
+                    progressStatus.postValue(RECHARGE_SUCCESSFUL)
                     _walletChargeDeducted.postValue(Resource.Success(response))
                 }
         }

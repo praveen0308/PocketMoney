@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.databinding.ActivityCustomerWalletBinding
@@ -42,6 +43,7 @@ class CustomerWalletActivity : BaseActivity<ActivityCustomerWalletBinding>(Activ
         super.onCreate(savedInstanceState)
 
         filter = intent.getStringExtra("FILTER").toString()
+        if(filter=="INCOME") binding.fabTransfer.isVisible =false
         populateTimeFilter(getTimeFilter().toMutableList())
         setupRecyclerview()
         binding.toolbarCustomerWallet.setApplicationToolbarListener(this)

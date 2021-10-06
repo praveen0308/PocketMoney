@@ -167,12 +167,10 @@ class NewCheckout : BaseActivity<ActivityNewCheckoutBinding>(ActivityNewCheckout
 
                                 }
                                 else->{
-
-                                    val message1: String =
-                                        "Thank you for shopping with pocketmoney, your order placed successfully. Your order number is  " + orderNumber.toString() + " you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
+                                    val message1 =
+                                        "Thank you for shopping with pocketmoney, your order placed successfully. Your order number is  $orderNumber you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
                                     viewModel.sendWhatsappMessage(userId,message1)
                                     displayError("Order Successfully !!!")
-
                                 }
                             }
 

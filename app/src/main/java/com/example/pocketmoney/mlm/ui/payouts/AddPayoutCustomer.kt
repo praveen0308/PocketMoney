@@ -51,7 +51,7 @@ class AddPayoutCustomer : BaseBottomSheetDialogFragment<FragmentAddPayoutCustome
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        showToast("CustomerAdded Successfully !!!")
+                        showToast("Customer added Successfully !!!")
                         dismiss()
                     }
                     displayLoading(false)

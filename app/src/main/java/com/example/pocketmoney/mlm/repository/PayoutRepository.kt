@@ -1,5 +1,6 @@
 package com.example.pocketmoney.mlm.repository
 
+import android.util.Log
 import com.example.pocketmoney.mlm.model.CustomerDetailResponse
 import com.example.pocketmoney.mlm.model.payoutmodels.*
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
@@ -8,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import timber.log.Timber
 import javax.inject.Inject
 
 class PayoutRepository @Inject constructor(val paymentService: PaymentService){
@@ -21,11 +23,12 @@ class PayoutRepository @Inject constructor(val paymentService: PaymentService){
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun searchPayoutCustomer(customerId:String): Flow<PayoutCustomer> {
+    suspend fun searchPayoutCustomer(customerId:String): Flow<PayoutCustomer?> {
         return flow {
             val response = paymentService.searchPayoutCustomer(customerId)
-
-            emit(response)
+            Log.d("PayoutRepo","Search customer response : $response")
+//            Timber.d("Search customer response : $response")
+            emit(response.body())
         }.flowOn(Dispatchers.IO)
     }
 

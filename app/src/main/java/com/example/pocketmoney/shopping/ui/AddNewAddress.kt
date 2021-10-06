@@ -56,13 +56,14 @@ class AddNewAddress : BaseActivity<ActivityAddNewAddressBinding>(ActivityAddNewA
                 Address1 = address,
                 Locality = locality,
                 Street = street,
-                CountryID = countryId.toString(),
-                StateID =  stateId.toString(),
+                CountryID = countryId,
+                StateID = stateId,
                 CityID =  cityId.toString(),
                 PostalCode = pincode,
                 UserID = userId,
                 AddressType = "Home",
-                IsCancel = false
+                IsCancel = false,
+                AddressID = mID
             )
 
             if (action==OtherEnum.ADD){

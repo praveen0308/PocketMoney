@@ -185,7 +185,7 @@ class RechargePaymentSheet : BaseBottomSheetDialogFragment<FragmentRechargePayme
 
 
         viewModel.progressStatus.observe(viewLifecycleOwner,{
-            displayLoading(it)
+//            displayLoading(it)
         })
     }
 

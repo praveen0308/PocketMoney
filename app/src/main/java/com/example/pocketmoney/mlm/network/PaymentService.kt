@@ -2,6 +2,7 @@ package com.example.pocketmoney.mlm.network
 
 import com.example.pocketmoney.mlm.model.payoutmodels.*
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -16,7 +17,7 @@ interface PaymentService {
     @POST("Payment/SearchPayoutCustomer")
     suspend fun searchPayoutCustomer(
         @Query("customerid") customerId : String
-    ): PayoutCustomer
+    ): Response<PayoutCustomer?>
 
     @POST("Payment/GetBeneficiaryDetails")
     suspend fun getBeneficiaryDetails(

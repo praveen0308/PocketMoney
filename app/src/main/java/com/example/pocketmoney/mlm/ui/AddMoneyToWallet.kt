@@ -48,6 +48,7 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
 
 
         binding.btnPay.setButtonClick {
+
             gatewayOrderId = createRandomOrderId()
             mAmount = binding.etAmount.text.toString()
             viewModel.initiateTransactionApi(

@@ -41,7 +41,7 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
 
         binding.btnSearch.setOnClickListener {
             viewModel.customerNumber.postValue(binding.etSearchView.text.toString().trim())
-            if (btnState.equals("ADD")){
+            if (btnState == "ADD"){
                 val sheet = AddPayoutCustomer()
                 sheet.show(supportFragmentManager,sheet.tag)
             }
@@ -81,14 +81,16 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
         viewModel.payoutCustomer.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
-                    _result._data?.let {
-
-                        if (it==null){
-                            viewModel.btnState.postValue(2)
-                        }else{
-                            populateCustomerUI(it)
+                    if (_result._data ==null){
+                        viewModel.btnState.postValue(2)
+                    }else{
+                        populateCustomerUI(_result._data)
+                        binding.apply {
+                            tlPayouts.isVisible = true
+                            vpPayouts.isVisible= true
                         }
                     }
+
                     displayLoading(false)
                 }
                 Status.LOADING -> {

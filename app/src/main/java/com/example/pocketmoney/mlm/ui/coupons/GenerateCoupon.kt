@@ -88,8 +88,8 @@ class GenerateCoupon : BaseBottomSheetDialogFragment<FragmentGenerateCouponBindi
         if (result){
             when(selectedMethod){
                 PaymentEnum.WALLET->viewModel.generateNewCoupons(userId,1,viewModel.noOfCoupons.value!!)
-                PaymentEnum.PCASH->viewModel.generateNewCoupons(userId,4,viewModel.noOfCoupons.value!!)
-                PaymentEnum.PAYTM->viewModel.generateNewCoupons(userId,2,viewModel.noOfCoupons.value!!)
+                PaymentEnum.PCASH->viewModel.generateNewCoupons(userId,2,viewModel.noOfCoupons.value!!)
+                PaymentEnum.PAYTM->viewModel.generateNewCoupons(userId,3,viewModel.noOfCoupons.value!!)
             }
         }
         else{

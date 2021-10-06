@@ -3,7 +3,6 @@ package com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.pocketmoney.R
 import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.FragmentRechargeBinding
+import com.example.pocketmoney.mlm.model.OperationResultModel
 import com.example.pocketmoney.mlm.model.serviceModels.MobileRechargeModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
@@ -21,6 +21,7 @@ import com.example.pocketmoney.mlm.repository.ServiceRepository
 import com.example.pocketmoney.mlm.ui.mobilerecharge.SelectContact
 import com.example.pocketmoney.mlm.ui.mobilerecharge.newui.ChooseRechargePlans
 import com.example.pocketmoney.mlm.viewmodel.MobileRechargeViewModel
+import com.example.pocketmoney.paymentgateway.OperationResultDialog
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import com.example.pocketmoney.utils.myEnums.PlanType
@@ -28,11 +29,13 @@ import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
 import com.paytm.pgsdk.TransactionManager
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class Recharge(val mListener : MobileRechargeInterface) : BaseFragment<FragmentRechargeBinding>(FragmentRechargeBinding::inflate),
-    PaymentMethods.PaymentMethodsInterface {
+    PaymentMethods.PaymentMethodsInterface, PaytmPaymentTransactionCallback,
+    OperationResultDialog.OperationResultDialogCallback {
 
     private val viewModel by activityViewModels<MobileRechargeViewModel>()
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -44,18 +47,17 @@ class Recharge(val mListener : MobileRechargeInterface) : BaseFragment<FragmentR
     private lateinit var userId : String
     private var roleId = 0
 
-    private lateinit var recharge : MobileRechargeModel
+//    private lateinit var recharge : MobileRechargeModel
     private var gatewayOrderId : String = ""
 
-    private lateinit var paytmResponseModel: PaytmResponseModel
+//    private lateinit var viewModel.paytmResponseModel: PaytmResponseModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        resultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 val data: Intent? = result.data
                 if (result.resultCode == Activity.RESULT_OK){
                     val number = data!!.getStringExtra("Number")!!
-                    binding.etMobileNumber.setText(number.toString())
+                    binding.etMobileNumber.setText(number)
                 }
                 else{
                     showToast("Cancelled !!")
@@ -106,6 +108,14 @@ class Recharge(val mListener : MobileRechargeInterface) : BaseFragment<FragmentR
         }
     }
 
+    private fun onRechargeFailed(){
+        showSuccessfulDialog("Recharge Failed !!!",isSuccess = false,dialogListener = object :MyDialogListener{
+            override fun onDismiss() {
+                requireActivity().finish()
+            }
+        })
+    }
+
     override fun subscribeObservers() {
         viewModel.userId.observe(this,{
             userId = it
@@ -129,7 +139,6 @@ class Recharge(val mListener : MobileRechargeInterface) : BaseFragment<FragmentR
         viewModel.rechargeMobileNo.observe(viewLifecycleOwner,{
             if (it.length==10) binding.btnConfirm.isEnabled = true
         })
-
 
         viewModel.circleNOperatorOfMobileNo.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
@@ -159,262 +168,94 @@ class Recharge(val mListener : MobileRechargeInterface) : BaseFragment<FragmentR
             }
         })
 
-
-        viewModel.walletBalance.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (it < viewModel.rechargeAmount.value!!){
-                            showToast("Insufficient Wallet Balance !!!")
-                        }else{
-                            recharge = MobileRechargeModel()
-                            recharge.UserID = userId
-                            recharge.MobileNo = viewModel.rechargeMobileNo.value!!
-                            recharge.ServiceTypeID = 1
-                            recharge.WalletTypeID = 1
-                            recharge.OperatorCode = getMobileOperatorCode(viewModel.selectedOperator.value!!).toString()
-                            recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
-                            recharge.ServiceField1 = ""
-                            recharge.ServiceProviderID = 3
-                            recharge.Status = "Received"
-                            recharge.TransTypeID = 9
-                            viewModel.addUsedServiceDetail(recharge)
-                        }
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
+        viewModel.progressStatus.observe(viewLifecycleOwner,{
+            when(it){
+                LOADING ->{
                     displayLoading(true)
                 }
-                Status.ERROR -> {
+                ERROR ->{
                     displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
+                    showToast("Something went wrong !!!")
+                }
+                CHECKING_WALLET_BALANCE->{
+                    displayLoading(true)
+                }
+                INSUFFICIENT_BALANCE->{
+                    displayLoading(false)
+                    showToast("Insufficient balance !!!")
+
+                }
+                START_PAYMENT_GATEWAY->{
+                    displayLoading(false)
+                    startPayment()
+                }
+                CHECKSUM_RECEIVED->{
+                    displayLoading(false)
+                    val paytmOrder = PaytmOrder(viewModel.recharge.RequestID, Constants.P_MERCHANT_ID, viewModel.transactionToken, viewModel.rechargeAmount.value.toString(),
+                        Constants.PAYTM_CALLBACK_URL+viewModel.recharge.RequestID)
+                    processPaytmTransaction(paytmOrder)
+                }
+                PENDING->{
+                    displayLoading(false)
+
+                    showFullScreenDialog(
+                        OperationResultModel(title1 = "Recharge pending !!!",
+                            amount = viewModel.rechargeAmount.value.toString(),status = "Payment pending",
+                            timestamp = getTodayDate(),viewModel.recharge.RequestID!!,animationUrl = R.raw.error_animation)
+                        ,operationResultDialogCallback = this)
+                }
+                RECHARGE_FAILED->{
+                    displayLoading(false)
+                    showFullScreenDialog(
+                        OperationResultModel(title1 = "Recharge failed !!!",
+                            amount = viewModel.rechargeAmount.value.toString(),status = "Payment Failed",
+                            timestamp = getTodayDate(),viewModel.recharge.RequestID!!,animationUrl = R.raw.error_animation)
+                        ,operationResultDialogCallback = this)
+                }
+                RECHARGE_SUCCESSFUL->{
+                    displayLoading(false)
+                    showFullScreenDialog(
+                        OperationResultModel(title1 = "Recharge done successfully!!",
+                            amount = viewModel.rechargeAmount.value.toString(),status = "Payment Successful",
+                            timestamp = getTodayDate(),viewModel.recharge.RequestID!!,animationUrl = R.raw.success_animation)
+                        ,operationResultDialogCallback = this)
                 }
             }
         })
 
-        viewModel.pCash.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (it < viewModel.rechargeAmount.value!!){
-                            showToast("Insufficient Wallet Balance !!!")
-
-
-                        }else{
-                            recharge = MobileRechargeModel()
-                            recharge.UserID = userId
-                            recharge.MobileNo = viewModel.rechargeMobileNo.value!!
-                            recharge.ServiceTypeID = 1
-                            recharge.WalletTypeID = 4
-                            recharge.OperatorCode = getMobileOperatorCode(viewModel.selectedOperator.value!!).toString()
-                            recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
-                            recharge.ServiceField1 = ""
-                            recharge.ServiceProviderID = 3
-                            recharge.Status = "Received"
-                            recharge.TransTypeID = 9
-                            viewModel.addUsedServiceDetail(recharge)
-                        }
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
-        viewModel.checkSum.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        val paytmOrder = PaytmOrder(recharge.RequestID, Constants.P_MERCHANT_ID, it, viewModel.rechargeAmount.value.toString(),
-                            Constants.PAYTM_CALLBACK_URL+recharge.RequestID)
-                        processPaytmTransaction(paytmOrder)
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
-        viewModel.addUsedServiceDetailResponse.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (it>0){
-                            viewModel.getUsedServiceRequestId(userId,recharge.MobileNo!!)
-                        }
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
-        viewModel.usedServiceRequestId.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        recharge.RequestID = it
-                        if (serviceRepository.selectedPaymentMethod==PaymentEnum.PAYTM){
-                            startPayment()
-                        }else{
-                            viewModel.callSampurnaRechargeService(recharge)
-                        }
-
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
-
-
-        viewModel.mobileRechargeModel.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-
-                        if (serviceRepository.selectedPaymentMethod==PaymentEnum.PAYTM){
-                            if (paytmResponseModel.PAYMENTMODE != "UPI"){
-                                val amountDeduct = (paytmResponseModel.TXNAMOUNT?.toDouble() ?: 0.0) * 2 / 100
-
-                                viewModel.walletChargeDeduct(userId,2,amountDeduct,recharge.RequestID!!,18)
-                            }
-                        }else{
-                            showToast("Recharge done successfully !!!!")
-                            requireActivity().finish()
-                        }
-
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
-        viewModel.addPaymentTransResponse.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (paytmResponseModel.STATUS == "SUCCESS"){
-                            viewModel.callSampurnaRechargeService(recharge)
-
-
-                        }else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE"){
-                            showToast("Payment failed !!!")
-
-                        }
-
-
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
-        viewModel.walletChargeDeducted.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        showToast("Recharge done successfully !!!!")
-                        requireActivity().finish()
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
     }
 
     override fun onPaymentMethodSelected(method: PaymentEnum) {
         serviceRepository.selectedPaymentMethod = method
+
+
         when(method){
             PaymentEnum.WALLET->viewModel.getWalletBalance(userId, roleId)
             PaymentEnum.PCASH->viewModel.getWalletBalance(userId, roleId)
             PaymentEnum.PAYTM->{
-                recharge = MobileRechargeModel()
-                recharge.UserID = userId
-                recharge.MobileNo = viewModel.rechargeMobileNo.value!!
-                recharge.ServiceTypeID = 1
-                recharge.WalletTypeID = 3
-                recharge.OperatorCode = getMobileOperatorCode(viewModel.selectedOperator.value!!).toString()
-                recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
-                recharge.ServiceField1 = ""
-                recharge.ServiceProviderID = 3
-                recharge.Status = "Received"
-                recharge.TransTypeID = 9
-                viewModel.addUsedServiceDetail(recharge)
+         viewModel.recharge = MobileRechargeModel()
+                viewModel.recharge.UserID = userId
+                viewModel.recharge.MobileNo = viewModel.rechargeMobileNo.value!!
+                viewModel.recharge.ServiceTypeID = 1
+                viewModel.recharge.WalletTypeID = 2
+                viewModel.recharge.OperatorCode = getMobileOperatorCode(viewModel.selectedOperator.value!!).toString()
+                viewModel.recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
+                viewModel.recharge.ServiceField1 = ""
+                viewModel.recharge.ServiceProviderID = 3
+                viewModel.recharge.Status = "Received"
+                viewModel.recharge.TransTypeID = 9
+                viewModel.addUsedServiceDetail(viewModel.recharge)
 
             }
         }
     }
 
-    fun startPayment() {
+    private fun startPayment() {
         gatewayOrderId = createRandomOrderId()
 
         viewModel.initiateTransactionApi(
             PaytmRequestData(
-                account= recharge.RequestID,
+                account= viewModel.recharge.RequestID,
                 amount = viewModel.rechargeAmount.value.toString(),
                 callbackurl = Constants.PAYTM_CALLBACK_URL,
                 userid = userId
@@ -425,83 +266,8 @@ class Recharge(val mListener : MobileRechargeInterface) : BaseFragment<FragmentR
 
     private fun processPaytmTransaction(paytmOrder: PaytmOrder) {
         try {
-
             val transactionManager =
-                TransactionManager(paytmOrder, object : PaytmPaymentTransactionCallback {
-
-
-                    override fun onTransactionResponse(p0: Bundle?) {
-                        Log.e("PAYTM_TRANS",p0.toString())
-                        p0?.let {
-                            paytmResponseModel = PaytmResponseModel(
-                                STATUS = it.getString("STATUS")!!.substring(4),
-                                ORDERID = it.getString("ORDERID"),
-                                CHARGEAMOUNT = it.getString("CHARGEAMOUNT"),
-                                TXNAMOUNT = it.getString("TXNAMOUNT"),
-                                TXNDATE = it.getString("TXNDATE"),
-                                MID = it.getString("MID"),
-                                TXNID = it.getString("TXNID"),
-                                RESPCODE = it.getString("RESPCODE"),
-                                PAYMENTMODE = it.getString("PAYMENTMODE"),
-                                BANKTXNID = it.getString("BANKTXNID"),
-                                CURRENCY = it.getString("CURRENCY"),
-                                GATEWAYNAME = it.getString("GATEWAYNAME"),
-                                RESPMSG = it.getString("RESPMSG")
-
-                            )
-                        }
-
-                        viewModel.addPaymentTransactionDetail(
-                            PaymentGatewayTransactionModel(
-                                UserId = userId,
-                                OrderId = paytmResponseModel.ORDERID,
-//                                ReferenceTransactionId = it,
-                                ServiceTypeId = 1,
-                                WalletTypeId = 1,
-                                TxnAmount = paytmResponseModel.TXNAMOUNT,
-                                Currency = paytmResponseModel.CURRENCY,
-                                TransactionTypeId = 1,
-                                IsCredit =  false,
-                                TxnId = paytmResponseModel.TXNID,
-                                Status = paytmResponseModel.STATUS,
-                                RespCode = paytmResponseModel.RESPCODE,
-                                RespMsg = paytmResponseModel.RESPMSG,
-                                BankTxnId = paytmResponseModel.BANKTXNID,
-                                BankName = paytmResponseModel.GATEWAYNAME,
-                                PaymentMode = paytmResponseModel.PAYMENTMODE
-                            )
-                        )
-
-                    }
-
-                    override fun networkNotAvailable() {
-                        Log.e("RESPONSE", "network not available")
-                    }
-
-                    override fun onErrorProceed(s: String) {
-                        Log.e("RESPONSE", "error proceed: $s")
-                    }
-
-                    override fun clientAuthenticationFailed(s: String) {
-                        Log.e("RESPONSE", "client auth failed: $s")
-                    }
-
-                    override fun someUIErrorOccurred(s: String) {
-                        Log.e("RESPONSE", "UI error occured: $s")
-                    }
-
-                    override fun onErrorLoadingWebPage(i: Int, s: String, s1: String) {
-                        Log.e("RESPONSE", "error loading webpage: $s--$s1")
-                    }
-
-                    override fun onBackPressedCancelTransaction() {
-                        Log.e("RESPONSE", "back pressed")
-                    }
-
-                    override fun onTransactionCancel(s: String, bundle: Bundle?) {
-                        Log.e("RESPONSE", "transaction cancel: $s")
-                    }
-                })
+                TransactionManager(paytmOrder, this)
             transactionManager.setAppInvokeEnabled(false)
             transactionManager.startTransaction(requireActivity(), 3)
         } catch (e: Exception) {
@@ -511,5 +277,120 @@ class Recharge(val mListener : MobileRechargeInterface) : BaseFragment<FragmentR
 
     interface MobileRechargeInterface{
         fun operatorSelection()
+    }
+    override fun onTransactionResponse(p0: Bundle?) {
+        Timber.d("onTransactionResponse : ${p0.toString()}")
+        
+        p0?.let {
+            viewModel.paytmResponseModel = PaytmResponseModel(
+                STATUS = it.getString("STATUS")!!.substring(4),
+                ORDERID = it.getString("ORDERID"),
+                CHARGEAMOUNT = it.getString("CHARGEAMOUNT"),
+                TXNAMOUNT = it.getString("TXNAMOUNT"),
+                TXNDATE = it.getString("TXNDATE"),
+                MID = it.getString("MID"),
+                TXNID = it.getString("TXNID"),
+                RESPCODE = it.getString("RESPCODE"),
+                PAYMENTMODE = it.getString("PAYMENTMODE"),
+                BANKTXNID = it.getString("BANKTXNID"),
+                CURRENCY = it.getString("CURRENCY"),
+                GATEWAYNAME = it.getString("GATEWAYNAME"),
+                RESPMSG = it.getString("RESPMSG")
+            )
+            viewModel.addPaymentTransactionDetail(
+                PaymentGatewayTransactionModel(
+                    UserId = userId,
+                    OrderId = viewModel.paytmResponseModel.ORDERID,
+//                                ReferenceTransactionId = it,
+                    ServiceTypeId = 1,
+                    WalletTypeId = 1,
+                    TxnAmount = viewModel.paytmResponseModel.TXNAMOUNT,
+                    Currency = viewModel.paytmResponseModel.CURRENCY,
+                    TransactionTypeId = 1,
+                    IsCredit =  false,
+                    TxnId = viewModel.paytmResponseModel.TXNID,
+                    Status = viewModel.paytmResponseModel.STATUS,
+                    RespCode = viewModel.paytmResponseModel.RESPCODE,
+                    RespMsg = viewModel.paytmResponseModel.RESPMSG,
+                    BankTxnId = viewModel.paytmResponseModel.BANKTXNID,
+                    BankName = viewModel.paytmResponseModel.GATEWAYNAME,
+                    PaymentMode = viewModel.paytmResponseModel.PAYMENTMODE
+                )
+            )
+
+            when(viewModel.paytmResponseModel.STATUS){
+                "SUCCESS"->{
+
+                }
+                "FAILURE"->{
+                    showToast("Transaction Failed !!!")
+                }
+                "CANCELLED"->{
+                    showToast("Transaction Cancelled !!!")
+                }
+                else->{
+                    showToast("Something went wrong !!!")
+                }
+            }
+
+        }
+
+    }
+
+    override fun networkNotAvailable() {
+        
+        Timber.d("networkNotAvailable : No Internet :(")
+    }
+
+    override fun onErrorProceed(p0: String?) {
+        
+        Timber.d("onErrorProceed : ${p0.toString()}")
+    }
+
+    override fun clientAuthenticationFailed(p0: String?) {
+        
+        Timber.d("clientAuthenticationFailed : ${p0.toString()}")
+    }
+
+    override fun someUIErrorOccurred(p0: String?) {
+        
+        Timber.d("someUIErrorOccurred : ${p0.toString()}")
+    }
+
+    override fun onErrorLoadingWebPage(p0: Int, p1: String?, p2: String?) {
+        
+        Timber.d("onErrorLoadingWebPage : $p0 \n $p1 \n $p2")
+    }
+
+    override fun onBackPressedCancelTransaction() {
+        
+        Timber.d("onBackPressedCancelTransaction : Back pressed :(")
+    }
+
+    override fun onTransactionCancel(p0: String?, p1: Bundle?) {
+        
+        Timber.d("onTransactionResponse : ${p0.toString()} \n ${p1.toString()}")
+    }
+
+    override fun onResultDialogDismiss() {
+        requireActivity().finish()
+    }
+
+    companion object{
+        const val LOADING=100
+        const val PENDING=150
+        const val ERROR=200
+        const val RECHARGE_FAILED=103
+        const val RECHARGE_SUCCESSFUL=104
+        const val CHECKING_WALLET_BALANCE=101
+        const val INSUFFICIENT_BALANCE=102
+        const val ADDING_USED_SERVICE_DETAIL=105
+        const val CHECKSUM_RECEIVED=106
+        const val START_PAYMENT_GATEWAY=107
+
+        /*const val GETTING_REQUEST_ID=106
+        const val CALLING_SAMPURNA_RECHARGE_API=107
+        const val SUBMITTING_PAYTM_TRANSACTION=108
+        const val WALLET_CHARGE_DEDUCTED=109*/
     }
 }

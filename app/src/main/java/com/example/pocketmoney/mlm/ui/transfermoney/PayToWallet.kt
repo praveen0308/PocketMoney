@@ -6,18 +6,20 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentPayToWalletBinding
 import com.example.pocketmoney.mlm.model.CustomerDetailResponse
+import com.example.pocketmoney.mlm.model.OperationResultModel
 import com.example.pocketmoney.mlm.viewmodel.B2BTransferViewModel
-import com.example.pocketmoney.utils.ApplicationToolbar
-import com.example.pocketmoney.utils.BaseFragment
-import com.example.pocketmoney.utils.Status
+import com.example.pocketmoney.paymentgateway.OperationResultDialog
+import com.example.pocketmoney.utils.*
 import com.google.gson.JsonObject
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWalletBinding::inflate),
-    ApplicationToolbar.ApplicationToolbarListener {
+    ApplicationToolbar.ApplicationToolbarListener,
+    OperationResultDialog.OperationResultDialogCallback {
 
     private val viewModel by activityViewModels<B2BTransferViewModel>()
 
@@ -79,8 +81,13 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        showToast("Transaction done successfully !!!")
-                        requireActivity().finish()
+
+                        showFullScreenDialog(
+                            OperationResultModel(title1 = "Transaction done successfully !!!",
+                                amount = binding.etAmount.text.toString(),status = "Payment Successful",
+                                timestamp = getTodayDate(),it.toString(),animationUrl = R.raw.success_animation)
+                            ,operationResultDialogCallback = this)
+
                     }
                     displayLoading(false)
                 }
@@ -90,6 +97,11 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
                 Status.ERROR -> {
                     displayLoading(false)
                     _result.message?.let {
+                        showFullScreenDialog(
+                            OperationResultModel(title1 = "Transaction failed !!!",
+                                amount = binding.etAmount.text.toString(),status = "Payment failed.",
+                                timestamp = getTodayDate(),"",animationUrl = R.raw.error_animation)
+                            ,operationResultDialogCallback = this)
                         displayError(it)
                     }
                 }
@@ -125,6 +137,10 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
 
     override fun onMenuClick() {
 
+    }
+
+    override fun onResultDialogDismiss() {
+        requireActivity().finish()
     }
 
 }
