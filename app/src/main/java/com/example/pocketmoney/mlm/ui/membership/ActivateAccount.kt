@@ -5,7 +5,9 @@ import androidx.activity.viewModels
 import com.example.pocketmoney.R
 import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.ActivityActivateAccountBinding
+import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
 import com.example.pocketmoney.mlm.viewmodel.ActivateAccountViewModel
+import com.example.pocketmoney.paymentgateway.PaymentPortal
 import com.example.pocketmoney.utils.BaseActivity
 import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
@@ -13,11 +15,12 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityActivateAccountBinding::inflate),
-    PaymentMethods.PaymentMethodsInterface {
+    PaymentPortal.PaymentPortalCallback {
 
     private val viewModel by viewModels<ActivateAccountViewModel>()
 
     private var selectedMethod = 1
+    private var selectedPaymentMethod = PaymentEnum.WALLET
     private var userId = ""
     private var roleId = 0
     private val activationCharge = 300.0
@@ -32,7 +35,7 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
                     sheet.show(supportFragmentManager,sheet.tag)
                 }
                 2->{
-                    val sheet = PaymentMethods(this)
+                    val sheet = PaymentPortal(this,activationCharge)
                     sheet.show(supportFragmentManager,sheet.tag)
                 }
             }
@@ -78,62 +81,11 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
             }
         })
 
-
-        viewModel.walletBalance.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (it < activationCharge){
-                            showToast("Insufficient Wallet Balance !!!")
-
-
-                        }
-                        else{
-                            viewModel.activateAccountByPayment(userId,1)
-                        }
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
-        viewModel.pCash.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (it < activationCharge){
-                            showToast("Insufficient PCash Balance !!!")
-                        } else{
-                            viewModel.activateAccountByPayment(userId,1)
-                        }
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
         viewModel.isActivationSuccessful.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
+
                         viewModel.checkIsAccountActive(userId)
                     }
                     displayLoading(false)
@@ -178,21 +130,25 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
 
     }
 
-    override fun onPaymentMethodSelected(method: PaymentEnum) {
-
-        when(method){
-            PaymentEnum.WALLET->{
-                viewModel.getWalletBalance(userId,roleId)
+    override fun onPaymentResultReceived(
+        method: PaymentEnum,
+        result: Boolean,
+        message: String,
+        paytmResponseModel: PaytmResponseModel?
+    ) {
+        paytmResponseModel?.let {
+            viewModel.paytmResponseModel = it
+        }
+        selectedPaymentMethod = method
+        if (result){
+            when(selectedPaymentMethod){
+                PaymentEnum.WALLET-> viewModel.activateAccountByPayment(userId,1)
+                PaymentEnum.PCASH-> viewModel.activateAccountByPayment(userId,4)
+                PaymentEnum.PAYTM->viewModel.activateAccountByPayment(userId,2)
             }
-            PaymentEnum.PCASH->{
-                viewModel.getPCashBalance(userId,roleId)
-            }
-            PaymentEnum.GATEWAY->{
-
-            }
-            else->{
-
-            }
+        }
+        else{
+            showToast("Cancelled !!")
         }
     }
 

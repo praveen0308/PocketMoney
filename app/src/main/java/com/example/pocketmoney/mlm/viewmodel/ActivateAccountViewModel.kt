@@ -3,6 +3,7 @@ package com.example.pocketmoney.mlm.viewmodel
 import androidx.lifecycle.*
 import com.example.pocketmoney.common.MailMessagingRepository
 import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
+import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
 import com.example.pocketmoney.mlm.repository.*
 import com.example.pocketmoney.utils.Resource
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
@@ -27,6 +28,8 @@ class ActivateAccountViewModel @Inject constructor(
     val userId = userPreferencesRepository.userId.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
     val selectedMethod = MutableStateFlow(1)
+
+    lateinit var paytmResponseModel: PaytmResponseModel
 
     private val _isValid = MutableLiveData<Resource<Int>>()
     val isValid: LiveData<Resource<Int>> = _isValid

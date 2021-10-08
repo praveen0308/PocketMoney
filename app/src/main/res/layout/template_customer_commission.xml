@@ -1,52 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="5dp"
-    app:strokeColor="@color/material_on_surface_stroke"
-    app:strokeWidth="1dp"
+    android:paddingHorizontal="@dimen/dimen_16dp"
+
+    android:paddingTop="@dimen/dimen_16dp"
+    android:paddingBottom="@dimen/dimen_8dp"
     >
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="8dp">
 
     <TextView
-        android:id="@+id/tv_reference_id"
+        android:id="@+id/tv_complaint_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="TextView"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/dimen_18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="TextView" />
 
     <TextView
-        android:id="@+id/tv_main_title"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_message"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        tools:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/black"
+        android:textSize="@dimen/dimen_16sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_reference_id" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_complaint_id"
+        tools:text="TextView" />
 
     <TextView
-        android:id="@+id/tv_amount"
+        android:id="@+id/tv_date_stamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/rupee_zero"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_message"
+        app:layout_constraintTop_toBottomOf="@+id/tv_message"
+        tools:text="TextView" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_view_complaint"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Complaint"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_date_stamp"
+        />
 
-    <TextView
-        android:id="@+id/tv_sub_title"
+    <com.google.android.material.chip.Chip
+        android:id="@+id/cp_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="TextView"
-        app:layout_constraintStart_toStartOf="@+id/tv_main_title"
-        app:layout_constraintTop_toBottomOf="@+id/tv_main_title" />
+        android:text="INPROGRESS"
+        android:textColor="@color/Green"
+        app:chipBackgroundColor="@color/white"
+        app:chipStrokeColor="@color/Green"
+        app:chipStrokeWidth="2dp"
+        android:checkable="false"
+        android:clickable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:chipMinTouchTargetSize="@dimen/dimen_32dp"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>

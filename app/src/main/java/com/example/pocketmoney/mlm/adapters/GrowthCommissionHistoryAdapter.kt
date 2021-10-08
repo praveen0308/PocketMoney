@@ -85,10 +85,10 @@ class GrowthCommissionHistoryAdapter(private val growthCommissionAdapterInterfac
 
         fun createMenuItem(item: CommissionHistoryModel) {
             binding.apply {
-                tvReferenceId.text = item.ReferenceID
+              /*  tvReferenceId.text = item.ReferenceID
                 tvMainTitle.text = item.FullName
                 tvSubTitle.text = convertISOTimeToDateTime(item.OriginatedOn)
-                tvAmount.text = "₹ ${item.CommCreditAmt}"
+                tvAmount.text = "₹ ${item.CommCreditAmt}"*/
             }
         }
     }
@@ -98,7 +98,7 @@ class GrowthCommissionHistoryAdapter(private val growthCommissionAdapterInterfac
     ):RecyclerView.ViewHolder(binding.root){
         fun createItem(item:GrowthHistory){
             binding.apply {
-                tvReferenceId.text = item.Reference_Id
+                /*tvReferenceId.text = item.Reference_Id
                 tvMainTitle.text = item.Trans_Category
                 tvSubTitle.text = convertISOTimeToDateTime(item.Trans_Date)
                 tvAmount.text = if (item.Credit == 0.0){
@@ -109,7 +109,7 @@ class GrowthCommissionHistoryAdapter(private val growthCommissionAdapterInterfac
                     tvAmount.setTextColor(ContextCompat.getColor(tvAmount.context, R.color.Red))
                     item.Credit.toString()}
 
-
+*/
             }
 
         }
@@ -121,10 +121,10 @@ class GrowthCommissionHistoryAdapter(private val growthCommissionAdapterInterfac
         fun createItem(item:UpdateHistory){
             binding.apply {
 
-                tvMainTitle.text = item.UserID
+               /* tvMainTitle.text = item.UserID
                 tvSubTitle.text = convertISOTimeToDateTime(item.UpdateDate)
                 tvAmount.text = item.CustomerRank
-
+*/
             }
 
         }

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.databinding.TemplateSectionedRvBinding
 import com.example.pocketmoney.mlm.model.IncomeModel
+import com.example.pocketmoney.utils.lcm
 import com.example.pocketmoney.utils.myEnums.NavigationEnum
 
 

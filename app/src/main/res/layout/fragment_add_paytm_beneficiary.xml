@@ -47,8 +47,7 @@ tools:context=".mlm.ui.payouts.AddPaytmBeneficiary"
             android:id="@+id/et_upi_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter upi id"
-            android:maxLength="16" />
+            android:maxLength="20" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

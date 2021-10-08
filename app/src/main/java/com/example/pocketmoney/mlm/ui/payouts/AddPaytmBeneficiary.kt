@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.activityViewModels
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentAddPaytmBeneficiaryBinding
@@ -21,6 +22,15 @@ class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBenefi
     private var userId : String = ""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (viewModel.payoutType.value == 2){
+            binding.etUpiId.setHint("Enter UPI Id")
+            binding.etUpiId.inputType = EditorInfo.TYPE_CLASS_TEXT
+
+
+        }else{
+            binding.etUpiId.setHint("Paytm Number")
+            binding.etUpiId.inputType = EditorInfo.TYPE_CLASS_NUMBER
+        }
         binding.btnSubmit.setButtonClick {
             binding.apply {
                 val upiID = etUpiId.text.toString().trim()

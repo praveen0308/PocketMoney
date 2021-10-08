@@ -1,20 +1,26 @@
 package com.example.pocketmoney.mlm.viewmodel
 
 import androidx.lifecycle.*
+import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
+import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
 import com.example.pocketmoney.mlm.repository.CustomerRepository
+import com.example.pocketmoney.mlm.repository.PaytmRepository
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge
 import com.example.pocketmoney.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class ManageCouponsViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
-    val userPreferencesRepository: UserPreferencesRepository
+    val userPreferencesRepository: UserPreferencesRepository,
+    private val paytmRepository: PaytmRepository
 ): ViewModel(){
 
     val userId = userPreferencesRepository.userId.asLiveData()
@@ -23,7 +29,7 @@ class ManageCouponsViewModel @Inject constructor(
     val message = MutableLiveData<String>()
 
     val noOfCoupons = MutableLiveData(1)
-
+    lateinit var paytmResponseModel: PaytmResponseModel
     fun incrementNoOfCoupons(){
         if (noOfCoupons.value!! < 10){
             noOfCoupons.postValue(noOfCoupons.value!!+1)
@@ -60,5 +66,30 @@ class ManageCouponsViewModel @Inject constructor(
                 }
         }
 
+    }
+
+    private val _addPaymentTransResponse = MutableLiveData<Resource<String>>()
+    val addPaymentTransResponse : LiveData<Resource<String>> = _addPaymentTransResponse
+
+    fun addPaymentTransactionDetail(paymentGatewayTransactionModel: PaymentGatewayTransactionModel) {
+
+        viewModelScope.launch {
+            paytmRepository
+                .addPaymentTransactionDetails(paymentGatewayTransactionModel)
+                .onStart {
+                    _addPaymentTransResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _addPaymentTransResponse.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error occurred while calling SampurnaRechargeService.")
+                        Timber.e("Exception : $it")
+                    }
+                }
+                .collect { response->
+
+                    _addPaymentTransResponse.postValue(Resource.Success(response))
+                }
+        }
     }
 }

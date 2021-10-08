@@ -113,11 +113,13 @@
                 android:text="@string/edit"
                 android:textColor="@color/black"
                 android:textStyle="bold"
+                android:visibility="gone"
                 app:cornerRadius="@dimen/btn_corner_radius"
                 app:layout_constraintBottom_toBottomOf="@+id/btn_remove"
                 app:layout_constraintStart_toStartOf="@+id/textView20"
                 app:layout_constraintTop_toTopOf="@+id/btn_remove"
-                app:strokeColor="@color/black_222222" />
+                app:strokeColor="@color/black_222222"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

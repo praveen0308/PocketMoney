@@ -137,7 +137,7 @@ interface MLMApiService {
         @Query("id") id: String
     ): CustomerProfileModel
 
-    @POST("Customer/AddCustomerDetails")
+    @POST("Customer/AddCustomerDetailsWithoutEmail")
     suspend fun addCustomerDetails(
         @Body customerDetail: ModelCustomerDetail
     ): Boolean

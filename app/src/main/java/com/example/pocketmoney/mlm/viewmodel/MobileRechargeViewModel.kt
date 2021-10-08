@@ -339,9 +339,7 @@ class MobileRechargeViewModel @Inject constructor(
     var checkSum : LiveData<Resource<String>> = _checkSum
 
     fun initiateTransactionApi(paytmRequestData: PaytmRequestData) {
-
         viewModelScope.launch {
-
             paytmRepository
                 .initiateTransactionApi(paytmRequestData)
                 .onStart {
@@ -423,6 +421,26 @@ class MobileRechargeViewModel @Inject constructor(
                     _usedServiceRequestId.postValue(Resource.Success(response))
                     if (serviceRepository.selectedPaymentMethod==PaymentEnum.PAYTM){
                         progressStatus.postValue(START_PAYMENT_GATEWAY)
+                        addPaymentTransactionDetail(
+                            PaymentGatewayTransactionModel(
+                                UserId = userId,
+                                OrderId = paytmResponseModel.ORDERID,
+                                ReferenceTransactionId = response,   // request id
+                                ServiceTypeId = 1,
+                                WalletTypeId = 1,
+                                TxnAmount = paytmResponseModel.TXNAMOUNT,
+                                Currency = paytmResponseModel.CURRENCY,
+                                TransactionTypeId = 1,
+                                IsCredit =  false,
+                                TxnId = paytmResponseModel.TXNID,
+                                Status = paytmResponseModel.STATUS,
+                                RespCode = paytmResponseModel.RESPCODE,
+                                RespMsg = paytmResponseModel.RESPMSG,
+                                BankTxnId = paytmResponseModel.BANKTXNID,
+                                BankName = paytmResponseModel.GATEWAYNAME,
+                                PaymentMode = paytmResponseModel.PAYMENTMODE
+                            )
+                        )
                     }else{
                         callSampurnaRechargeService(recharge)
                     }

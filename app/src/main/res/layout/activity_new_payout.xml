@@ -92,7 +92,7 @@
         android:focusable="true"
         android:hint="Enter mobile number"
         android:imeOptions="actionSearch"
-        android:inputType="text"
+        android:inputType="number"
         android:paddingHorizontal="8dp"
         android:paddingVertical="12dp"
         android:textSize="14sp"

@@ -7,12 +7,12 @@ import com.example.pocketmoney.databinding.TemplateCustomerCommissionBinding
 import com.example.pocketmoney.mlm.model.mlmModels.CustomerComplaintModel
 import com.example.pocketmoney.utils.convertISOTimeToDateTime
 
-class CustomerComplaintListAdapter:RecyclerView.Adapter<CustomerComplaintListAdapter.ComplaintListViewHolder>() {
+class CustomerComplaintListAdapter(private val customerComplaintAdapterInterface: CustomerComplaintAdapterInterface):RecyclerView.Adapter<CustomerComplaintListAdapter.ComplaintListViewHolder>() {
 
 
     private val complaintList = mutableListOf<CustomerComplaintModel>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ComplaintListViewHolder {
-        return ComplaintListViewHolder(TemplateCustomerCommissionBinding.inflate(LayoutInflater.from(parent.context),parent,false))
+        return ComplaintListViewHolder(TemplateCustomerCommissionBinding.inflate(LayoutInflater.from(parent.context),parent,false),customerComplaintAdapterInterface)
     }
 
     override fun onBindViewHolder(holder: ComplaintListViewHolder, position: Int) {
@@ -29,14 +29,23 @@ class CustomerComplaintListAdapter:RecyclerView.Adapter<CustomerComplaintListAda
         notifyDataSetChanged()
     }
 
-    inner class ComplaintListViewHolder(val binding:TemplateCustomerCommissionBinding):RecyclerView.ViewHolder(binding.root){
+    inner class ComplaintListViewHolder(
+        val binding:TemplateCustomerCommissionBinding,
+        val complaintAdapterInterface: CustomerComplaintAdapterInterface
+    ):RecyclerView.ViewHolder(binding.root){
 
+        init {
+            binding.btnViewComplaint.setOnClickListener {
+                complaintAdapterInterface.onViewComplaint(complaintList[absoluteAdapterPosition])
+            }
+        }
         fun createCoupon(complaintModel:CustomerComplaintModel){
 
             binding.apply {
-                tvReferenceId.text = complaintModel.ComplainID
-                tvMainTitle.text = complaintModel.RespondedBy.toString()
-                tvSubTitle.text = convertISOTimeToDateTime(complaintModel.RegisteredOn)
+                tvComplaintId.text = complaintModel.ComplainID
+                tvMessage.text = complaintModel.ResponderComment.toString()
+                tvDateStamp.text = convertISOTimeToDateTime(complaintModel.RegisteredOn)
+                cpStatus.text = complaintModel.Status
 //                tvAmount.text = if (coupon.PinStatus == "Used"){
 //                    tvAmount.setTextColor(ContextCompat.getColor(tvAmount.context, R.color.Green))
 //                    coupon.PinStatus
@@ -52,6 +61,10 @@ class CustomerComplaintListAdapter:RecyclerView.Adapter<CustomerComplaintListAda
 
         }
 
+    }
+
+    interface CustomerComplaintAdapterInterface{
+        fun onViewComplaint(complaintModel: CustomerComplaintModel)
     }
 
 }

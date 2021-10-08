@@ -1,12 +1,16 @@
 package com.example.pocketmoney.mlm.ui.dashboard
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.pocketmoney.common.ChatActivity
 import com.example.pocketmoney.databinding.ActivityComplaintListBinding
 import com.example.pocketmoney.mlm.adapters.CustomerComplaintListAdapter
 import com.example.pocketmoney.mlm.model.UniversalFilterItemModel
+import com.example.pocketmoney.mlm.model.mlmModels.CustomerComplaintModel
 import com.example.pocketmoney.mlm.viewmodel.ComplaintListViewModel
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.DateTimeEnum
@@ -15,7 +19,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class ComplaintList : BaseActivity<ActivityComplaintListBinding>(ActivityComplaintListBinding::inflate), ApplicationToolbar.ApplicationToolbarListener {
+class ComplaintList : BaseActivity<ActivityComplaintListBinding>(ActivityComplaintListBinding::inflate), ApplicationToolbar.ApplicationToolbarListener,
+    CustomerComplaintListAdapter.CustomerComplaintAdapterInterface {
 
 
     // ViewModels
@@ -97,7 +102,7 @@ class ComplaintList : BaseActivity<ActivityComplaintListBinding>(ActivityComplai
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        customerComplaintListAdapter.setComplaintList(it)
+                        customerComplaintListAdapter.setComplaintList(it.reversed())
                     }
                     displayLoading(false)
                 }
@@ -116,10 +121,15 @@ class ComplaintList : BaseActivity<ActivityComplaintListBinding>(ActivityComplai
     }
 
     private fun setupRecyclerView() {
-        customerComplaintListAdapter = CustomerComplaintListAdapter()
+        customerComplaintListAdapter = CustomerComplaintListAdapter(this)
         binding.rvComplaintList.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
+            val layoutManager = LinearLayoutManager(context)
+            val dividerItemDecoration = DividerItemDecoration(context,
+                layoutManager.orientation)
+            addItemDecoration(dividerItemDecoration)
+
+            this.layoutManager = layoutManager
             adapter = customerComplaintListAdapter
         }
     }
@@ -137,6 +147,14 @@ class ComplaintList : BaseActivity<ActivityComplaintListBinding>(ActivityComplai
 
     override fun onMenuClick() {
 
+    }
+
+    override fun onViewComplaint(complaintModel: CustomerComplaintModel) {
+        val intent = Intent(this, ChatActivity::class.java)
+//        intent.putExtra("TransactionId",complaintModel.transactionId)
+        intent.putExtra("ReferenceId",complaintModel.RequestID)
+        intent.putExtra("ComplaintId",complaintModel.ComplainID)
+        startActivity(intent)
     }
 
 }

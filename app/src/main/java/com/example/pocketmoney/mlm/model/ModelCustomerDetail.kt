@@ -37,7 +37,7 @@ data class ModelCustomerDetail(
         val ResignedOn: String?=null,
         val ResignedReason: String?=null,
         val RoleID: Int?=null,
-        val SponsorID: Double?=null,
+        val SponsorID: String?=null,
         val SponsorName: String?=null,
         val SponsorNo: Int?=null,
         val StateID: String?=null,

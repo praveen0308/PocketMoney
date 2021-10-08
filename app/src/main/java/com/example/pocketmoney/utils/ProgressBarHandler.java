@@ -33,9 +33,6 @@ public class ProgressBarHandler {
         hide();
     }
 
-    public void setmProgressBarStyle(){
-
-    }
     public void show() {
         mProgressBar.setVisibility(View.VISIBLE);
     }

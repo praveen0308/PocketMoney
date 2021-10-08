@@ -38,7 +38,6 @@ class RegisterFragment : BaseBottomSheetDialogFragment<FragmentRegisterBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        subscribeObservers()
         initialUiState()
         initiateFieldsValidation()
         binding.btnRegister.setOnClickListener {
@@ -50,11 +49,16 @@ class RegisterFragment : BaseBottomSheetDialogFragment<FragmentRegisterBinding>(
                             && validator.validatePincode(tilPincode,etPincode)){
                                 if(cbTncAgreement.isChecked){
                                     customerDetail = ModelCustomerDetail(
-                                            SponsorID = etSponsorId.text.toString().toDouble(),
+                                            SponsorID = etSponsorId.text.toString(),
+                                            SponsorName=etSponsorName.text.toString(),
                                             FullName = etFullName.text.toString(),
                                             EmailID = etEmail.text.toString(),
                                             Mobile = etMobileNumber.text.toString(),
-                                            PinNo = etPincode.text.toString())
+                                            PinNo = etPincode.text.toString(),
+                                        Address1 = "",
+                                        Address2 = "",
+                                    )
+
                                     accountViewModel.checkAccountAlreadyExist(etMobileNumber.text.toString())
                                     
                                 }
