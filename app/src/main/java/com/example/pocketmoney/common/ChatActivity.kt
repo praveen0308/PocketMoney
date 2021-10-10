@@ -44,6 +44,7 @@ class ChatActivity : BaseActivity<ActivityChatBinding>(ActivityChatBinding::infl
         binding.btnSend.setOnClickListener {
             val comment = binding.etMessage.text.toString().trim()
             viewModel.addServiceComplaint(referenceId,transactionId,userID,comment)
+
         }
     }
 
@@ -88,6 +89,7 @@ class ChatActivity : BaseActivity<ActivityChatBinding>(ActivityChatBinding::infl
                     _result._data?.let {
                         complaintId = it
                         showToast("Sent successfully !!!")
+                        binding.etMessage.setText("")
                         viewModel.getComplaintChat(complaintId)
                     }
                     displayLoading(false)

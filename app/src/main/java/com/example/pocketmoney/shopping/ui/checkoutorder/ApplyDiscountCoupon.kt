@@ -85,7 +85,7 @@ class ApplyDiscountCoupon : BaseBottomSheetDialogFragment<FragmentApplyDiscountC
                         populateCouponDetails(it)
                         if (isValidCoupon){
                             if (it.IsFixed){
-                                checkoutRepository.appliedDiscount = it.Amount!!
+                                checkoutRepository.appliedDiscount.postValue(it.Amount!!)
                             }else{
 //                                checkoutRepository.appliedDiscount = calculatePercentageAmount(checkoutRepository.totalAmount,it.Amount!!)
                             }
@@ -112,7 +112,7 @@ class ApplyDiscountCoupon : BaseBottomSheetDialogFragment<FragmentApplyDiscountC
     }
 
     private fun populateCouponDetails(discountModel: DiscountModel) {
-        binding.discountLayout.apply {
+  /*      binding.discountLayout.apply {
             if (discountModel.IsFixed){
                 tvDiscountAmount.text = "₹${discountModel.Amount}"
             }else{
@@ -123,7 +123,7 @@ class ApplyDiscountCoupon : BaseBottomSheetDialogFragment<FragmentApplyDiscountC
             tvDiscountValidity.text = "${convertISOTimeToAny(discountModel.Starts_At.toString(),
                 SDF_dM)} - ${convertISOTimeToAny(discountModel.Ends_At.toString(),
                 SDF_dM)}"
-        }
+        }*/
     }
 
     fun calculatePercentageAmount(amount:Double,percentage:Double):Double{

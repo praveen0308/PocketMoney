@@ -18,6 +18,7 @@ import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion
 import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion.START_PAYMENT_GATEWAY
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
+import com.example.pocketmoney.utils.myEnums.WalletType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -272,7 +273,7 @@ class MobileRechargeViewModel @Inject constructor(
                         recharge.UserID = userId
                         recharge.MobileNo = rechargeMobileNo.value!!
                         recharge.ServiceTypeID = 1
-                        recharge.WalletTypeID = 1
+                        recharge.WalletTypeID = WalletType.Wallet.id
                         recharge.OperatorCode = getMobileOperatorCode(selectedOperator.value!!).toString()
                         recharge.RechargeAmt = rechargeAmount.value!!.toDouble()
                         recharge.ServiceField1 = ""
@@ -317,7 +318,7 @@ class MobileRechargeViewModel @Inject constructor(
                         recharge.UserID = userId
                         recharge.MobileNo = rechargeMobileNo.value!!
                         recharge.ServiceTypeID = 1
-                        recharge.WalletTypeID = 4
+                        recharge.WalletTypeID = WalletType.PCash.id
                         recharge.OperatorCode = getMobileOperatorCode(selectedOperator.value!!).toString()
                         recharge.RechargeAmt = rechargeAmount.value!!.toDouble()
                         recharge.ServiceField1 = ""

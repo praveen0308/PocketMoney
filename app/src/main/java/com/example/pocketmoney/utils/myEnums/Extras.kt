@@ -25,7 +25,13 @@ enum class PaymentModes(val id:Int){
     CashOnDelivery(3),
     PCash(4)
 }
-
+enum class WalletType(val id:Int)
+{
+    Wallet(1),
+    PCash(2),
+    OnlinePayment(3),
+    CashOnDelivery(4)
+}
 
 enum class PaymentStatus(val id: Int)
 {

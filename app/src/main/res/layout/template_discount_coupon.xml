@@ -6,7 +6,7 @@
     android:layout_height="100dp"
     android:layout_margin="@dimen/dimen_8dp"
 
-    app:cardCornerRadius="@dimen/dimen_16dp"
+    app:cardCornerRadius="@dimen/dimen_10dp"
     app:strokeColor="@color/material_on_surface_stroke"
     app:strokeWidth="@dimen/dimen_1dp">
 
@@ -24,7 +24,7 @@
             android:gravity="center"
             android:text="100"
             android:textColor="@color/white"
-            android:textSize="32sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             android:background="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -44,6 +44,7 @@
                 android:layout_height="wrap_content"
                 android:text="New Member Discount"
                 android:textSize="@dimen/dimen_18sp"
+                android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

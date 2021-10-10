@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.example.pocketmoney.common.MailMessagingRepository
 import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
+import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
 import com.example.pocketmoney.mlm.repository.CustomerRepository
 import com.example.pocketmoney.mlm.repository.PaytmRepository
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
@@ -15,8 +16,10 @@ import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.repository.AddressRepository
 import com.example.pocketmoney.shopping.repository.CartRepository
 import com.example.pocketmoney.shopping.repository.CheckoutRepository
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.LOADING
 import com.example.pocketmoney.utils.Resource
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
+import com.example.pocketmoney.utils.myEnums.PaymentStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -42,6 +45,9 @@ class CheckoutOrderViewModel @Inject constructor(
 
     val activeStep = MutableLiveData(0)
 
+    lateinit var paytmResponseModel: PaytmResponseModel
+    lateinit var customerOrder: CustomerOrder
+
     // Order fields
     /*
     var totalAmount = 0.0
@@ -60,12 +66,17 @@ class CheckoutOrderViewModel @Inject constructor(
     var mShippingCharge = 0.0
     var saving = 0.0
     var grandTotal =0.0
+    var discountAmount =0.0
 
     var selectedAddressId = MutableLiveData(0)
 
     val discountCoupon = ""
 
-    var OrderNumber = ""
+    var mOrderNumber = ""
+
+    var mCartItemList= mutableListOf<CartModel>()
+
+    var progressStatus = MutableLiveData(LOADING)
 
     fun setActiveStep(step:Int){
         activeStep.postValue(step)
@@ -129,8 +140,44 @@ class CheckoutOrderViewModel @Inject constructor(
                     }
                 }
                 .collect { response->
-
                     _orderNumber.postValue(Resource.Success(response))
+
+                    if (response != null) {
+                        mOrderNumber = response
+                        when (checkoutRepository.selectedPaymentMethod) {
+                            PaymentEnum.PAYTM -> {
+                                addPaymentTransactionDetail(
+                                    PaymentGatewayTransactionModel(
+                                        UserId = customerOrder.UserID,
+                                        OrderId = paytmResponseModel.ORDERID,
+                                        ReferenceTransactionId = response,
+                                        ServiceTypeId = 1,
+                                        WalletTypeId = 1,
+                                        TxnAmount = paytmResponseModel.TXNAMOUNT,
+                                        Currency = paytmResponseModel.CURRENCY,
+                                        TransactionTypeId = 1,
+                                        IsCredit = false,
+                                        TxnId = paytmResponseModel.TXNID,
+                                        Status = paytmResponseModel.STATUS,
+                                        RespCode = paytmResponseModel.RESPCODE,
+                                        RespMsg = paytmResponseModel.RESPMSG,
+                                        BankTxnId = paytmResponseModel.BANKTXNID,
+                                        BankName = paytmResponseModel.GATEWAYNAME,
+                                        PaymentMode = paytmResponseModel.PAYMENTMODE
+                                    )
+                                )
+
+
+                            }
+                            else -> {
+                                val message1 =
+                                    "Thank you for shopping with pocketmoney, your order placed successfully. Your order number is  $orderNumber you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
+                                sendWhatsappMessage(customerOrder.UserID!!, message1)
+                            }
+                        }
+                    } else {
+                        _orderNumber.postValue(Resource.Error("Something went wrong. Try Again !!!"))
+                    }
                 }
         }
 
@@ -154,6 +201,18 @@ class CheckoutOrderViewModel @Inject constructor(
                 }
                 .collect { response->
                     _addPaymentTransResponse.postValue(Resource.Success(response))
+                    if (paytmResponseModel.STATUS == "SUCCESS") {
+                        updatePaymentStatus(mOrderNumber, PaymentStatus.Paid.id)
+                        val message1: String =
+                            "Thank you for shopping with Pocket Money, your order placed successfully. Your order number is  $mOrderNumber you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
+                        sendWhatsappMessage(paymentGatewayTransactionModel.UserId!!, message1)
+                    } else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE") {
+
+                        val message =
+                            "Thank you for shopping with pocketmoney, your order payment has been failed. please revisit pocketmoney to place order again, click https//wwww.pocketmoney.net.in"
+                        updatePaymentStatus(mOrderNumber, PaymentStatus.Failed.id)
+                        sendWhatsappMessage(paymentGatewayTransactionModel.UserId!!, message)
+                    }
                 }
         }
     }
@@ -320,6 +379,15 @@ class CheckoutOrderViewModel @Inject constructor(
                 }
                 .collect { response->
                     _isPaymentStatusUpdated.postValue(Resource.Success(response))
+                    if (paytmResponseModel.STATUS == "SUCCESS") {
+                        val message1: String =
+                            "Thank you for shopping with Pocket Money, your order placed successfully. Your order number is  $mOrderNumber you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
+                        sendWhatsappMessage(userId.value!!, message1)
+                    } else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE") {
+                        val message =
+                            "Thank you for shopping with pocketmoney, your order payment has been failed. please revisit pocketmoney to place order again, click https//wwww.pocketmoney.net.in"
+                        sendWhatsappMessage(userId.value!!, message)
+                    }
                 }
         }
     }

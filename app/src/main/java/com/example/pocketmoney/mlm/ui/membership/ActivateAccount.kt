@@ -5,17 +5,20 @@ import androidx.activity.viewModels
 import com.example.pocketmoney.R
 import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.ActivityActivateAccountBinding
+import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
 import com.example.pocketmoney.mlm.viewmodel.ActivateAccountViewModel
 import com.example.pocketmoney.paymentgateway.PaymentPortal
+import com.example.pocketmoney.utils.ApplicationToolbar
 import com.example.pocketmoney.utils.BaseActivity
 import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityActivateAccountBinding::inflate),
-    PaymentPortal.PaymentPortalCallback {
+    PaymentPortal.PaymentPortalCallback, ApplicationToolbar.ApplicationToolbarListener {
 
     private val viewModel by viewModels<ActivateAccountViewModel>()
 
@@ -27,7 +30,7 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        binding.toolbarActivateAccount.setApplicationToolbarListener(this)
         binding.btnActivate.setOnClickListener {
             when(selectedMethod){
                 1->{
@@ -85,8 +88,31 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
+                        if(selectedPaymentMethod == PaymentEnum.PAYTM){
+                            viewModel.addPaymentTransactionDetail(
+                                PaymentGatewayTransactionModel(
+                                    UserId = userId,
+                                    OrderId = viewModel.paytmResponseModel.ORDERID,
+                                    ReferenceTransactionId = viewModel.paytmResponseModel.ORDERID,
+                                    ServiceTypeId = 1,
+                                    WalletTypeId = 2,
+                                    TxnAmount = viewModel.paytmResponseModel.TXNAMOUNT,
+                                    Currency = viewModel.paytmResponseModel.CURRENCY,
+                                    TransactionTypeId = 1,
+                                    IsCredit = false,
+                                    TxnId = viewModel.paytmResponseModel.TXNID,
+                                    Status = viewModel.paytmResponseModel.STATUS,
+                                    RespCode = viewModel.paytmResponseModel.RESPCODE,
+                                    RespMsg = viewModel.paytmResponseModel.RESPMSG,
+                                    BankTxnId = viewModel.paytmResponseModel.BANKTXNID,
+                                    BankName = viewModel.paytmResponseModel.GATEWAYNAME,
+                                    PaymentMode = viewModel.paytmResponseModel.PAYMENTMODE
+                                )
+                            )
+                        }else{
+                            viewModel.checkIsAccountActive(userId)
+                        }
 
-                        viewModel.checkIsAccountActive(userId)
                     }
                     displayLoading(false)
                 }
@@ -126,7 +152,33 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
             }
         })
 
+        viewModel.addPaymentTransResponse.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        if (viewModel.paytmResponseModel.STATUS == "SUCCESS"){
+                            Timber.d("Payment Gateway response was successful.")
+                            viewModel.checkIsAccountActive(userId)
 
+                        }else if (viewModel.paytmResponseModel.STATUS == "FAILED" || viewModel.paytmResponseModel.STATUS == "FAILURE"){
+                            Timber.d("Payment Gateway response was failed.")
+                            showToast("Payment failed!!!")
+                        }
+
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
 
     }
 
@@ -150,6 +202,14 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
         else{
             showToast("Cancelled !!")
         }
+    }
+
+    override fun onToolbarNavClick() {
+        finish()
+    }
+
+    override fun onMenuClick() {
+
     }
 
 

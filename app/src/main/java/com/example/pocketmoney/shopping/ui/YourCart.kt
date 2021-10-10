@@ -45,27 +45,12 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
 
         binding.toolbarYourCart.setApplicationToolbarListener(this)
         setUpCartItemRecyclerView()
-        binding.etCouponCode.doOnTextChanged { text, start, before, count ->
-            viewModel.couponCode.postValue(text.toString())
 
-        }
-        binding.btnSearch.setOnClickListener {
-            viewModel.validateCouponCode(viewModel.couponCode.value!!)
-
-        }
         binding.btnCheckout.setOnClickListener {
 //            startActivity(Intent(this, CheckoutOrder::class.java))
             startActivity(Intent(this, NewCheckout::class.java))
         }
 
-        binding.discountLayout.btnApply.setOnClickListener {
-            checkoutRepository.appliedCouponCode.postValue(viewModel.couponCode.value!!)
-            binding.discountLayout.btnApply.apply {
-                setTextColor(ContextCompat.getColor(context, R.color.Green))
-                text = "Applied"
-                icon = ContextCompat.getDrawable(this@YourCart, R.drawable.ic_round_check_24)
-            }
-        }
     }
 
     override fun subscribeObservers() {
@@ -79,11 +64,7 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
             }
 
         })
-        viewModel.couponCode.observe(this, {
-            binding.discountLayout.root.isVisible = false
-            binding.btnSearch.isEnabled = !it.isNullOrEmpty()
 
-        })
         viewModel.cartItems.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -123,49 +104,6 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
                 }
             }
         })
-
-        viewModel.isValidCoupon.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
-
-        viewModel.couponDetail.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        populateCouponDetails(it)
-//
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
 
     }
 
@@ -226,34 +164,9 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
                 totalPrice
             )
         )
-        binding.layoutCartSummary.setVisibilityStatus(0)
+        binding.layoutCartSummary.setVisibilityStatus(1)
 
     }
-
-    private fun populateCouponDetails(discountModel: DiscountModel) {
-        binding.discountLayout.root.isVisible = true
-        binding.discountLayout.apply {
-            if (discountModel.IsFixed) {
-                tvDiscountAmount.text = "₹${discountModel.Amount}"
-            } else {
-                tvDiscountAmount.text = "${discountModel.Amount}%"
-            }
-            tvDiscountCode.text = discountModel.Code.toString()
-            tvDiscountName.text = discountModel.Name.toString()
-            tvDiscountValidity.text = "${
-                convertISOTimeToAny(
-                    discountModel.Starts_At.toString(),
-                    SDF_dM
-                )
-            } - ${
-                convertISOTimeToAny(
-                    discountModel.Ends_At.toString(),
-                    SDF_dM
-                )
-            }"
-        }
-    }
-
 
     override fun onItemQuantityIncrease(itemID: Int) {
         viewModel.changeCartItemQuantity(1, itemID, userID)

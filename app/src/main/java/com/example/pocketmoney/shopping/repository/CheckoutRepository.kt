@@ -27,7 +27,8 @@ class CheckoutRepository @Inject constructor(
 
     var selectedAddressId = 0
     var appliedCouponCode = MutableLiveData("")
-    var appliedDiscount = 0.0
+    var isFixed = MutableLiveData(false)
+    var appliedDiscount = MutableLiveData(0.0)
 
 
     var selectedPaymentMethod = PaymentEnum.WALLET

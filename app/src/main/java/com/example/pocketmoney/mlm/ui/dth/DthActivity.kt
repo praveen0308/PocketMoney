@@ -9,14 +9,17 @@ import com.example.pocketmoney.mlm.model.RechargeEnum
 //import com.example.pocketmoney.mlm.ui.mobilerecharge.SelectOperatorArgs
 import com.example.pocketmoney.mlm.viewmodel.DTHActivityViewModel
 import com.example.pocketmoney.utils.BaseActivity
+import com.example.pocketmoney.utils.MyCustomToolbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DthActivity : BaseActivity<ActivityDthBinding>(ActivityDthBinding::inflate) {
+class DthActivity : BaseActivity<ActivityDthBinding>(ActivityDthBinding::inflate),
+    MyCustomToolbar.MyCustomToolbarListener {
 
     private val viewModel by viewModels<DTHActivityViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.toolbarDth.setCustomToolbarListener(this)
 //        val navController = findNavController(R.id.nav_host_dth)
 //        val bundle = Bundle()
 //        bundle.putSerializable("operatorType",RechargeEnum.DTH)
@@ -24,6 +27,14 @@ class DthActivity : BaseActivity<ActivityDthBinding>(ActivityDthBinding::inflate
     }
 
     override fun subscribeObservers() {
+
+    }
+
+    override fun onToolbarNavClick() {
+        finish()
+    }
+
+    override fun onMenuClick() {
 
     }
 }

@@ -42,6 +42,28 @@ class ChatActivityViewModel @Inject constructor(
         }
     }
 
+    private val _actionOnComplainResponse = MutableLiveData<Resource<Int>>()
+    val actionOnComplainResponse: LiveData<Resource<Int>> = _actionOnComplainResponse
+
+    fun actionOnComplain(complainModel: ComplainModel) {
+        viewModelScope.launch {
+            customerRepository
+                .actionOnComplain(complainModel)
+                .onStart {
+                    _actionOnComplainResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _actionOnComplainResponse.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _actionOnComplainResponse.postValue(Resource.Success(response))
+                }
+        }
+    }
+
+
 
     private val _complaintChat = MutableLiveData<Resource<List<ComplainModel>>>()
     val complaintChat: LiveData<Resource<List<ComplainModel>>> = _complaintChat

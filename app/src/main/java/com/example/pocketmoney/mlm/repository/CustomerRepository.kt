@@ -128,6 +128,14 @@ class CustomerRepository @Inject constructor(
     }
 
 
+    suspend fun actionOnComplain(complainModel: ComplainModel): Flow<Int> {
+        return flow {
+            val response = customerService.actionOnComplaint(complainModel)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
     suspend fun getComplaintChat(transactionId: String): Flow<List<ComplainModel>> {
         return flow {
             val response = customerService.getComplaintChat(transactionId)

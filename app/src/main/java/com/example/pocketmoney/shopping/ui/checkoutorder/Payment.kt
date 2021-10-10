@@ -10,11 +10,13 @@ import com.example.pocketmoney.databinding.FragmentPaymentBinding
 import com.example.pocketmoney.shopping.adapters.PaymentMethodAdapter
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.model.ModelPaymentMethod
+import com.example.pocketmoney.shopping.repository.CheckoutRepository
 import com.example.pocketmoney.shopping.viewmodel.CheckoutOrderViewModel
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import com.example.pocketmoney.utils.myEnums.ShoppingEnum
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inflate),
@@ -22,6 +24,9 @@ class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inf
 
     //ViewModels
     private val viewModel by activityViewModels<CheckoutOrderViewModel>()
+
+    @Inject
+    lateinit var checkoutRepository: CheckoutRepository
 
     // Adapters
 
@@ -76,11 +81,17 @@ class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inf
             userID = it
 
         })
+
         viewModel.selectedAddress.observe(viewLifecycleOwner, {
-            selectedAddressId = it.AddressID!!
+            selectedAddressId = it.AddressID
             viewModel.getShippingCharge(selectedAddressId, userID)
 
         })
+
+        checkoutRepository.appliedCouponCode.observe(this,{
+
+        })
+
         viewModel.shippingCharge.observe(viewLifecycleOwner, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -169,7 +180,7 @@ class Payment : BaseFragment<FragmentPaymentBinding>(FragmentPaymentBinding::inf
         )
         binding.orderAmountSummary.setAmountSummary(orderAmountSummary)
         modelOrderAmountSummary = orderAmountSummary
-        binding.orderAmountSummary.setVisibilityStatus(1)
+        binding.orderAmountSummary.setVisibilityStatus(2)
         viewModel.setPayableAmount(grandTotal)
 
 

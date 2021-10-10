@@ -13,10 +13,7 @@ import com.example.pocketmoney.R
 import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.FragmentRechargeBinding
 import com.example.pocketmoney.mlm.model.OperationResultModel
-import com.example.pocketmoney.mlm.model.serviceModels.MobileRechargeModel
-import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
-import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
-import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
+import com.example.pocketmoney.mlm.model.serviceModels.*
 import com.example.pocketmoney.mlm.repository.ServiceRepository
 import com.example.pocketmoney.mlm.ui.mobilerecharge.SelectContact
 import com.example.pocketmoney.mlm.ui.mobilerecharge.newui.ChooseRechargePlans
@@ -25,6 +22,7 @@ import com.example.pocketmoney.paymentgateway.OperationResultDialog
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import com.example.pocketmoney.utils.myEnums.PlanType
+import com.example.pocketmoney.utils.myEnums.WalletType
 import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
 import com.paytm.pgsdk.TransactionManager
@@ -43,6 +41,8 @@ class Recharge(val mListener: MobileRechargeInterface) :
 
     private var mCircle: String = "Mumbai"
     private var mOperator: String = "Jio"
+
+    private var previousMobileNumber = ""
 
     @Inject
     lateinit var serviceRepository: ServiceRepository
@@ -100,13 +100,37 @@ class Recharge(val mListener: MobileRechargeInterface) :
         }
 
         binding.btnViewPlan.setOnClickListener {
-            val sheet = ChooseRechargePlans()
-            sheet.show(parentFragmentManager, sheet.tag)
+            if (viewModel.rechargeMobileNo.value.isNullOrEmpty() || viewModel.rechargeMobileNo.value!!.length!=10){
+                showToast("Enter a valid mobile number...")
+            }else{
+                if (previousMobileNumber == viewModel.rechargeMobileNo.value.toString()){
+                    val sheet = ChooseRechargePlans()
+                    sheet.show(parentFragmentManager, sheet.tag)
+                }else{
+                    previousMobileNumber = viewModel.rechargeMobileNo.value.toString()
+                    viewModel.getMobileSimplePlanList(viewModel.selectedCircle.value!!, viewModel.selectedOperator.value!!)
+                }
+
+
+
+            }
+
         }
 
         binding.btnBestOffer.setOnClickListener {
-            val sheet = ChooseRechargePlans(PlanType.SPECIAL_PLAN)
-            sheet.show(parentFragmentManager, sheet.tag)
+            if (viewModel.rechargeMobileNo.value.isNullOrEmpty()){
+                showToast("Enter a valid mobile number...")
+            }else{
+                if (previousMobileNumber == viewModel.rechargeMobileNo.value.toString()){
+                    val sheet = ChooseRechargePlans(PlanType.SPECIAL_PLAN)
+                    sheet.show(parentFragmentManager, sheet.tag)
+                }else{
+                    previousMobileNumber = viewModel.rechargeMobileNo.value.toString()
+                    viewModel.getMobileSpecialPlanList(viewModel.rechargeMobileNo.value!!, viewModel.selectedOperator.value!!)
+                }
+
+
+            }
         }
     }
 
@@ -173,6 +197,47 @@ class Recharge(val mListener: MobileRechargeInterface) :
             }
         })
 
+        viewModel.mobileSimplePlanList.observe(viewLifecycleOwner, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        val sheet = ChooseRechargePlans()
+                        sheet.show(parentFragmentManager, sheet.tag)
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+        viewModel.mobileSpecialPlanList.observe(viewLifecycleOwner, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        val sheet = ChooseRechargePlans(PlanType.SPECIAL_PLAN)
+                        sheet.show(parentFragmentManager, sheet.tag)
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
         viewModel.progressStatus.observe(viewLifecycleOwner, {
             when (it) {
                 LOADING -> {
@@ -313,7 +378,7 @@ class Recharge(val mListener: MobileRechargeInterface) :
                     viewModel.recharge.UserID = userId
                     viewModel.recharge.MobileNo = viewModel.rechargeMobileNo.value!!
                     viewModel.recharge.ServiceTypeID = 1
-                    viewModel.recharge.WalletTypeID = 2
+                    viewModel.recharge.WalletTypeID = WalletType.OnlinePayment.id
                     viewModel.recharge.OperatorCode =
                         getMobileOperatorCode(viewModel.selectedOperator.value!!).toString()
                     viewModel.recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
@@ -332,7 +397,7 @@ class Recharge(val mListener: MobileRechargeInterface) :
                             OrderId = viewModel.paytmResponseModel.ORDERID,
                             ReferenceTransactionId = gatewayOrderId,
                             ServiceTypeId = 1,
-                            WalletTypeId = 2,
+                            WalletTypeId = WalletType.OnlinePayment.id,
                             TxnAmount = viewModel.paytmResponseModel.TXNAMOUNT,
                             Currency = viewModel.paytmResponseModel.CURRENCY,
                             TransactionTypeId = 1,

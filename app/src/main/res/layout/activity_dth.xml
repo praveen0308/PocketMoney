@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".mlm.ui.dth.DthActivity">
     <com.example.pocketmoney.utils.MyCustomToolbar
-        android:id="@+id/myCustomToolbar3"
+        android:id="@+id/toolbar_dth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,6 +23,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/myCustomToolbar3"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_dth"
         app:navGraph="@navigation/nav_dth" />
 </androidx.constraintlayout.widget.ConstraintLayout>

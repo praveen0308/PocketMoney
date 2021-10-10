@@ -1,6 +1,7 @@
 package com.example.pocketmoney.mlm.network
 
 import com.example.pocketmoney.mlm.model.ComplainModel
+import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -32,6 +33,11 @@ interface CustomerService {
         @Query("userid") userId: String,
         @Query("comment") comment:String
     ): String
+
+    @POST("Customer/ActionOnComplain")
+    suspend fun actionOnComplaint(
+        @Body complaint : ComplainModel,
+    ): Int
 
     @POST("Customer/GetComplainChat")
     suspend fun getComplaintChat(

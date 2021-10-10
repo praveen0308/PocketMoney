@@ -51,59 +51,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:itemCount="2"
-                tools:listitem="@layout/template_cart_item" />
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <com.example.pocketmoney.utils.EditTextWithClear
-                    android:id="@+id/et_coupon_code"
-                    android:layout_width="0dp"
-                    android:layout_height="55dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/bg_edit_text_rect_5dp_light_grey"
-                    android:drawableStart="@drawable/ic_baseline_pin_24"
-                    android:drawablePadding="10dp"
-                    android:focusable="true"
-                    android:hint="Enter coupon code"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:maxLength="12"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="12dp"
-                    android:textSize="14sp"
-                    app:drawableTint="@color/colorBlack"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_search"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
-                <Button
-                    android:id="@+id/btn_search"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/search"
-                    android:enabled="false"
-                    app:layout_constraintBottom_toBottomOf="@+id/et_coupon_code"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/et_coupon_code"
-                    app:layout_constraintTop_toTopOf="@+id/et_coupon_code" />
+                tools:listitem="@layout/template_cart_item"
+                />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-            <include
-                android:id="@+id/discount_layout"
-                layout="@layout/template_discount_coupon"
+            <fragment
+                android:id="@+id/apply_coupon_code_fragment"
+                android:name="com.example.pocketmoney.shopping.ui.checkoutorder.ApplyCouponCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/dimen_8dp"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout13"
-                tools:visibility="visible" />
-
+                tools:layout="@layout/fragment_apply_coupon_code" />
             <com.example.pocketmoney.utils.OrderAmountSummary
                 android:id="@+id/layout_cart_summary"
                 android:layout_width="match_parent"
@@ -113,6 +70,8 @@
                 android:layout_marginEnd="10dp"
                 android:visibility="gone"
                 tools:visibility="visible" />
+
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

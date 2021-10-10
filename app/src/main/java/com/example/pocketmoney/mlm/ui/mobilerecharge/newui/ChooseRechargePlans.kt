@@ -38,14 +38,14 @@ class ChooseRechargePlans(val planType:PlanType = PlanType.NORMAL_PLAN) : BaseBo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+/*
         if (planType == PlanType.SPECIAL_PLAN){
             viewModel.getMobileSpecialPlanList(viewModel.rechargeMobileNo.value!!, viewModel.selectedOperator.value!!)
         }else{
 
 
             viewModel.getMobileSimplePlanList(viewModel.selectedCircle.value!!, viewModel.selectedOperator.value!!)
-        }
+        }*/
     }
 
     override fun subscribeObservers() {
@@ -88,7 +88,11 @@ class ChooseRechargePlans(val planType:PlanType = PlanType.NORMAL_PLAN) : BaseBo
                     _result._data?.let {
 
 //                        it.records.specialPlanList = specialPlanList
-                        setupTLWithViewPager(getOperatorPlanList(it.records))
+                        if (planType != PlanType.SPECIAL_PLAN){
+                            setupTLWithViewPager(getOperatorPlanList(it.records))
+                        }
+
+
                     }
                     displayLoading(false)
                 }

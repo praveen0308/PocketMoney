@@ -4,10 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.databinding.ActivityTransactionDetailBinding
 import com.example.pocketmoney.mlm.model.TransactionDetailModel
+import com.example.pocketmoney.mlm.ui.dashboard.ComplaintList
 import com.example.pocketmoney.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,6 +48,11 @@ class TransactionDetailActivity :
             intent.putExtra("ComplaintId",complaintId)
             startActivity(intent)
         }
+
+        binding.btnViewHistory.setOnClickListener {
+            startActivity(Intent(this, ComplaintList::class.java))
+        }
+
     }
 
     override fun subscribeObservers() {
@@ -66,6 +73,17 @@ class TransactionDetailActivity :
                     _result._data?.let {
                         referenceId = it.Reference_Id.toString()
                         complaintId = it.ComplainID.toString()
+                        if(complaintId.isNullOrEmpty()){
+                            binding.apply {
+                                btnNeedHelp.isVisible = true
+                                btnViewHistory.isVisible = false
+                            }
+                        }else{
+                            binding.apply {
+                                btnNeedHelp.isVisible = false
+                                btnViewHistory.isVisible = true
+                            }
+                        }
                         populateTransactionDetail(it)
                     }
                     displayLoading(false)

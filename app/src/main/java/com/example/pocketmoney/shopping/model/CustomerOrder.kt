@@ -11,8 +11,8 @@ data class CustomerOrder(
     val OrderStatusId: Int? = null,
     val Payment: Double? = null,
     val PaymentMethod: String? = null,
-    val PaymentMode: Int? = null,
-    val PaymentStatusId: Int? = null,
+    var PaymentMode: Int? = null,
+    var PaymentStatusId: Int? = null,
     val Promo: String? = null,
     val RedeemRewardPointEntryId: Int? = null,
     val RefundedAmount: Double? = null,
@@ -26,5 +26,5 @@ data class CustomerOrder(
     val Total: Double? = null,
     val TransactionNumber: String? = null,
     val UserID: String? = null,
-    val WalletTypeId: Int? = null
+    var WalletTypeId: Int? = null
 )

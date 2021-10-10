@@ -1,5 +1,6 @@
 package com.example.pocketmoney.utils
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +19,7 @@ abstract class BaseBottomSheetDialogFragment<VB: ViewBinding>(
     private var _binding: VB? = null
     val binding get() = _binding!!
     private lateinit var progressBarHandler: ProgressBarHandler
-
+    private lateinit var progressDialog : ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +39,7 @@ abstract class BaseBottomSheetDialogFragment<VB: ViewBinding>(
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        displayLoading(false)
     }
 
 
