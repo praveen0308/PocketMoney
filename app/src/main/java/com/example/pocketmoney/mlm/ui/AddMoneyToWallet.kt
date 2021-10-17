@@ -142,7 +142,7 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
                     _result._data?.let {
                         if (paytmResponseModel.STATUS == "SUCCESS"){
                             viewModel.actionOnWalletDetail(requestId, "Updated as online payment success","Approve",paytmResponseModel.PAYMENTMODE.toString())
-                            viewModel.addCompanyTransactionResponse(userId,userId,paytmResponseModel.TXNAMOUNT!!.toDouble(),1,8,it,"0")
+                            viewModel.addCompanyTransactionResponse(userId,userId,paytmResponseModel.TXNAMOUNT!!.toDouble(),1,1,it,"0")
                         }else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE"){
                             viewModel.actionOnWalletDetail(requestId, "Updated as online payment failed","Rejected",paytmResponseModel.PAYMENTMODE.toString())
                         }

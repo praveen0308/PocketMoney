@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentMobileRechargeHostBinding
 import com.example.pocketmoney.mlm.ui.dashboard.CustomerProfileDetails
+import com.example.pocketmoney.mlm.viewmodel.MobileRechargeViewModel
 import com.example.pocketmoney.utils.BaseFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,12 +22,23 @@ import dagger.hilt.android.AndroidEntryPoint
 class MobileRechargeHost : BaseFragment<FragmentMobileRechargeHostBinding>(FragmentMobileRechargeHostBinding::inflate),
     Recharge.MobileRechargeInterface {
 
+    private val viewModel by activityViewModels<MobileRechargeViewModel>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewPager()
+
+        binding.vpRecharge.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                viewModel.currentActivePage.postValue(position.toInt())
+            }
+        })
     }
 
     override fun subscribeObservers() {
+        viewModel.currentActivePage.observe(viewLifecycleOwner,{
+            binding.vpRecharge.currentItem = it
+        })
 
     }
 

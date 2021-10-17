@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract
 import com.example.pocketmoney.R
+import com.example.pocketmoney.mlm.model.DthCustomerDetail
 import com.example.pocketmoney.mlm.model.ModelContact
 import com.example.pocketmoney.mlm.model.ModelOperator
 import com.example.pocketmoney.mlm.model.RechargeEnum
@@ -12,6 +13,7 @@ import com.example.pocketmoney.mlm.model.serviceModels.MobileCircleOperator
 import com.example.pocketmoney.mlm.model.serviceModels.MobileOperatorPlan
 import com.example.pocketmoney.mlm.model.serviceModels.SimplePlanResponse
 import com.example.pocketmoney.mlm.network.MLMApiService
+import com.example.pocketmoney.mlm.network.RechargeAPIService
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.extractMobileNumber
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +25,8 @@ import javax.inject.Inject
 
 class RechargeRepository @Inject constructor(
         val context: Context,
-        val mlmApiService: MLMApiService
+        val mlmApiService: MLMApiService,
+        val rechargeAPIService: RechargeAPIService
 ) {
 
     fun getContactList(): Flow<DataState<List<ModelContact>>> = flow {
@@ -150,12 +153,12 @@ class RechargeRepository @Inject constructor(
     private fun getDTHOperators(): List<ModelOperator> {
         val dthOperatorList:MutableList<ModelOperator> = ArrayList()
 
-        dthOperatorList.add(ModelOperator("Tata Sky",R.drawable.ic_tata_sky))
-        dthOperatorList.add(ModelOperator("Airtel DTH",R.drawable.ic_airtel))
-        dthOperatorList.add(ModelOperator("Big TV",R.drawable.ic_big_tv))
-        dthOperatorList.add(ModelOperator("Dish TV",R.drawable.ic_dish_tv))
-        dthOperatorList.add(ModelOperator("Sun Direct",R.drawable.ic_sun_direct))
-        dthOperatorList.add(ModelOperator("Videocon D2H",R.drawable.ic_videocon_d2h))
+        dthOperatorList.add(ModelOperator("Tata Sky",R.drawable.ic_tata_sky,"19"))
+        dthOperatorList.add(ModelOperator("Airtel DTH",R.drawable.ic_airtel,"22"))
+        dthOperatorList.add(ModelOperator("Big TV",R.drawable.ic_big_tv,"18"))
+        dthOperatorList.add(ModelOperator("Dish TV",R.drawable.ic_dish_tv,"17"))
+        dthOperatorList.add(ModelOperator("Sun Direct",R.drawable.ic_sun_direct,"20"))
+        dthOperatorList.add(ModelOperator("Videocon D2h",R.drawable.ic_videocon_d2h,"21"))
 
         return dthOperatorList
     }
@@ -233,6 +236,17 @@ class RechargeRepository @Inject constructor(
     ): Flow<List<IdNameModel>> {
         return flow {
             val response = mlmApiService.getMobileServiceOperator(serviceTypeId,serviceProviderId,circleCode)
+
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getDthCustomerDetails(
+        accountId: String,
+        opCode: String
+    ): Flow<DthCustomerDetail> {
+        return flow {
+            val response = rechargeAPIService.getDthCustomerDetails(accountId,opCode)
 
             emit(response)
         }.flowOn(Dispatchers.IO)

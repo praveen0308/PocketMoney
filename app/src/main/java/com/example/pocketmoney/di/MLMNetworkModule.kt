@@ -53,8 +53,8 @@ object MLMNetworkModule {
     }
 
     @Provides
-    fun provideRechargeRepo(@ApplicationContext context: Context,mlmApiService: MLMApiService):RechargeRepository{
-        return RechargeRepository(context,mlmApiService)
+    fun provideRechargeRepo(@ApplicationContext context: Context,mlmApiService: MLMApiService,rechargeAPIService: RechargeAPIService):RechargeRepository{
+        return RechargeRepository(context,mlmApiService,rechargeAPIService)
     }
 
     @Provides

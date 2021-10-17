@@ -7,6 +7,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pocketmoney.databinding.ActivityChatBinding
+import com.example.pocketmoney.mlm.model.ComplainModel
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.DateTimeEnum
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,12 +39,21 @@ class ChatActivity : BaseActivity<ActivityChatBinding>(ActivityChatBinding::infl
         }
 
         binding.etMessage.doAfterTextChanged { it ->
-            binding.btnSend.isEnabled = !it.toString().isNullOrEmpty()
+            binding.btnSend.isEnabled = !it.toString().isEmpty()
 
         }
         binding.btnSend.setOnClickListener {
             val comment = binding.etMessage.text.toString().trim()
-            viewModel.addServiceComplaint(referenceId,transactionId,userID,comment)
+            if (complaintId.isNotEmpty()){
+                viewModel.actionOnComplain(ComplainModel(
+                    ActionFlagID = 1,
+                    ComplainID = complaintId,
+                    ResponderComment = comment
+                ))
+            }else{
+                viewModel.addServiceComplaint(referenceId,transactionId,userID,comment)
+            }
+
 
         }
     }
@@ -89,6 +99,27 @@ class ChatActivity : BaseActivity<ActivityChatBinding>(ActivityChatBinding::infl
                     _result._data?.let {
                         complaintId = it
                         showToast("Sent successfully !!!")
+                        binding.etMessage.setText("")
+                        viewModel.getComplaintChat(complaintId)
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+        viewModel.actionOnComplainResponse.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
                         binding.etMessage.setText("")
                         viewModel.getComplaintChat(complaintId)
                     }

@@ -260,13 +260,26 @@ fun getTimeFilters(): List<UniversalFilterItemModel> {
 fun getMobileOperatorLogo(id: String): Int {
 
     val mobileOperators = hashMapOf<String,Int>()
-    mobileOperators["Jio"] = R.drawable.ic_jio
+    /*mobileOperators["Jio"] = R.drawable.ic_jio
     mobileOperators["Airtel"] = R.drawable.ic_airtel
     mobileOperators["Idea"] = R.drawable.ic_vi_vodafone_idea
     mobileOperators["Vodafone"] = R.drawable.ic_vi_vodafone_idea
     mobileOperators["VI"] = R.drawable.ic_vi_vodafone_idea
     mobileOperators["BSNL"] = R.drawable.ic_bsnl
     mobileOperators["MTNL"] = R.drawable.ic_mtnl
+*/
+    mobileOperators["Jio"] = R.drawable.ic_jio
+    mobileOperators["Airtel"] = R.drawable.ic_airtel
+    mobileOperators["Idea"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["Vodafone"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["VI"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["Tata Docomo"] = R.drawable.ic_tata_docomo
+    mobileOperators["Docomo Special"] = R.drawable.ic_tata_docomo
+    mobileOperators["BSNL"] = R.drawable.ic_bsnl
+    mobileOperators["BSNL Special"] = R.drawable.ic_bsnl
+    mobileOperators["MTNL"] = R.drawable.ic_mtnl
+    mobileOperators["MTNL Mumbai Special"] = R.drawable.ic_mtnl
+    mobileOperators["MTNL Mumbai Topup"] = R.drawable.ic_mtnl
     return mobileOperators[id]!!
 
 }
@@ -286,6 +299,40 @@ fun getMobileOperatorCode(operator: String): Int {
     mobileOperatorCodes["MTNL Mumbai Special"] = 57
     mobileOperatorCodes["MTNL Mumbai Topup"] = 56
     return mobileOperatorCodes[operator]!!
+}
+
+fun getDthOperatorCode(operator: String): Int {
+    val mobileOperatorCodes = hashMapOf<String,Int>()
+    mobileOperatorCodes["Dish TV"] = 17
+    mobileOperatorCodes["Big TV"] = 18
+    mobileOperatorCodes["Tata Sky"] = 19
+    mobileOperatorCodes["Sun Direct"] = 20
+    mobileOperatorCodes["Videocon D2h"] = 21
+    mobileOperatorCodes["Airtel DTH"] = 22
+    return mobileOperatorCodes[operator]!!
+
+}
+fun getOperatorLogo(operator: String): Int {
+    val operators = hashMapOf<String,Int>()
+    operators["Dish TV"] = R.drawable.ic_dish_tv
+    operators["Big TV"] = R.drawable.ic_big_tv
+    operators["Tata Sky"] = R.drawable.ic_tata_sky
+    operators["Sun Direct"] = R.drawable.ic_sun_direct
+    operators["Videocon D2h"] = R.drawable.ic_videocon_d2h
+    operators["Airtel DTH"] = R.drawable.ic_airtel
+    operators["Jio"] = R.drawable.ic_jio
+    operators["Airtel"] = R.drawable.ic_airtel
+    operators["Idea"] = R.drawable.ic_vi_vodafone_idea
+    operators["Vodafone"] = R.drawable.ic_vi_vodafone_idea
+    operators["VI"] = R.drawable.ic_vi_vodafone_idea
+    operators["Tata Docomo"] = R.drawable.ic_tata_docomo
+    operators["Docomo Special"] = R.drawable.ic_tata_docomo
+    operators["BSNL"] = R.drawable.ic_bsnl
+    operators["BSNL Special"] = R.drawable.ic_bsnl
+    operators["MTNL"] = R.drawable.ic_mtnl
+    operators["MTNL Mumbai Special"] = R.drawable.ic_mtnl
+    operators["MTNL Mumbai Topup"] = R.drawable.ic_mtnl
+    return operators[operator]!!
 
 }
 

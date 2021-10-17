@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.pocketmoney.R
@@ -13,18 +14,30 @@ import com.example.pocketmoney.databinding.FragmentDthRechargeHostBinding
 import com.example.pocketmoney.mlm.ui.dashboard.CustomerProfileDetails
 import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge
 import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.RechargeHistory
+import com.example.pocketmoney.mlm.viewmodel.DTHActivityViewModel
 import com.example.pocketmoney.utils.BaseFragment
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DthRechargeHost : BaseFragment<FragmentDthRechargeHostBinding>(FragmentDthRechargeHostBinding::inflate) {
-
+    private val viewModel by activityViewModels<DTHActivityViewModel>()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewPager()
+
+        binding.vpRecharge.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                viewModel.currentActivePage.postValue(position.toInt())
+            }
+        })
     }
 
     override fun subscribeObservers() {
-
+        viewModel.currentActivePage.observe(viewLifecycleOwner,{
+            binding.vpRecharge.currentItem = it
+        })
     }
 
 

@@ -19,6 +19,7 @@ import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge.Companion
 import com.example.pocketmoney.utils.*
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import com.example.pocketmoney.utils.myEnums.WalletType
+import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -38,6 +39,7 @@ class MobileRechargeViewModel @Inject constructor(
     val userName = userPreferencesRepository.userName.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
 
+    val currentActivePage = MutableLiveData(0)
 
     val selectedPaymentMethod = MutableLiveData(PaymentEnum.WALLET)
     var rechargeAmount = MutableLiveData<Int>()
@@ -45,10 +47,10 @@ class MobileRechargeViewModel @Inject constructor(
     var requestId = ""
 
     val rechargeMobileNo  = MutableLiveData<String>()
+    val rechargeMobileNumber  = MutableLiveData<String>()
     val selectedOperator = MutableLiveData<String>()
     val selectedCircle  = MutableLiveData("Maharashtra")
     lateinit var recharge : MobileRechargeModel
-
     val progressStatus = MutableLiveData<Int>()
 
     var transactionToken = ""
@@ -128,12 +130,8 @@ class MobileRechargeViewModel @Inject constructor(
 
     private val _mobileSimplePlanList = MutableLiveData<Resource<SimplePlanResponse>>()
     val mobileSimplePlanList: LiveData<Resource<SimplePlanResponse>> = _mobileSimplePlanList
-
-
     fun getMobileSimplePlanList(circle: String, mobileOperator:String) {
-
         viewModelScope.launch {
-
             rechargeRepository
                     .getMobileSimplePlans(circle,mobileOperator)
                     .onStart {
@@ -147,6 +145,28 @@ class MobileRechargeViewModel @Inject constructor(
                     .collect { response->
                         _mobileSimplePlanList.postValue(Resource.Success(response))
                     }
+        }
+
+    }
+
+
+    private val _rechargeHistory = MutableLiveData<Resource<List<RechargeHistoryModel>>>()
+    val rechargeHistory: LiveData<Resource<List<RechargeHistoryModel>>> = _rechargeHistory
+    fun getRechargeHistory(jsonObject: JsonObject) {
+        viewModelScope.launch {
+            serviceRepository
+                .getUsedServiceHistory(jsonObject)
+                .onStart {
+                    _rechargeHistory.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _rechargeHistory.postValue(Resource.Error(it))
+                    }
+                }
+                .collect { response->
+                    _rechargeHistory.postValue(Resource.Success(response))
+                }
         }
 
     }
@@ -427,8 +447,8 @@ class MobileRechargeViewModel @Inject constructor(
                                 UserId = userId,
                                 OrderId = paytmResponseModel.ORDERID,
                                 ReferenceTransactionId = response,   // request id
-                                ServiceTypeId = 1,
-                                WalletTypeId = 1,
+                                ServiceTypeId = 2,
+                                WalletTypeId = WalletType.OnlinePayment.id,
                                 TxnAmount = paytmResponseModel.TXNAMOUNT,
                                 Currency = paytmResponseModel.CURRENCY,
                                 TransactionTypeId = 1,

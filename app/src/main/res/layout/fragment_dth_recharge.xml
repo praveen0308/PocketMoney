@@ -13,7 +13,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="100dp">
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,15 +35,17 @@
                         app:layout_constraintStart_toStartOf="@+id/textInputLayout10"
                         app:layout_constraintTop_toBottomOf="@+id/textInputLayout10" />
 
+
                     <ImageView
-                        android:id="@+id/imageView23"
+                        android:id="@+id/iv_operator_logo"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
+                        android:layout_marginTop="32dp"
                         android:src="@drawable/ic_videocon_d2h"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.498"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputLayout10"
@@ -59,10 +62,10 @@
                         app:hintEnabled="false"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/imageView23">
+                        app:layout_constraintTop_toBottomOf="@+id/iv_operator_logo">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_mobile_number"
+                            android:id="@+id/et_account_id"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Enter ID"
@@ -71,21 +74,123 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <Button
+                        android:id="@+id/btn_search"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Search"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/textInputLayout10"
+                        app:layout_constraintStart_toStartOf="@+id/textInputLayout10"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayout10"
+                        tools:visibility="visible" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/container_customer_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dimen_8dp">
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_customer_details"
+                android:layout_margin="@dimen/dimen_8dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="@dimen/dimen_8dp"
-                    android:paddingVertical="@dimen/dimen_32dp"/>
+                    android:padding="@dimen/dimen_16dp">
 
+
+                    <TextView
+                        android:id="@+id/textView65"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Customer Details"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/dimen_18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView66"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Customer Name:"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView65" />
+
+                    <TextView
+                        android:id="@+id/tv_customer_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen_8dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView66"
+                        app:layout_constraintStart_toEndOf="@+id/textView66"
+                        app:layout_constraintTop_toTopOf="@+id/textView66" />
+
+                    <TextView
+                        android:id="@+id/textView68"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Due Date : "
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView66" />
+
+                    <TextView
+                        android:id="@+id/tv_due_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView68"
+                        app:layout_constraintStart_toEndOf="@+id/textView68"
+                        app:layout_constraintTop_toTopOf="@+id/textView68" />
+
+                    <TextView
+                        android:id="@+id/textView70"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Monthly Recharge : "
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView68" />
+
+                    <TextView
+                        android:id="@+id/tv_monthly_recharge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView70"
+                        app:layout_constraintStart_toEndOf="@+id/textView70"
+                        app:layout_constraintTop_toTopOf="@+id/textView70" />
+
+                    <TextView
+                        android:id="@+id/textView72"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Balance : "
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView70" />
+
+                    <TextView
+                        android:id="@+id/tv_balance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView72"
+                        app:layout_constraintStart_toEndOf="@+id/textView72"
+                        app:layout_constraintTop_toTopOf="@+id/textView72" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
@@ -100,6 +205,7 @@
 
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textInputLayout15"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -120,10 +226,64 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Enter amount"
-                            android:inputType="number"
-                            />
+                            android:inputType="number" />
 
                     </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textInputLayout15">
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/cp_50"
+                            android:layout_width="wrap_content"
+                            android:layout_height="55dp"
+                            android:text="₹50"
+                            android:checkable="false"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/dimen_18sp"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeWidth="@dimen/dimen_1dp"
+                            app:chipStrokeColor="@color/colorPrimary"
+                            app:chipStartPadding="@dimen/dimen_16dp"
+                            app:chipEndPadding="@dimen/dimen_16dp"
+                            />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/cp_100"
+                            android:layout_width="wrap_content"
+                            android:layout_height="55dp"
+                            android:text="₹100"
+                            android:checkable="false"
+                            android:layout_marginHorizontal="16dp"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/dimen_18sp"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeWidth="@dimen/dimen_1dp"
+                            app:chipStrokeColor="@color/colorPrimary"
+                            app:chipStartPadding="@dimen/dimen_16dp"
+                            app:chipEndPadding="@dimen/dimen_16dp"
+                            />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/cp_200"
+                            android:layout_width="wrap_content"
+                            android:layout_height="55dp"
+                            android:text="₹200"
+                            android:checkable="false"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="@dimen/dimen_18sp"
+                            app:chipBackgroundColor="@color/white"
+                            app:chipStrokeWidth="@dimen/dimen_1dp"
+                            app:chipStrokeColor="@color/colorPrimary"
+                            app:chipStartPadding="@dimen/dimen_16dp"
+                            app:chipEndPadding="@dimen/dimen_16dp"
+                            />
+                    </LinearLayout>
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -132,6 +292,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_confirm"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginStart="8dp"
@@ -141,6 +302,7 @@
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:enabled="false"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

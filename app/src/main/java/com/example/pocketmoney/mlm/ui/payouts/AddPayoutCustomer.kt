@@ -33,10 +33,11 @@ class AddPayoutCustomer : BaseBottomSheetDialogFragment<FragmentAddPayoutCustome
                 PinCode = binding.etPincode.text.toString().trim(),
                 TransferLimit = 200000.0,
                 IsActive = true,
-                AddedBy = userId,
+                AddedBy = userId.toInt(),
                 AddedOn = Date().toString(),
                 CustomerTypeID = 1,
-                PayoutCustomerID = viewModel.customerNumber.value
+                PayoutCustomerID = viewModel.customerNumber.value,
+                MobileNo = userId
 
             ))
         }

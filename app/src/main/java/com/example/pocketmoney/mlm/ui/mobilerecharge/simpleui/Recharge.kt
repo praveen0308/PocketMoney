@@ -165,7 +165,11 @@ class Recharge(val mListener: MobileRechargeInterface) :
             binding.etRechargeAmount.setText(it.toString())
         })
 
+        viewModel.rechargeMobileNumber.observe(viewLifecycleOwner, {
+            binding.etMobileNumber.setText(it)
+        })
         viewModel.rechargeMobileNo.observe(viewLifecycleOwner, {
+
             if (it.length == 10) binding.btnConfirm.isEnabled = true
         })
 
