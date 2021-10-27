@@ -19,6 +19,9 @@
             tools:text="Please wait"
             android:textAllCaps="false"
             android:textSize="@dimen/dimen_18sp"
+            android:textColor="@color/white"
+
+            app:backgroundTint="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -39,15 +39,13 @@
             android:layout_height="wrap_content"
             android:text="@string/validity"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/txt_plan_validity"
-            app:layout_constraintStart_toStartOf="@+id/txt_plan_validity"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txt_plan_validity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:textColor="@color/colorTextPrimary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lbl_plan_validity"
@@ -58,12 +56,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            tools:text="TextView"
-            android:maxLines="2"
-            android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txt_plan_validity" />
+            app:layout_constraintTop_toBottomOf="@+id/txt_plan_validity"
+            tools:text="TextView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

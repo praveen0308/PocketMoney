@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PocketMoney">
         <activity
+            android:name=".mlm.ui.forgotpassword.ForgotPassword"
+            android:exported="true" />
+        <activity
             android:name=".common.ChatActivity"
             android:exported="true" />
         <activity
@@ -41,7 +44,7 @@
         <activity android:name=".mlm.ui.transfermoney.QRCodeScanner" />
         <activity android:name=".mlm.ui.customergrowth.CustomerGrowthNCommission" />
         <activity android:name=".shopping.ui.AddNewAddress" />
-        <activity android:name=".mlm.ui.mobilerecharge.PaytmActivity" />
+
         <activity android:name=".mlm.ui.dashboard.ComplaintList" />
         <activity android:name=".mlm.ui.dashboard.MyCoupons" />
         <activity android:name=".mlm.ui.dashboard.CustomerWalletActivity" />

@@ -60,7 +60,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textInputLayout10" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout14"
+                android:id="@+id/til_operator"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -92,14 +92,15 @@
                 app:hintEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout14"
+                app:layout_constraintTop_toBottomOf="@+id/til_operator"
                 app:startIconDrawable="@drawable/ic_rupee_bold_18">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_recharge_amount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter Amount" />
+                    android:hint="Enter Amount"
+                    android:inputType="number"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 

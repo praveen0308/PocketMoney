@@ -19,7 +19,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="ORD1000021"
         android:textAppearance="@style/ValueLabel"
         app:layout_constraintBottom_toBottomOf="@+id/textView51"
         app:layout_constraintStart_toEndOf="@+id/textView51"

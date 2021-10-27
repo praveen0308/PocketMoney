@@ -1,6 +1,7 @@
 package com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -12,17 +13,29 @@ import androidx.navigation.fragment.findNavController
 import com.example.pocketmoney.R
 import com.example.pocketmoney.common.PaymentMethods
 import com.example.pocketmoney.databinding.FragmentRechargeBinding
-import com.example.pocketmoney.mlm.model.OperationResultModel
 import com.example.pocketmoney.mlm.model.serviceModels.*
 import com.example.pocketmoney.mlm.repository.ServiceRepository
+import com.example.pocketmoney.mlm.ui.TaskResultDialog
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.KEY_ACCOUNT_NUMBER
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.KEY_AMOUNT
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.KEY_HEADING
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.KEY_PAYMENT_STATUS
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.KEY_REF_ID
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.KEY_STATUS
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.KEY_SUBTITLE
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.KEY_WALLET_TYPE_ID
+import com.example.pocketmoney.mlm.ui.TaskResultDialog.Companion.PENDING
 import com.example.pocketmoney.mlm.ui.mobilerecharge.SelectContact
 import com.example.pocketmoney.mlm.ui.mobilerecharge.newui.ChooseRechargePlans
 import com.example.pocketmoney.mlm.viewmodel.MobileRechargeViewModel
 import com.example.pocketmoney.paymentgateway.OperationResultDialog
 import com.example.pocketmoney.utils.*
+
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
 import com.example.pocketmoney.utils.myEnums.PlanType
 import com.example.pocketmoney.utils.myEnums.WalletType
+import com.jmm.brsap.dialog_builder.DialogType
+
 import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
 import com.paytm.pgsdk.TransactionManager
@@ -33,8 +46,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Recharge(val mListener: MobileRechargeInterface) :
     BaseFragment<FragmentRechargeBinding>(FragmentRechargeBinding::inflate),
-    PaymentMethods.PaymentMethodsInterface, PaytmPaymentTransactionCallback,
-    OperationResultDialog.OperationResultDialogCallback {
+    PaymentMethods.PaymentMethodsInterface, PaytmPaymentTransactionCallback
+    {
 
     private val viewModel by activityViewModels<MobileRechargeViewModel>()
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -52,6 +65,31 @@ class Recharge(val mListener: MobileRechargeInterface) :
     //    private lateinit var recharge : MobileRechargeModel
     private var gatewayOrderId: String = ""
 
+    private val circles = mutableListOf<String>(
+        "Maharashtra Goa",
+        "Mumbai",
+        "Andhra Pradesh Telangana",
+        "Assam",
+        "Bihar Jharkhand",
+        "Chennai",
+        "Delhi NCR",
+        "Gujarat",
+        "Haryana",
+        "Himachal Pradesh",
+        "Jammu Kashmir",
+        "Karnataka",
+        "Kerala",
+        "Kolkata",
+        "Madhya Pradesh Chhattisgarh",
+        "North East",
+        "Orissa",
+        "Punjab",
+        "Rajasthan",
+        "Tamil Nadu",
+        "UP East",
+        "UP West",
+        "West Bengal",
+    )
     //    private lateinit var viewModel.paytmResponseModel: PaytmResponseModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,61 +126,55 @@ class Recharge(val mListener: MobileRechargeInterface) :
         binding.btnConfirm.setOnClickListener {
             val number = binding.etMobileNumber.text.toString().trim()
             viewModel.rechargeMobileNo.postValue(number)
-            val amount = binding.etRechargeAmount.text.toString().trim()
-            if (amount.toInt() > 0) {
-                viewModel.rechargeAmount.postValue(amount.toInt())
-
-                val sheet = PaymentMethods(this)
-                sheet.show(parentFragmentManager, sheet.tag)
-            } else {
+            val amount = binding.etRechargeAmount.text.toString()
+            if (amount.isNullOrEmpty()){
                 showToast("Enter valid recharge amount!!!")
+            }else{
+                if (amount.toInt() > 0) {
+                    viewModel.rechargeAmount.postValue(amount.toInt())
+                    val sheet = PaymentMethods(this)
+                    sheet.show(parentFragmentManager, sheet.tag)
+                } else {
+                    showToast("Enter valid recharge amount!!!")
+                }
             }
+
         }
 
         binding.btnViewPlan.setOnClickListener {
             if (viewModel.rechargeMobileNo.value.isNullOrEmpty() || viewModel.rechargeMobileNo.value!!.length!=10){
                 showToast("Enter a valid mobile number...")
             }else{
-                if (previousMobileNumber == viewModel.rechargeMobileNo.value.toString()){
+                previousMobileNumber = viewModel.rechargeMobileNo.value.toString()
+                viewModel.getMobileSimplePlanList(viewModel.selectedCircle.value!!, viewModel.selectedOperator.value!!)
+
+                /*if (previousMobileNumber == viewModel.rechargeMobileNo.value.toString()){
                     val sheet = ChooseRechargePlans()
                     sheet.show(parentFragmentManager, sheet.tag)
                 }else{
                     previousMobileNumber = viewModel.rechargeMobileNo.value.toString()
                     viewModel.getMobileSimplePlanList(viewModel.selectedCircle.value!!, viewModel.selectedOperator.value!!)
-                }
-
-
-
+                }*/
             }
-
         }
 
         binding.btnBestOffer.setOnClickListener {
             if (viewModel.rechargeMobileNo.value.isNullOrEmpty()){
                 showToast("Enter a valid mobile number...")
             }else{
-                if (previousMobileNumber == viewModel.rechargeMobileNo.value.toString()){
+                previousMobileNumber = viewModel.rechargeMobileNo.value.toString()
+                viewModel.getMobileSpecialPlanList(viewModel.rechargeMobileNo.value!!, viewModel.selectedOperator.value!!)
+                /*if (previousMobileNumber == viewModel.rechargeMobileNo.value.toString()){
                     val sheet = ChooseRechargePlans(PlanType.SPECIAL_PLAN)
                     sheet.show(parentFragmentManager, sheet.tag)
                 }else{
                     previousMobileNumber = viewModel.rechargeMobileNo.value.toString()
                     viewModel.getMobileSpecialPlanList(viewModel.rechargeMobileNo.value!!, viewModel.selectedOperator.value!!)
-                }
+                }*/
 
 
             }
         }
-    }
-
-    private fun onRechargeFailed() {
-        showSuccessfulDialog(
-            "Recharge Failed !!!",
-            isSuccess = false,
-            dialogListener = object : MyDialogListener {
-                override fun onDismiss() {
-                    requireActivity().finish()
-                }
-            })
     }
 
     override fun subscribeObservers() {
@@ -177,14 +209,25 @@ class Recharge(val mListener: MobileRechargeInterface) :
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        it.Operator?.let { operator ->
-                            viewModel.selectedOperator.postValue(operator)
+
+                        if(it.Operator.isNullOrEmpty()){
+                            viewModel.selectedOperator.postValue("Jio")
+                            binding.tilOperator.error = "Not a jio operator! then choose manually."
+                        }else{
+                            viewModel.selectedOperator.postValue(it.Operator)
+                            binding.tilOperator.error = null
                         }
 
-                        it.circle?.let { circle ->
-                            if (circle.length > 2) viewModel.selectedCircle.postValue(circle)
-                            else viewModel.selectedCircle.postValue(circle)
+                        if (it.circle.isNullOrEmpty()){
+                            viewModel.selectedCircle.postValue(circles[0])
+                        }else{
+                            if (circles.contains(it.circle)){
+                                viewModel.selectedCircle.postValue(it.circle)
+                            }else{
+                                viewModel.selectedCircle.postValue(circles[0])
+                            }
                         }
+
 
                     }
                     displayLoading(false)
@@ -243,23 +286,29 @@ class Recharge(val mListener: MobileRechargeInterface) :
             }
         })
         viewModel.progressStatus.observe(viewLifecycleOwner, {
+            displayLoading(false)
+            hideLoadingDialog()
             when (it) {
-                LOADING -> {
-                    displayLoading(true)
-                }
                 ERROR -> {
-                    displayLoading(false)
-                    showToast("Something went wrong !!!")
+                    showActionDialog(requireActivity(), DialogType.ERROR,"Oops !!!","Something went wrong! Please try again."
+                        ,"Okay"
+                    ) {
+                        // do things here
+                    }
                 }
                 CHECKING_WALLET_BALANCE -> {
-                    displayLoading(true)
+                    showLoadingDialog("Checking wallet balance...")
                 }
                 INSUFFICIENT_BALANCE -> {
-                    displayLoading(false)
-                    showToast("Insufficient balance !!!")
-
+                    showActionDialog(requireActivity(), DialogType.ERROR,"Insufficient balance!!","Your wallet balance is low."
+                        ,"Okay"
+                    ) {
+                        // do things here
+                    }
                 }
-
+                INITIATING_TRANSACTION->{
+                    showLoadingDialog("Initiating transaction...")
+                }
                 CHECKSUM_RECEIVED -> {
                     displayLoading(false)
                     val paytmOrder = PaytmOrder(
@@ -271,57 +320,66 @@ class Recharge(val mListener: MobileRechargeInterface) :
                     )
                     processPaytmTransaction(paytmOrder)
                 }
+                INITIATING_RECHARGE_SERVICE->{
+                    showLoadingDialog("Requesting for recharge...")
+                }
                 PENDING -> {
-                    displayLoading(false)
-
-                    showFullScreenDialog(
-                        OperationResultModel(
-                            title1 = "Recharge pending !!!",
-                            amount = viewModel.rechargeAmount.value.toString(),
-                            status = "Payment pending",
-                            timestamp = getTodayDate(),
-                            viewModel.recharge.RequestID!!,
-                            animationUrl = R.raw.error_animation
-                        ), operationResultDialogCallback = this
-                    )
+                    val bundle = Bundle()
+                    bundle.putString(KEY_HEADING,"Recharge Pending!!!")
+                    bundle.putString(KEY_SUBTITLE,"Your ${viewModel.selectedOperator.value} prepaid recharge is pending.")
+                    bundle.putInt(KEY_STATUS, TaskResultDialog.PENDING)
+                    bundle.putString(KEY_REF_ID,viewModel.recharge.RequestID)
+                    bundle.putString(KEY_ACCOUNT_NUMBER,viewModel.recharge.MobileNo.toString())
+                    bundle.putString(KEY_AMOUNT,viewModel.rechargeAmount.value.toString())
+                    bundle.putString(KEY_PAYMENT_STATUS,viewModel.rechargeApiResponse.Status)
+                    bundle.putInt(KEY_WALLET_TYPE_ID,viewModel.recharge.WalletTypeID!!)
+                    showTaskResultDialog(bundle,parentFragmentManager)
                 }
                 RECHARGE_FAILED -> {
-                    displayLoading(false)
-                    showFullScreenDialog(
-                        OperationResultModel(
-                            title1 = "Recharge failed !!!",
-                            amount = viewModel.rechargeAmount.value.toString(),
-                            status = "Payment Failed",
-                            timestamp = getTodayDate(),
-                            viewModel.recharge.RequestID!!,
-                            animationUrl = R.raw.error_animation
-                        ), operationResultDialogCallback = this
-                    )
+                    val bundle = Bundle()
+                    bundle.putString(KEY_HEADING,"Recharge Failed!!!")
+                    bundle.putString(KEY_SUBTITLE,"Your ${viewModel.selectedOperator.value} prepaid was unfortunately failed.")
+                    bundle.putInt(KEY_STATUS, TaskResultDialog.PENDING)
+                    bundle.putString(KEY_REF_ID,viewModel.recharge.RequestID)
+                    bundle.putString(KEY_ACCOUNT_NUMBER,viewModel.recharge.MobileNo.toString())
+                    bundle.putString(KEY_AMOUNT,viewModel.rechargeAmount.value.toString())
+                    bundle.putString(KEY_PAYMENT_STATUS,viewModel.rechargeApiResponse.Status)
+                    bundle.putInt(KEY_WALLET_TYPE_ID,viewModel.recharge.WalletTypeID!!)
+                    showTaskResultDialog(bundle,parentFragmentManager)
                 }
                 RECHARGE_SUCCESSFUL -> {
-                    displayLoading(false)
-                    showFullScreenDialog(
-                        OperationResultModel(
-                            title1 = "Recharge done successfully!!",
-                            amount = viewModel.rechargeAmount.value.toString(),
-                            status = "Payment Successful",
-                            timestamp = getTodayDate(),
-                            viewModel.recharge.RequestID!!,
-                            animationUrl = R.raw.success_animation
-                        ), operationResultDialogCallback = this
-                    )
+                    val bundle = Bundle()
+                    bundle.putString(KEY_HEADING,"Recharge Pending!!!")
+                    bundle.putString(KEY_SUBTITLE,"Your ${viewModel.selectedOperator.value} prepaid was successfully recharged.")
+                    bundle.putInt(KEY_STATUS, TaskResultDialog.PENDING)
+                    bundle.putString(KEY_REF_ID,viewModel.recharge.RequestID)
+                    bundle.putString(KEY_ACCOUNT_NUMBER,viewModel.recharge.MobileNo.toString())
+                    bundle.putString(KEY_AMOUNT,viewModel.rechargeAmount.value.toString())
+                    bundle.putString(KEY_PAYMENT_STATUS,viewModel.rechargeApiResponse.Status)
+                    bundle.putInt(KEY_WALLET_TYPE_ID,viewModel.recharge.WalletTypeID!!)
+                    showTaskResultDialog(bundle,parentFragmentManager)
+                }
+               /* RECHARGE_FAILED->{
+                    showActionDialog(requireActivity(), DialogType.ERROR,"Payment failed!","Unfortunately payment failed!!"
+                        ,"Okay"
+                    ) {
+                        // do things here
+                        displayLoading(false)
+                    }
+                }*/
+                PROCESSING ->{
+                    showLoadingDialog()
                 }
             }
-        })
 
+        })
     }
 
     override fun onPaymentMethodSelected(method: PaymentEnum) {
         serviceRepository.selectedPaymentMethod = method
-
         when (method) {
             PaymentEnum.WALLET -> viewModel.getWalletBalance(userId, roleId)
-            PaymentEnum.PCASH -> viewModel.getWalletBalance(userId, roleId)
+            PaymentEnum.PCASH -> viewModel.getPCashBalance(userId, roleId)
             PaymentEnum.PAYTM -> { startPayment() }
         }
     }
@@ -394,7 +452,7 @@ class Recharge(val mListener: MobileRechargeInterface) :
 
                 }
                 "FAILURE" -> {
-                    showToast("Transaction Failed !!!")
+//                    showToast("Transaction Failed !!!")
                     viewModel.addPaymentTransactionDetail(
                         PaymentGatewayTransactionModel(
                             UserId = userId,
@@ -420,7 +478,11 @@ class Recharge(val mListener: MobileRechargeInterface) :
                     showToast("Transaction Cancelled !!!")
                 }
                 else -> {
-                    showToast("Something went wrong !!!")
+//                    showToast("Something went wrong !!!")
+                    showActionDialog(requireActivity(),DialogType.ERROR,"Oops!",
+                        "Something went wrong!! Contact admin...",mListener = {
+                            requireActivity().finish()
+                        })
                 }
             }
 
@@ -463,9 +525,7 @@ class Recharge(val mListener: MobileRechargeInterface) :
         Timber.d("onTransactionResponse : ${p0.toString()} \n ${p1.toString()}")
     }
 
-    override fun onResultDialogDismiss() {
-        requireActivity().finish()
-    }
+
 
     companion object {
         const val LOADING = 100
@@ -478,10 +538,9 @@ class Recharge(val mListener: MobileRechargeInterface) :
         const val ADDING_USED_SERVICE_DETAIL = 107
         const val CHECKSUM_RECEIVED = 108
         const val START_PAYMENT_GATEWAY = 109
-
-        /*const val GETTING_REQUEST_ID=106
-        const val CALLING_SAMPURNA_RECHARGE_API=107
-        const val SUBMITTING_PAYTM_TRANSACTION=108
-        const val WALLET_CHARGE_DEDUCTED=109*/
+        const val PROCESSING = 110
+        const val INITIATING_TRANSACTION = 111
+        const val INITIATING_RECHARGE_SERVICE = 112
+        const val REDIRECT=113
     }
 }

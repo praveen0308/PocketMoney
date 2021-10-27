@@ -42,8 +42,6 @@ class ChooseRechargePlans(val planType:PlanType = PlanType.NORMAL_PLAN) : BaseBo
         if (planType == PlanType.SPECIAL_PLAN){
             viewModel.getMobileSpecialPlanList(viewModel.rechargeMobileNo.value!!, viewModel.selectedOperator.value!!)
         }else{
-
-
             viewModel.getMobileSimplePlanList(viewModel.selectedCircle.value!!, viewModel.selectedOperator.value!!)
         }*/
     }

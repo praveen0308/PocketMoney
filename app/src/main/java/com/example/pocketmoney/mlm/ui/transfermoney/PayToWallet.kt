@@ -24,6 +24,7 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
     private val viewModel by activityViewModels<B2BTransferViewModel>()
 
     private lateinit var userId:String
+    private var roleId = 0
     private lateinit var recipientUserId:String
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,17 +39,18 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
             }
         }
         binding.btnPay.setOnClickListener {
-            val requestData = JsonObject()
-            requestData.addProperty("TransferBy",userId)
-            requestData.addProperty("TransferTo",recipientUserId)
-            requestData.addProperty("TransferAmount",binding.etAmount.text.toString().toDouble())
-            requestData.addProperty("TransferComment",binding.etMessage.text.toString())
-            viewModel.b2bTransfer(requestData)
+            binding.btnPay.isEnabled = false
+            viewModel.getWalletBalance(userId, roleId)
+
         }
     }
     override fun subscribeObservers() {
         viewModel.userId.observe(viewLifecycleOwner,{
             userId = it
+        })
+
+        viewModel.userRoleID.observe(viewLifecycleOwner,{
+            roleId = it
         })
         viewModel.recipientUserId.observe(viewLifecycleOwner,{
             recipientUserId = it
@@ -77,6 +79,37 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
             }
         })
 
+        viewModel.walletBalance.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        if (it<binding.etAmount.text.toString().toDouble()){
+                            showToast("Insufficient Balance !!!")
+                            binding.btnPay.isEnabled = true
+                        }else{
+                            val requestData = JsonObject()
+                            requestData.addProperty("TransferBy",userId)
+                            requestData.addProperty("TransferTo",recipientUserId)
+                            requestData.addProperty("TransferAmount",binding.etAmount.text.toString().toDouble())
+                            requestData.addProperty("TransferComment",binding.etMessage.text.toString())
+                            viewModel.b2bTransfer(requestData)
+                        }
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+
         viewModel.b2bTransferResponse.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -97,6 +130,7 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
                 Status.ERROR -> {
                     displayLoading(false)
                     _result.message?.let {
+
                         showFullScreenDialog(
                             OperationResultModel(title1 = "Transaction failed !!!",
                                 amount = binding.etAmount.text.toString(),status = "Payment failed.",

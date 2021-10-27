@@ -13,6 +13,7 @@ import com.example.pocketmoney.databinding.FragmentPayoutTransferMoneyBinding
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.mlm.viewmodel.PayoutViewModel
 import com.example.pocketmoney.utils.*
+import com.jmm.brsap.dialog_builder.DialogType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,7 +26,7 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
     private var userID: String = ""
     private var roleID: Int = 0
     private var walletBalance: Double = 0.0
-
+    private var isTransferred = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,7 +76,7 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             val amount = binding.etAmount.text.toString()
 
             val beneficiary = viewModel.selectedBeneficiary.value!!
-
+            isTransferred= true
             when (payoutType) {
                 // Bank transfer
                 1 -> {
@@ -140,7 +141,6 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
                         walletBalance=it
                         binding.tvWalletBalance.text = "Wallet Balance : $it"
                     }
-
                     displayLoading(false)
                 }
                 Status.LOADING -> {
@@ -203,18 +203,27 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        showToast("Transferred successfully !!!")
-                        dismiss()
+                        if (isTransferred){
+                            dismiss()
+//                            binding.btnSubmit.setState(LoadingButton.LoadingStates.SUCCESS,msg = "Transaction successful!")
+                            showActionDialog(requireActivity(), DialogType.SUCCESS,
+                                "Transaction successful!",
+                                "₹${binding.etAmount.text.toString()} transferred to ${viewModel.selectedBeneficiary.value!!.BeneficiaryName} successffully!!",
+                                "Continue"
+                            ) {
+                               dismiss()
+                            }
+
+                        }
+
                     }
-                    displayLoading(false)
 
                 }
                 Status.LOADING -> {
-                    displayLoading(true)
+
                     binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,msg = "Processing...")
                 }
                 Status.ERROR -> {
-                    displayLoading(false)
                     _result.message?.let {
                         displayError(it)
                         binding.btnSubmit.setState(LoadingButton.LoadingStates.RETRY,"Retry")
@@ -227,17 +236,27 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        showToast("Transferred successfully !!!")
-                        dismiss()
+                        if (isTransferred){
+                            dismiss()
+//                            binding.btnSubmit.setState(LoadingButton.LoadingStates.SUCCESS,msg = "Transaction successful!")
+                            showActionDialog(requireActivity(), DialogType.SUCCESS,
+                                "Transaction successful!",
+                                "₹${binding.etAmount.text.toString()} transferred to ${viewModel.selectedBeneficiary.value!!.BeneficiaryName} successffully!!",
+                                "Continue"
+                            ) {
+                                dismiss()
+                            }
+
+                        }
                     }
-                    displayLoading(false)
+
                 }
                 Status.LOADING -> {
-                    displayLoading(true)
+
                     binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,msg = "Processing...")
                 }
                 Status.ERROR -> {
-                    displayLoading(false)
+
                     _result.message?.let {
                         displayError(it)
                         binding.btnSubmit.setState(LoadingButton.LoadingStates.RETRY,"Retry")
@@ -250,17 +269,24 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        showToast("Transferred successfully !!!")
-                        dismiss()
+                        if (isTransferred){
+                            dismiss()
+//                            binding.btnSubmit.setState(LoadingButton.LoadingStates.SUCCESS,msg = "Transaction successful!")
+                            showActionDialog(requireActivity(), DialogType.SUCCESS,
+                                "Transaction successful!",
+                                "₹${binding.etAmount.text.toString()} transferred to ${viewModel.selectedBeneficiary.value!!.BeneficiaryName} successffully!!",
+                                "Continue"
+                            ) {
+                                dismiss()
+                            }
+
+                        }
                     }
-                    displayLoading(false)
                 }
                 Status.LOADING -> {
-                    displayLoading(true)
                     binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,msg = "Processing...")
                 }
                 Status.ERROR -> {
-                    displayLoading(false)
                     _result.message?.let {
                         displayError(it)
                         binding.btnSubmit.setState(LoadingButton.LoadingStates.RETRY,"Retry")

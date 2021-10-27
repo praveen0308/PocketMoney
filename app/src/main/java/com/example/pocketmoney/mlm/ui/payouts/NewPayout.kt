@@ -41,13 +41,12 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
 
         binding.btnSearch.setOnClickListener {
             viewModel.customerNumber.postValue(binding.etSearchView.text.toString().trim())
-            if (btnState == "ADD"){
-                val sheet = AddPayoutCustomer()
-                sheet.show(supportFragmentManager,sheet.tag)
-            }
-            else{
-                viewModel.searchPayoutCustomer(binding.etSearchView.text.toString())
-            }
+            viewModel.searchPayoutCustomer(binding.etSearchView.text.toString())
+        }
+
+        binding.btnAddCustomer.setOnClickListener {
+            val sheet = AddPayoutCustomer()
+            sheet.show(supportFragmentManager,sheet.tag)
         }
 
     }
@@ -57,23 +56,36 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
 
         })
 
+        viewModel.progressStatus.observe(this,{
+            when(it){
+
+            }
+        })
         viewModel.btnState.observe(this, {
             when (it) {
                 0 -> {
                     btnState = "SEARCH"
-                    binding.btnSearch.text = "Search"
                     binding.btnSearch.isEnabled = false
-
+                    binding.btnSearch.isVisible = true
+                    binding.btnAddCustomer.isVisible = false
                 }
                 1 -> {
                     btnState = "SEARCH"
-                    binding.btnSearch.text = "Search"
                     binding.btnSearch.isEnabled = true
+                    binding.btnSearch.isVisible = true
+                    binding.btnAddCustomer.isVisible = false
                 }
                 2 -> {
                     btnState = "ADD"
-                    binding.btnSearch.text = "Add Customer"
-                    binding.btnSearch.isEnabled = true
+                    binding.apply {
+                        btnSearch.isEnabled = false
+                        btnAddCustomer.isVisible = true
+                        btnSearch.isVisible= false
+                        layoutCustomerDetail.root.isVisible = false
+                        tlPayouts.isVisible = false
+                        vpPayouts.isVisible= false
+                    }
+
                 }
             }
         })
@@ -83,6 +95,11 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
                 Status.SUCCESS -> {
                     if (_result._data ==null){
                         viewModel.btnState.postValue(2)
+                        binding.apply {
+                            layoutCustomerDetail.root.isVisible = false
+                            tlPayouts.isVisible = false
+                            vpPayouts.isVisible= false
+                        }
                     }else{
                         populateCustomerUI(_result._data)
                         binding.apply {
@@ -133,8 +150,6 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
                     "Bank transfer"->viewModel.payoutType.postValue(1)
                     "UPI transfer"->viewModel.payoutType.postValue(2)
                     "Paytm transfer"->viewModel.payoutType.postValue(3)
-
-
                 }
 
             }
@@ -158,9 +173,7 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
             vpPayouts.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
 
             })
-
         }
-
     }
 
     inner class PayoutsVPAdapter(fragmentActivity: FragmentActivity) :
@@ -186,5 +199,9 @@ class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBindin
 
     override fun onMenuClick() {
 
+    }
+
+    companion object{
+        const val UPDATED = 1
     }
 }

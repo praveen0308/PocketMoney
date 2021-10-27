@@ -48,8 +48,8 @@ object MLMNetworkModule {
 
 
     @Provides
-    fun provideUserAuthenticationRepo(mlmApiService: MLMApiService):AccountRepository{
-        return AccountRepository(mlmApiService)
+    fun provideUserAuthenticationRepo(mlmApiService: MLMApiService,customerService: CustomerService):AccountRepository{
+        return AccountRepository(mlmApiService,customerService)
     }
 
     @Provides

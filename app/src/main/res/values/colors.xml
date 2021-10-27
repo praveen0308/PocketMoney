@@ -48,6 +48,13 @@
     <color name="Olive">#808000</color>
     <color name="CreamyRed">#DB3022</color>
 
+    <color name="success">#2da25c</color>
 
 
+    <color name="colorRed">#B71C1C</color>
+    <color name="colorYellow">#FFD54F</color>
+    <color name="colorBlue">#42A5F5</color>
+    <color name="colorPurple">#9C27B0</color>
+    <color name="colorGreen">#4CAF50</color>
+    <color name="grayFontColor">#424242</color>
 </resources>

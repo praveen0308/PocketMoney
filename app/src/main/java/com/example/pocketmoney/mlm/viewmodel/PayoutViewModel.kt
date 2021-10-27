@@ -35,6 +35,8 @@ class PayoutViewModel @Inject constructor(
 
     val payoutType = MutableLiveData(1)
     val selectedBeneficiary = MutableLiveData<Beneficiary>()
+    val transferMoneyStatus = MutableLiveData(false)
+    val progressStatus = MutableLiveData(0)
 
     fun getWalletBalance(userId: String, roleId: Int) {
 
@@ -57,10 +59,8 @@ class PayoutViewModel @Inject constructor(
 
     }
 
-
     private val _walletBalance = MutableLiveData<Resource<Double>>()
     val walletBalance : LiveData<Resource<Double>> = _walletBalance
-
 
     private val _addPayoutCustomer = MutableLiveData<Resource<Int>>()
     val addPayoutCustomer: LiveData<Resource<Int>> = _addPayoutCustomer

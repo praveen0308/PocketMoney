@@ -13,6 +13,7 @@ import com.example.pocketmoney.utils.ApplicationToolbar
 import com.example.pocketmoney.utils.BaseActivity
 import com.example.pocketmoney.utils.Status
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
+import com.example.pocketmoney.utils.myEnums.WalletType
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -64,25 +65,6 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
             roleId = it
         })
 
-        viewModel.addPaymentTransResponse.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
 
         viewModel.isActivationSuccessful.observe(this, { _result ->
             when (_result.status) {
@@ -95,7 +77,7 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
                                     OrderId = viewModel.paytmResponseModel.ORDERID,
                                     ReferenceTransactionId = viewModel.paytmResponseModel.ORDERID,
                                     ServiceTypeId = 1,
-                                    WalletTypeId = 2,
+                                    WalletTypeId = WalletType.OnlinePayment.id,
                                     TxnAmount = viewModel.paytmResponseModel.TXNAMOUNT,
                                     Currency = viewModel.paytmResponseModel.CURRENCY,
                                     TransactionTypeId = 1,
@@ -194,9 +176,9 @@ class ActivateAccount : BaseActivity<ActivityActivateAccountBinding>(ActivityAct
         selectedPaymentMethod = method
         if (result){
             when(selectedPaymentMethod){
-                PaymentEnum.WALLET-> viewModel.activateAccountByPayment(userId,1)
-                PaymentEnum.PCASH-> viewModel.activateAccountByPayment(userId,4)
-                PaymentEnum.PAYTM->viewModel.activateAccountByPayment(userId,2)
+                PaymentEnum.WALLET-> viewModel.activateAccountByPayment(userId,WalletType.Wallet.id)
+                PaymentEnum.PCASH-> viewModel.activateAccountByPayment(userId,WalletType.PCash.id)
+                PaymentEnum.PAYTM->viewModel.activateAccountByPayment(userId,WalletType.OnlinePayment.id)
             }
         }
         else{

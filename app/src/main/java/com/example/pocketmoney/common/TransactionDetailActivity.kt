@@ -110,9 +110,9 @@ class TransactionDetailActivity :
         paymentDetails.add(ModelTitleValue("Reference ID",detail.Reference_Id.toString()))
         val mode = when(detail.PaymentMode){
             1->"Wallet"
-            2->"Online"
-            3->"Cash On Delivery"
-            4->"PCash"
+            2->"PCash"
+            3->"Online"
+            4->"Cash On Delivery"
             else->detail.PaymentMode
         }
         paymentDetails.add(ModelTitleValue("Payment Mode",mode.toString()))

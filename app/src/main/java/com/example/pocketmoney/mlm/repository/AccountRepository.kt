@@ -3,6 +3,7 @@ package com.example.pocketmoney.mlm.repository
 import com.example.pocketmoney.mlm.model.ModelCustomerDetail
 import com.example.pocketmoney.mlm.model.UserMenu
 import com.example.pocketmoney.mlm.model.UserModel
+import com.example.pocketmoney.mlm.network.CustomerService
 import com.example.pocketmoney.mlm.network.MLMApiService
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class AccountRepository @Inject constructor(
-        private val mlmApiService: MLMApiService
+        private val mlmApiService: MLMApiService,
+        private val customerService: CustomerService
 ) {
 
     suspend fun doLogin(userId:String,password:String): Flow<UserModel> {
@@ -23,22 +25,6 @@ class AccountRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
 
     }
-//
-//    suspend fun doLogin(userName: String, password: String): Flow<DataState<UserModel>> = flow {
-//        emit(DataState.Loading)
-//
-//        try {
-//
-//            val userModel = mlmApiService.doLogin(userName, password)
-//            if (userModel != null) {
-//
-//                emit(DataState.Success(userModel))
-//            }
-//
-//        } catch (e: Exception) {
-//            emit(DataState.Error(e))
-//        }
-//    }
 
     suspend fun checkAccountAlreadyExist(
             userId: String
@@ -111,4 +97,17 @@ class AccountRepository @Inject constructor(
             emit(response)
         }.flowOn(Dispatchers.IO)
     }
+
+    suspend fun resetPassword(
+        userId: String,
+        loginId: Int,
+        otp: String,
+        action: String
+    ): Flow<Boolean> {
+        return flow {
+            val response = customerService.resetPassword(userId,loginId, otp, action)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
 }

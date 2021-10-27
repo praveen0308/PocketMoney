@@ -16,10 +16,7 @@ import com.example.pocketmoney.mlm.repository.PaytmRepository
 import com.example.pocketmoney.shopping.model.DiscountModel
 import com.example.pocketmoney.shopping.repository.CheckoutRepository
 import com.example.pocketmoney.shopping.viewmodel.ApplyCouponCodeViewModel
-import com.example.pocketmoney.utils.BaseFragment
-import com.example.pocketmoney.utils.SDF_dM
-import com.example.pocketmoney.utils.Status
-import com.example.pocketmoney.utils.convertISOTimeToAny
+import com.example.pocketmoney.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -40,6 +37,9 @@ class ApplyCouponCode : BaseFragment<FragmentApplyCouponCodeBinding>(FragmentApp
         super.onViewCreated(view, savedInstanceState)
 
         binding.etCouponCode.doOnTextChanged { text, start, before, count ->
+            checkoutRepository.appliedCouponCode.postValue("")
+            binding.discountLayout.btnApply.text = "Apply"
+            binding.discountLayout.btnApply.icon = null
             viewModel.couponCode.postValue(text.toString())
         }
 
@@ -127,12 +127,12 @@ class ApplyCouponCode : BaseFragment<FragmentApplyCouponCodeBinding>(FragmentApp
             tvDiscountValidity.text = "${
                 convertISOTimeToAny(
                     discountModel.Starts_At.toString(),
-                    SDF_dM
+                    SDF_d_M_y
                 )
             } - ${
                 convertISOTimeToAny(
                     discountModel.Ends_At.toString(),
-                    SDF_dM
+                    SDF_d_M_y
                 )
             }"
         }

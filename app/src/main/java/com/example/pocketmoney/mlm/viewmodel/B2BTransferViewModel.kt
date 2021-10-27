@@ -2,14 +2,19 @@ package com.example.pocketmoney.mlm.viewmodel
 
 import androidx.lifecycle.*
 import com.example.pocketmoney.mlm.model.*
+import com.example.pocketmoney.mlm.model.serviceModels.MobileRechargeModel
 import com.example.pocketmoney.mlm.repository.*
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge
 import com.example.pocketmoney.utils.DataState
 import com.example.pocketmoney.utils.Resource
+import com.example.pocketmoney.utils.getMobileOperatorCode
+import com.example.pocketmoney.utils.myEnums.WalletType
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -97,6 +102,31 @@ class B2BTransferViewModel @Inject constructor(
 
     }
 
+    private val _walletBalance = MutableLiveData<Resource<Double>>()
+    val walletBalance : LiveData<Resource<Double>> = _walletBalance
+
+    fun getWalletBalance(userId: String, roleId: Int) {
+        viewModelScope.launch {
+            walletRepository
+                .getWalletBalance(userId, roleId, 1)
+                .onStart {
+                    _walletBalance.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+
+                        _walletBalance.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error occurred while fetching wallet balance")
+                        Timber.e("Exception : $it")
+
+                    }
+                }
+                .collect { _balance->
+
+                    _walletBalance.postValue(Resource.Success(_balance))
+                }
+        }
+    }
 
 
 }

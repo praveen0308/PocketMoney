@@ -50,4 +50,13 @@ interface CustomerService {
         @Query("walletId") walletId: Int,
         @Query("count") count: Int
     ): Int
+
+
+    @POST("Account/ResetPassword")
+    suspend fun resetPassword(
+        @Query("userId") userId: String,
+        @Query("loginId") loginId: Int,
+        @Query("otp") otp: String,
+        @Query("action") action: String
+    ): Boolean
 }

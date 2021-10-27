@@ -1,6 +1,7 @@
 package com.example.pocketmoney.utils
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -20,6 +21,7 @@ import com.example.pocketmoney.R
 import com.example.pocketmoney.common.AuthInterceptorSheet
 import com.example.pocketmoney.mlm.model.OperationResultModel
 import com.example.pocketmoney.paymentgateway.OperationResultDialog
+import com.jmm.brsap.dialog_builder.NordanLoadingDialog
 
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
@@ -31,12 +33,18 @@ abstract class BaseFragment<VB : ViewBinding>(
     private var _binding: VB? = null
     val binding get() = _binding!!
     lateinit var progressBarHandler: ProgressBarHandler
-
+    private lateinit var loadingDialog: Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         progressBarHandler = ProgressBarHandler(requireActivity())
 
+        loadingDialog = NordanLoadingDialog.createLoadingDialog(requireActivity(),"Loading")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        displayLoading(false)
     }
 
     override fun onCreateView(
@@ -51,6 +59,7 @@ abstract class BaseFragment<VB : ViewBinding>(
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        displayLoading(false)
     }
 
 
@@ -161,4 +170,16 @@ abstract class BaseFragment<VB : ViewBinding>(
         val dialogFragment = OperationResultDialog(operationResultModel,operationResultDialogCallback)
         dialogFragment.show(parentFragmentManager, "dialog")
     }
+
+
+    fun showLoadingDialog(msg: String="Processing..."){
+        loadingDialog = NordanLoadingDialog.createLoadingDialog(requireActivity(),msg)
+        loadingDialog.show()
+    }
+    fun hideLoadingDialog(){
+        loadingDialog.hide()
+    }
+
+
+
 }

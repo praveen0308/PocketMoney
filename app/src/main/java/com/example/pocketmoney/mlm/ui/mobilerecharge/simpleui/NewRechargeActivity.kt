@@ -3,6 +3,7 @@ package com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -30,6 +31,9 @@ class NewRechargeActivity : BaseActivity<ActivityNewRechargeBinding>(ActivityNew
 
     }
 
+    fun setToolbarVisibility(status:Boolean){
+        binding.toolbarActivityRecharge.isVisible = status
+    }
     override fun subscribeObservers() {
 
     }

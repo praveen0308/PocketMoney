@@ -1,18 +1,24 @@
 package com.example.pocketmoney.utils
 
-import android.R.attr
-import android.graphics.Bitmap
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
 import android.widget.Adapter
 import android.widget.TextView
-import androidmads.library.qrgenearator.QRGContents
-import androidmads.library.qrgenearator.QRGEncoder
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketmoney.R
 import com.example.pocketmoney.mlm.model.UniversalFilterItemModel
+import com.example.pocketmoney.mlm.ui.TaskResultDialog
+
 import com.example.pocketmoney.utils.myEnums.DateTimeEnum
 import com.example.pocketmoney.utils.myEnums.FilterEnum
 import com.example.pocketmoney.utils.myEnums.PaymentHistoryFilterEnum
-import com.google.zxing.WriterException
+import com.jmm.brsap.dialog_builder.Animation
+import com.jmm.brsap.dialog_builder.DialogType
+import com.jmm.brsap.dialog_builder.NordanAlertDialog
+import com.jmm.brsap.dialog_builder.NordanAlertDialogListener
+
 import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -397,4 +403,26 @@ fun lcm(vararg input: Int): Int {
     val midSeed = (timeSeed * randSeed).toLong()
     val s = midSeed.toString()
     return s.substring(0, 9)
+}
+
+
+fun showActionDialog(
+    mActivity: Activity, type: DialogType, mTitle:String, mMessage:String, positiveBtnText:String="Okay", mListener: NordanAlertDialogListener= NordanAlertDialogListener {  }
+){
+    NordanAlertDialog.Builder(mActivity).
+        setDialogType(type)
+        .setAnimation(Animation.SLIDE)
+        .isCancellable(false)
+        .setTitle(mTitle)
+        .setMessage(mMessage)
+        .setDialogAccentColor(R.color.white)
+        .setPositiveBtnText(positiveBtnText)
+        .onPositiveClicked(mListener)
+        .build().show()
+}
+
+fun showTaskResultDialog(bundle: Bundle,fragmentManager: FragmentManager){
+    val sheet = TaskResultDialog()
+    sheet.arguments = bundle
+    sheet.show(fragmentManager,sheet.tag)
 }

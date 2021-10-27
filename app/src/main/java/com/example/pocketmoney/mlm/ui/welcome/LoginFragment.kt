@@ -11,6 +11,7 @@ import com.example.pocketmoney.R
 import com.example.pocketmoney.databinding.FragmentLoginBinding
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository.Companion.LOGIN_DONE
 import com.example.pocketmoney.mlm.ui.dashboard.MainDashboard
+import com.example.pocketmoney.mlm.ui.forgotpassword.ForgotPassword
 import com.example.pocketmoney.mlm.viewmodel.LoginViewModel
 import com.example.pocketmoney.utils.BaseBottomSheetDialogFragment
 import com.example.pocketmoney.utils.BaseFragment
@@ -34,6 +35,9 @@ class LoginFragment : BaseBottomSheetDialogFragment<FragmentLoginBinding>(Fragme
 //        navController = Navigation.findNavController(view)
 
         createProgressDialog()
+        binding.btnForgotPassword.setOnClickListener {
+            startActivity(Intent(requireActivity(),ForgotPassword::class.java))
+        }
 
         binding.btnRegister.setOnClickListener {
 //            navController.navigate(R.id.action_loginFragment_to_registerFragment)

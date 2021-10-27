@@ -40,6 +40,9 @@ class PaymentPortal(private val paymentPortalCallback: PaymentPortalCallback,
 
         binding.btnMakePayment.setButtonClick {
             when(selectedPaymentMethod){
+                PaymentEnum.COD->{
+                    paymentPortalCallback.onPaymentResultReceived(PaymentEnum.COD,true,"Valid Balance")
+                }
                 PaymentEnum.WALLET->viewModel.getWalletBalance(userID, roleID)
                 PaymentEnum.PCASH->viewModel.getPCashBalance(userID, roleID)
                 PaymentEnum.PAYTM->{

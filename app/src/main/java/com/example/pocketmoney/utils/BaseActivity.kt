@@ -1,6 +1,7 @@
 package com.example.pocketmoney.utils
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -25,17 +26,22 @@ import android.view.Display
 import android.widget.LinearLayout
 import com.example.pocketmoney.mlm.model.OperationResultModel
 import com.example.pocketmoney.paymentgateway.OperationResultDialog
+import com.jmm.brsap.dialog_builder.NordanLoadingDialog
 
 
 abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (LayoutInflater) -> B) : AppCompatActivity() {
     lateinit var binding: B
     private lateinit var progressBarHandler: ProgressBarHandler
+    private lateinit var loadingDialog: Dialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadingDialog = NordanLoadingDialog.createLoadingDialog(this,"Loading")
         binding = bindingFactory(layoutInflater)
         setContentView(binding.root)
         subscribeObservers()
         progressBarHandler = ProgressBarHandler(this)
+
     }
 
     abstract fun subscribeObservers()
@@ -141,4 +147,14 @@ abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (Layout
         val dialogFragment = OperationResultDialog(operationResultModel,operationResultDialogCallback)
         dialogFragment.show(supportFragmentManager, "dialog")
     }
+
+
+    fun showLoadingDialog(msg: String="Processing..."){
+        loadingDialog = NordanLoadingDialog.createLoadingDialog(this,msg)
+        loadingDialog.show()
+    }
+    fun hideLoadingDialog(){
+        loadingDialog.hide()
+    }
+
 }

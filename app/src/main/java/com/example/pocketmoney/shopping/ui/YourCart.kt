@@ -146,6 +146,7 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
         var productOldPrice = 0.0
         var saving = 0.0
         var totalPrice = 0.0
+        var discount = 0.0
 
         for (item in cartList) {
             itemQuantity += item.Quantity
@@ -155,13 +156,23 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
 
         saving = productOldPrice - totalPrice
 
+        if (!checkoutRepository.appliedCouponCode.value.isNullOrEmpty()){
+            if (checkoutRepository.isFixed.value==true){
+                discount =checkoutRepository.appliedDiscount.value!!
+            }else{
+                discount = (checkoutRepository.appliedDiscount.value!!*totalPrice)/100
+
+            }
+        }
+
 
         binding.layoutCartSummary.setAmountSummary(
             ModelOrderAmountSummary(
                 itemQuantity,
                 productOldPrice,
                 saving,
-                totalPrice
+                totalPrice,
+                extraDiscount = discount
             )
         )
         binding.layoutCartSummary.setVisibilityStatus(1)

@@ -1,7 +1,7 @@
 package com.example.pocketmoney.mlm.model.payoutmodels
 
 data class PayoutCustomer(
-    val AddedBy: Int? = null,
+    val AddedBy: String? = null,
     val AddedOn: String? = null,
     val Address: String? = null,
     val CustomerTypeID: Int? = null,

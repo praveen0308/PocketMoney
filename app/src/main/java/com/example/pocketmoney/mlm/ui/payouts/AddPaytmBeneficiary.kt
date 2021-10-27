@@ -14,12 +14,15 @@ import com.example.pocketmoney.mlm.viewmodel.PayoutViewModel
 import com.example.pocketmoney.utils.BaseBottomSheetDialogFragment
 import com.example.pocketmoney.utils.LoadingButton
 import com.example.pocketmoney.utils.Status
+import com.example.pocketmoney.utils.showActionDialog
+import com.jmm.brsap.dialog_builder.DialogType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBeneficiaryBinding>(FragmentAddPaytmBeneficiaryBinding::inflate) {
     private val viewModel by activityViewModels<PayoutViewModel>()
     private var userId : String = ""
+    private var isAddedBeneficiary = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (viewModel.payoutType.value == 2){
@@ -32,11 +35,12 @@ class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBenefi
             binding.etUpiId.inputType = EditorInfo.TYPE_CLASS_NUMBER
         }
         binding.btnSubmit.setButtonClick {
+
             binding.apply {
                 val upiID = etUpiId.text.toString().trim()
 
                 val customerName = etCustomerName.text.toString().trim()
-
+                isAddedBeneficiary = true
                 viewModel.addBeneficiary(
                     Beneficiary(
                     Account = upiID,
@@ -61,9 +65,23 @@ class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBenefi
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        showToast("Beneficiary added successfully !!!")
-                        binding.btnSubmit.setState(LoadingButton.LoadingStates.SUCCESS,msg = "Added Successfully !!")
-                        dismiss()
+
+
+                        if (isAddedBeneficiary){
+                            dismiss()
+                            binding.btnSubmit.setState(LoadingButton.LoadingStates.SUCCESS,msg = "Added Successfully !!")
+                            showActionDialog(requireActivity(), DialogType.SUCCESS,
+                                "Successfully Added !!",
+                                "Beneficiary ${binding.etCustomerName.text.toString().trim()} added successfully!!!",
+                                "Great!"
+                            ) {
+
+                                viewModel.getBeneficiaries(viewModel.customerNumber.value!!,viewModel.payoutType.value!!)
+
+                            }
+
+                        }
+
                     }
                     displayLoading(false)
 
@@ -82,5 +100,8 @@ class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBenefi
         })
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        isAddedBeneficiary = false
+    }
 }

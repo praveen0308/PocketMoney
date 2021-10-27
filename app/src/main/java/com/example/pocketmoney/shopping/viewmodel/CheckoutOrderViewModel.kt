@@ -2,6 +2,7 @@ package com.example.pocketmoney.shopping.viewmodel
 
 import androidx.lifecycle.*
 import com.example.pocketmoney.common.MailMessagingRepository
+import com.example.pocketmoney.mlm.model.serviceModels.MobileRechargeModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.example.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
@@ -9,6 +10,7 @@ import com.example.pocketmoney.mlm.repository.CustomerRepository
 import com.example.pocketmoney.mlm.repository.PaytmRepository
 import com.example.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.example.pocketmoney.mlm.repository.WalletRepository
+import com.example.pocketmoney.mlm.ui.mobilerecharge.simpleui.Recharge
 import com.example.pocketmoney.shopping.model.CartModel
 import com.example.pocketmoney.shopping.model.CustomerOrder
 import com.example.pocketmoney.shopping.model.DiscountModel
@@ -16,13 +18,24 @@ import com.example.pocketmoney.shopping.model.ModelAddress
 import com.example.pocketmoney.shopping.repository.AddressRepository
 import com.example.pocketmoney.shopping.repository.CartRepository
 import com.example.pocketmoney.shopping.repository.CheckoutRepository
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.CHECKING_WALLET_BALANCE
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.CHECKSUM_RECEIVED
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.CREATING_ORDER_NUMBER
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.ERROR
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.INITIATING_TRANSACTION
 import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.LOADING
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.ORDER_SUCCESSFUL
+import com.example.pocketmoney.shopping.ui.checkoutorder.NewCheckout.Companion.PROCESSING
 import com.example.pocketmoney.utils.Resource
+import com.example.pocketmoney.utils.getMobileOperatorCode
 import com.example.pocketmoney.utils.myEnums.PaymentEnum
+import com.example.pocketmoney.utils.myEnums.PaymentModes
 import com.example.pocketmoney.utils.myEnums.PaymentStatus
+import com.example.pocketmoney.utils.myEnums.WalletType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,16 +61,6 @@ class CheckoutOrderViewModel @Inject constructor(
     lateinit var paytmResponseModel: PaytmResponseModel
     lateinit var customerOrder: CustomerOrder
 
-    // Order fields
-    /*
-    var totalAmount = 0.0
-    var mShippingCharge = 0.0
-    var tax = 0.0
-    var discountAmount = 0.0
-    var discountCoupon = ""
-    var grandTotal = (totalAmount + mShippingCharge) - discountAmount
-*/
-
     var itemQuantity = 0
     var productOldPrice = 0.0
     var totalAmount = 0.0
@@ -76,8 +79,8 @@ class CheckoutOrderViewModel @Inject constructor(
 
     var mCartItemList= mutableListOf<CartModel>()
 
-    var progressStatus = MutableLiveData(LOADING)
-
+    var progressStatus = MutableLiveData<Int>()
+    var transactionToken = ""
     fun setActiveStep(step:Int){
         activeStep.postValue(step)
     }
@@ -104,7 +107,6 @@ class CheckoutOrderViewModel @Inject constructor(
 
     fun getCustomerAddressList(userId: String){
         viewModelScope.launch {
-
             addressRepository.getCustomerAddressByUserId(userId)
                 .onStart {
                     _customerAddressList.postValue(Resource.Loading(true))
@@ -126,22 +128,23 @@ class CheckoutOrderViewModel @Inject constructor(
     var orderNumber : LiveData<Resource<String>> = _orderNumber
 
     fun createCustomerOrder(customerOrder: CustomerOrder) {
-
         viewModelScope.launch {
-
             checkoutRepository
                 .createCustomerOrder(customerOrder)
                 .onStart {
+                    progressStatus.postValue(CREATING_ORDER_NUMBER)
                     _orderNumber.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _orderNumber.postValue(Resource.Error(it))
+                        progressStatus.postValue(Recharge.ERROR)
+                        _orderNumber.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error occurred while creating order.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response->
                     _orderNumber.postValue(Resource.Success(response))
-
                     if (response != null) {
                         mOrderNumber = response
                         when (checkoutRepository.selectedPaymentMethod) {
@@ -152,7 +155,7 @@ class CheckoutOrderViewModel @Inject constructor(
                                         OrderId = paytmResponseModel.ORDERID,
                                         ReferenceTransactionId = response,
                                         ServiceTypeId = 1,
-                                        WalletTypeId = 1,
+                                        WalletTypeId = WalletType.OnlinePayment.id,
                                         TxnAmount = paytmResponseModel.TXNAMOUNT,
                                         Currency = paytmResponseModel.CURRENCY,
                                         TransactionTypeId = 1,
@@ -171,7 +174,7 @@ class CheckoutOrderViewModel @Inject constructor(
                             }
                             else -> {
                                 val message1 =
-                                    "Thank you for shopping with pocketmoney, your order placed successfully. Your order number is  $orderNumber you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
+                                    "Thank you for shopping with PocketMoney, your order placed successfully. Your order number is  $mOrderNumber you can track your order using PocketMoney, click https//wwww.pocketmoney.net.in"
                                 sendWhatsappMessage(customerOrder.UserID!!, message1)
                             }
                         }
@@ -187,23 +190,28 @@ class CheckoutOrderViewModel @Inject constructor(
     val addPaymentTransResponse : LiveData<Resource<String>> = _addPaymentTransResponse
 
     fun addPaymentTransactionDetail(paymentGatewayTransactionModel: PaymentGatewayTransactionModel) {
-
         viewModelScope.launch {
             paytmRepository
                 .addPaymentTransactionDetails(paymentGatewayTransactionModel)
                 .onStart {
+                    progressStatus.postValue(PROCESSING)
                     _addPaymentTransResponse.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _addPaymentTransResponse.postValue(Resource.Error(it))
+                        progressStatus.postValue(ERROR)
+                        _addPaymentTransResponse.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error occurred while adding PaymentTransactionDetail.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response->
+
                     _addPaymentTransResponse.postValue(Resource.Success(response))
                     if (paytmResponseModel.STATUS == "SUCCESS") {
+
                         updatePaymentStatus(mOrderNumber, PaymentStatus.Paid.id)
-                        val message1: String =
+                        val message1 =
                             "Thank you for shopping with Pocket Money, your order placed successfully. Your order number is  $mOrderNumber you can track your order using pocketmoney, click https//wwww.pocketmoney.net.in"
                         sendWhatsappMessage(paymentGatewayTransactionModel.UserId!!, message1)
                     } else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE") {
@@ -221,9 +229,7 @@ class CheckoutOrderViewModel @Inject constructor(
     val shippingCharge : LiveData<Resource<Double>> = _shippingCharge
 
     fun getShippingCharge(addressId:Int,userId: String) {
-
         viewModelScope.launch {
-
             addressRepository
                 .getShippingCharge(addressId,userId)
                 .onStart {
@@ -235,7 +241,6 @@ class CheckoutOrderViewModel @Inject constructor(
                     }
                 }
                 .collect { charge->
-//                    mShippingCharge = charge
                     _shippingCharge.postValue(Resource.Success(charge))
                 }
         }
@@ -289,20 +294,24 @@ class CheckoutOrderViewModel @Inject constructor(
     val checkSum : LiveData<Resource<String>> = _checkSum
 
     fun initiateTransactionApi(paytmRequestData: PaytmRequestData) {
-
         viewModelScope.launch {
-
             paytmRepository
                 .initiateTransactionApi(paytmRequestData)
                 .onStart {
+                    progressStatus.postValue(INITIATING_TRANSACTION)
                     _checkSum.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _checkSum.postValue(Resource.Error(it))
+                        _checkSum.postValue(Resource.Error("Something went wrong !!!"))
+                        progressStatus.postValue(ERROR)
+                        Timber.d("Error occurred while generating checksum.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response->
+                    progressStatus.postValue(CHECKSUM_RECEIVED)
+                    transactionToken = response
                     _checkSum.postValue(Resource.Success(response))
                 }
         }
@@ -316,22 +325,43 @@ class CheckoutOrderViewModel @Inject constructor(
     private val _pCash = MutableLiveData<Resource<Double>>()
     val pCash: LiveData<Resource<Double>> = _pCash
 
-
     fun getWalletBalance(userId: String, roleId: Int) {
-
         viewModelScope.launch {
-
             walletRepository
                 .getWalletBalance(userId, roleId, 1)
                 .onStart {
+                    progressStatus.postValue(CHECKING_WALLET_BALANCE)
                     _walletBalance.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _walletBalance.postValue(Resource.Error(it))
+                        progressStatus.postValue(ERROR)
+                        _walletBalance.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error occurred while fetching wallet balance.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { _balance->
+                    if(_balance<grandTotal){
+                        progressStatus.postValue(Recharge.INSUFFICIENT_BALANCE)
+                        _walletBalance.postValue(Resource.Error("Insufficient Wallet Balance !!!"))
+                        Timber.d("Insufficient Wallet Balance !!!")
+                    }else{
+                        customerOrder = CustomerOrder(
+                            ShippingAddressId = selectedAddressId.value,
+                            UserID = userId,
+                            Total = grandTotal,
+                            Discount = discountAmount,
+                            Shipping = mShippingCharge,
+                            Tax = tax,
+                            GrandTotal = grandTotal,
+                            Promo = discountCoupon,
+                            PaymentStatusId = PaymentStatus.Paid.id,
+                            WalletTypeId = WalletType.Wallet.id,
+                            PaymentMode = PaymentModes.Wallet.id
+                        )
+                        createCustomerOrder(customerOrder)
+                    }
                     _walletBalance.postValue(Resource.Success(_balance))
                 }
         }
@@ -340,20 +370,42 @@ class CheckoutOrderViewModel @Inject constructor(
 
 
     fun getPCashBalance(userId: String, roleId: Int) {
-
         viewModelScope.launch {
-
             walletRepository
                 .getWalletBalance(userId, roleId, 2)
                 .onStart {
+                    progressStatus.postValue(CHECKING_WALLET_BALANCE)
                     _pCash.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _pCash.postValue(Resource.Error(it))
+                        progressStatus.postValue(ERROR)
+                        _pCash.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error occurred while fetching wallet balance.")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { _balance->
+                    if(_balance<grandTotal){
+                        progressStatus.postValue(Recharge.INSUFFICIENT_BALANCE)
+                        _walletBalance.postValue(Resource.Error("Insufficient Wallet Balance !!!"))
+                        Timber.d("Insufficient Wallet Balance !!!")
+                    }else{
+                        customerOrder = CustomerOrder(
+                            ShippingAddressId = selectedAddressId.value,
+                            UserID = userId,
+                            Total = grandTotal,
+                            Discount = discountAmount,
+                            Shipping = mShippingCharge,
+                            Tax = tax,
+                            GrandTotal = grandTotal,
+                            Promo = discountCoupon,
+                            PaymentStatusId = PaymentStatus.Paid.id,
+                            WalletTypeId = WalletType.PCash.id,
+                            PaymentMode = PaymentModes.PCash.id
+                        )
+                        createCustomerOrder(customerOrder)
+                    }
                     _pCash.postValue(Resource.Success(_balance))
                 }
         }
@@ -365,7 +417,6 @@ class CheckoutOrderViewModel @Inject constructor(
     val isPaymentStatusUpdated : LiveData<Resource<Boolean>> = _isPaymentStatusUpdated
 
     fun updatePaymentStatus(orderNumber:String,paymentStatusId:Int) {
-
         viewModelScope.launch {
             checkoutRepository
                 .updatePaymentStatus(orderNumber, paymentStatusId)

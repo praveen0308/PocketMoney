@@ -54,7 +54,7 @@ interface RechargeAPIService {
     ): DthCustomerDetail
 
 
-    @GET("Wallet/WalletChargeDeduction")
+    @POST("Wallet/WalletChargeDeduction")
     suspend fun walletChargeDeduction(
         @Query("userid") userId: String,
         @Query("walletId") walletId: Int,

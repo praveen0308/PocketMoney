@@ -111,8 +111,8 @@ class GrowthNCommissionAdapter(private val mListener: GrowthNCommissionInterface
                 }else{
                     tvValue.text = "₹ ${item.count}"
                 }
-                cpvGrowth.progress =(item.count/50).toFloat()
-                cpvGrowth.text = "${item.count.toInt()}/50"
+                /*cpvGrowth.progress =(item.count/50).toFloat()
+                cpvGrowth.text = "${item.count.toInt()}/50"*/
             }
         }
     }

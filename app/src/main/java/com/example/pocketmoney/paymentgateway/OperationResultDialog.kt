@@ -17,8 +17,6 @@ import java.util.*
 class OperationResultDialog(private val operationResultModel: OperationResultModel, private val operationResultDialogCallback: OperationResultDialogCallback) : DialogFragment(),
     ApplicationToolbar.ApplicationToolbarListener {
     private var _binding: FragmentOperationResultDialogBinding? = null
-    // This property is only valid between onCreateView and
-// onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
