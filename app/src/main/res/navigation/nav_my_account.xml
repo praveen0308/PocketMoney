@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/myAccountHome"
-        android:name="com.example.pocketmoney.shopping.ui.customernavigation.MyAccountHome"
+        android:name="com.sampurna.pocketmoney.shopping.ui.customernavigation.MyAccountHome"
         android:label="fragment_my_account_home"
         tools:layout="@layout/fragment_my_account_home" >
         <action
@@ -22,12 +22,12 @@
     </fragment>
     <fragment
         android:id="@+id/addAddress"
-        android:name="com.example.pocketmoney.shopping.ui.AddAddress"
+        android:name="com.sampurna.pocketmoney.shopping.ui.AddAddress"
         android:label="fragment_add_address"
         tools:layout="@layout/fragment_add_address" />
     <fragment
         android:id="@+id/address"
-        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.Address"
+        android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.Address"
         android:label="fragment_address"
         tools:layout="@layout/fragment_manage_address" >
         <action
@@ -36,12 +36,12 @@
     </fragment>
     <activity
         android:id="@+id/myOrders"
-        android:name="com.example.pocketmoney.shopping.ui.customernavigation.MyOrders"
+        android:name="com.sampurna.pocketmoney.shopping.ui.customernavigation.MyOrders"
         android:label="activity_my_orders"
         tools:layout="@layout/activity_my_orders" />
     <fragment
         android:id="@+id/savedPaymentMethod"
-        android:name="com.example.pocketmoney.shopping.ui.SavedPaymentMethod"
+        android:name="com.sampurna.pocketmoney.shopping.ui.SavedPaymentMethod"
         android:label="fragment_saved_payment_method"
         tools:layout="@layout/fragment_saved_payment_method" >
         <action
@@ -50,6 +50,6 @@
     </fragment>
     <dialog
         android:id="@+id/addPaymentCard"
-        android:name="com.example.pocketmoney.shopping.ui.AddPaymentCard"
+        android:name="com.sampurna.pocketmoney.shopping.ui.AddPaymentCard"
         android:label="AddPaymentCard" />
 </navigation>

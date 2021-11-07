@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_manage_coupon"
+    app:startDestination="@id/myCoupons">
+    <fragment
+        android:id="@+id/myCoupons"
+        android:name="com.sampurna.pocketmoney.mlm.ui.coupons.MyCoupons"
+        android:label="fragment_my_coupons"
+        tools:layout="@layout/fragment_my_coupons" >
+        <action
+            android:id="@+id/action_myCoupons_to_generateCoupon2"
+            app:destination="@id/generateCoupon2" />
+    </fragment>
+    <fragment
+        android:id="@+id/generateCoupon2"
+        android:name="com.sampurna.pocketmoney.mlm.ui.coupons.GenerateCoupon"
+        android:label="fragment_generate_coupon"
+        tools:layout="@layout/fragment_generate_coupon" />
+</navigation>

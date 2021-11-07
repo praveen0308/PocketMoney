@@ -7,7 +7,7 @@
     tools:context=".shopping.ui.YourCart">
 
 
-    <com.example.pocketmoney.utils.MyEmptyView
+    <com.sampurna.pocketmoney.utils.MyEmptyView
         android:id="@+id/empty_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -19,7 +19,7 @@
         android:padding="32dp"
         android:visibility="gone"/>
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_your_cart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,12 +56,12 @@
 
             <fragment
                 android:id="@+id/apply_coupon_code_fragment"
-                android:name="com.example.pocketmoney.shopping.ui.checkoutorder.ApplyCouponCode"
+                android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.ApplyCouponCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 tools:layout="@layout/fragment_apply_coupon_code" />
-            <com.example.pocketmoney.utils.OrderAmountSummary
+            <com.sampurna.pocketmoney.utils.OrderAmountSummary
                 android:id="@+id/layout_cart_summary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -7,17 +7,17 @@
 
     <fragment
         android:id="@+id/notificationPreferences"
-        android:name="com.example.pocketmoney.shopping.ui.customernavigation.NotificationPreferences"
+        android:name="com.sampurna.pocketmoney.shopping.ui.customernavigation.NotificationPreferences"
         android:label="fragment_notification_preferences"
         tools:layout="@layout/fragment_notification_preferences" />
     <fragment
         android:id="@+id/helpCentre"
-        android:name="com.example.pocketmoney.shopping.ui.customernavigation.HelpCentre"
+        android:name="com.sampurna.pocketmoney.shopping.ui.customernavigation.HelpCentre"
         android:label="fragment_help_centre"
         tools:layout="@layout/fragment_help_centre" />
     <fragment
         android:id="@+id/privacyPolicy"
-        android:name="com.example.pocketmoney.shopping.ui.customernavigation.PrivacyPolicy"
+        android:name="com.sampurna.pocketmoney.shopping.ui.customernavigation.PrivacyPolicy"
         android:label="fragment_privacy_policy"
         tools:layout="@layout/fragment_privacy_policy" />
 </navigation>

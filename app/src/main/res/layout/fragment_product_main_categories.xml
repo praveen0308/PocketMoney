@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".shopping.ui.ProductMainCategories">
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_product_main_categories"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

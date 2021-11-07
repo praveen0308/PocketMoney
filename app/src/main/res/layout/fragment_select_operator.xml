@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".mlm.ui.mobilerecharge.SelectOperator">
 
-  <!--  <com.example.pocketmoney.utils.MyCustomToolbar
+  <!--  <com.sampurna.pocketmoney.utils.MyCustomToolbar
         android:id="@+id/toolbar_select_operator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

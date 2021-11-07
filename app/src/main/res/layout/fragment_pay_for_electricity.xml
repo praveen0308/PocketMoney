@@ -11,7 +11,7 @@
     android:orientation="vertical"
     android:background="@color/colorWhite">
 
-    <com.example.pocketmoney.utils.MyCustomToolbar
+    <com.sampurna.pocketmoney.utils.MyCustomToolbar
         android:id="@+id/myCustomToolbar3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

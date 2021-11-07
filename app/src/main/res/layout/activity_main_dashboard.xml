@@ -23,7 +23,7 @@
 <!--        android:layout_gravity="end"-->
 <!--        >-->
 
-<!--        <com.example.pocketmoney.utils.MyCustomNavigationDrawer.MyNavigationDrawer-->
+<!--        <com.sampurna.pocketmoney.utils.MyCustomNavigationDrawer.MyNavigationDrawer-->
 <!--            android:id="@+id/custom_user_navigation"-->
 <!--            android:layout_width="match_parent"-->
 <!--            android:layout_height="match_parent"/>-->

@@ -3,40 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:elevation="10dp"
+    android:layout_height="match_parent"
     android:paddingHorizontal="14dp"
-    android:paddingBottom="16dp"
-    app:layout_behavior="@string/bottom_sheet_behavior"
-    android:minHeight="500dp"
     tools:context=".mlm.ui.coupons.GenerateCoupon">
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_horizontal"
-        android:scaleType="fitXY"
-        android:src="@drawable/icon_minus"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/Grey" />
 
     <TextView
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+
         android:layout_marginTop="8dp"
         android:text="Generate Coupons"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/black"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btn_pay"
         android:layout_width="match_parent"
         android:layout_height="65dp"
@@ -107,6 +93,7 @@
         android:text="Note *"
         android:textColor="@color/colorTextPrimary"
         android:textStyle="bold"
+        android:textSize="@dimen/dimen_18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_no_of_coupons" />
 
@@ -114,12 +101,12 @@
         android:id="@+id/textView52"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
+
         android:text="Maximum 10 coupons can be generated at one time.\n₹300 per coupon"
+        android:textSize="@dimen/dimen_18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView50"
-        app:layout_constraintTop_toTopOf="@+id/textView50" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView50" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

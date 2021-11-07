@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".mlm.ui.dashboard.ComplaintList">
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_complaint_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

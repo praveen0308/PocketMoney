@@ -28,6 +28,8 @@
         android:layout_height="60dp"
         android:layout_marginTop="8dp"
         android:text="Deliver Here"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

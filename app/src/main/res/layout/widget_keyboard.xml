@@ -72,7 +72,7 @@
             style="@style/keyboard_number_button"
             android:text="@string/number_zero" />
 
-        <com.example.pocketmoney.utils.CustomKeyboard.view.IconifiedTextView
+        <com.sampurna.pocketmoney.utils.CustomKeyboard.view.IconifiedTextView
             android:id="@+id/keyRemove"
             style="@style/keyboard_button"
             android:text="&#xe14a;" />

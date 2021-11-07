@@ -9,7 +9,7 @@
     android:background="@color/colorWhiteSmoke"
     >
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_order_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/colorTextPrimary" />
 
-            <com.example.pocketmoney.utils.MyAddressView
+            <com.sampurna.pocketmoney.utils.MyAddressView
                 android:id="@+id/address_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

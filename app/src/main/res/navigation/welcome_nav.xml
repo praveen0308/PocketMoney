@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/splashScreen"
-        android:name="com.example.pocketmoney.mlm.ui.welcome.SplashScreen"
+        android:name="com.sampurna.pocketmoney.mlm.ui.welcome.SplashScreen"
         android:label="fragment_splash_screen"
         tools:layout="@layout/fragment_splash_screen" >
         <action
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/onBoardingScreen"
-        android:name="com.example.pocketmoney.mlm.ui.welcome.OnBoardingScreen"
+        android:name="com.sampurna.pocketmoney.mlm.ui.welcome.OnBoardingScreen"
         android:label="fragment_on_boarding_screen"
         tools:layout="@layout/fragment_on_boarding_screen" >
         <action
@@ -43,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.pocketmoney.mlm.ui.welcome.LoginFragment"
+        android:name="com.sampurna.pocketmoney.mlm.ui.welcome.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -58,7 +58,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.pocketmoney.mlm.ui.welcome.RegisterFragment"
+        android:name="com.sampurna.pocketmoney.mlm.ui.welcome.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" >
         <action
@@ -73,7 +73,7 @@
     </fragment>
     <activity
         android:id="@+id/mainDashboard"
-        android:name="com.example.pocketmoney.mlm.ui.dashboard.MainDashboard"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dashboard.MainDashboard"
         android:label="activity_main_dashoboard"
         tools:layout="@layout/activity_main_dashoboard" />
 </navigation>

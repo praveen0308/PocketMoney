@@ -8,7 +8,7 @@ app:layout_behavior="@string/bottom_sheet_behavior"
 tools:context=".mlm.ui.payouts.AddBankBeneficiary"
 android:orientation="vertical">
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_add_beneficiary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +36,7 @@ android:orientation="vertical">
             android:paddingHorizontal="@dimen/dimen_16dp">
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_account_number"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,12 +48,13 @@ android:orientation="vertical">
                     android:layout_height="wrap_content"
                     android:hint="Bank Account No."
                     android:inputType="number"
-                    android:maxLength="14" />
+                    android:maxLength="18" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_confirm_account_no"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,6 +71,7 @@ android:orientation="vertical">
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_bank"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,6 +88,7 @@ android:orientation="vertical">
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_ifsc_code"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -102,6 +106,7 @@ android:orientation="vertical">
 
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_customer_name"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -121,7 +126,7 @@ android:orientation="vertical">
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.example.pocketmoney.utils.LoadingButton
+    <com.sampurna.pocketmoney.utils.LoadingButton
         android:id="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/home"
-        android:name="com.example.pocketmoney.mlm.ui.dashboard.pages.Home"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dashboard.pages.Home"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -32,7 +32,7 @@
     </fragment>
     <fragment
         android:id="@+id/shop"
-        android:name="com.example.pocketmoney.mlm.ui.dashboard.pages.Shop"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dashboard.pages.Shop"
         android:label="fragment_shop"
         tools:layout="@layout/fragment_shop" >
         <action
@@ -50,61 +50,61 @@
     </fragment>
     <fragment
         android:id="@+id/paymentHistory"
-        android:name="com.example.pocketmoney.mlm.ui.dashboard.pages.PaymentHistory"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dashboard.pages.PaymentHistory"
         android:label="fragment_payment_history"
         tools:layout="@layout/fragment_payment_history" />
     <fragment
         android:id="@+id/offers"
-        android:name="com.example.pocketmoney.mlm.ui.dashboard.pages.Offers"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dashboard.pages.Offers"
         android:label="fragment_offers"
         tools:layout="@layout/fragment_offers" />
     <activity
         android:id="@+id/rechargeActivity"
-        android:name="com.example.pocketmoney.mlm.ui.recharge.RechargeActivity"
+        android:name="com.sampurna.pocketmoney.mlm.ui.recharge.RechargeActivity"
         android:label="activity_recharge"
         tools:layout="@layout/activity_recharge">
         <argument
             android:name="RECHARGE_TYPE"
-            app:argType="com.example.pocketmoney.mlm.model.RechargeEnum" />
+            app:argType="com.sampurna.pocketmoney.mlm.model.RechargeEnum" />
     </activity>
     <activity
         android:id="@+id/mobileRechargeActivity"
-        android:name="com.example.pocketmoney.mlm.ui.mobilerecharge.MobileRechargeActivity"
+        android:name="com.sampurna.pocketmoney.mlm.ui.mobilerecharge.MobileRechargeActivity"
         android:label="activity_mobile_recharge"
         tools:layout="@layout/activity_mobile_recharge" />
     <activity
         android:id="@+id/dthActivity"
-        android:name="com.example.pocketmoney.mlm.ui.dth.DthActivity"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dth.DthActivity"
         android:label="activity_dth"
         tools:layout="@layout/activity_dth" />
     <activity
         android:id="@+id/electricityActivity"
-        android:name="com.example.pocketmoney.mlm.ui.electricity.ElectricityActivity"
+        android:name="com.sampurna.pocketmoney.mlm.ui.electricity.ElectricityActivity"
         android:label="activity_electricity"
         tools:layout="@layout/activity_electricity" />
     <activity
         android:id="@+id/yourCart"
-        android:name="com.example.pocketmoney.shopping.ui.YourCart"
+        android:name="com.sampurna.pocketmoney.shopping.ui.YourCart"
         android:label="activity_your_cart"
         tools:layout="@layout/activity_your_cart" />
     <activity
         android:id="@+id/searchProductActivity"
-        android:name="com.example.pocketmoney.shopping.ui.SearchProductActivity"
+        android:name="com.sampurna.pocketmoney.shopping.ui.SearchProductActivity"
         android:label="activity_search_product"
         tools:layout="@layout/activity_search_product" />
     <fragment
         android:id="@+id/account"
-        android:name="com.example.pocketmoney.mlm.ui.dashboard.pages.Account"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dashboard.pages.Account"
         android:label="fragment_account"
         tools:layout="@layout/fragment_account" />
     <fragment
         android:id="@+id/privacyPolicy2"
-        android:name="com.example.pocketmoney.shopping.ui.customernavigation.PrivacyPolicy"
+        android:name="com.sampurna.pocketmoney.shopping.ui.customernavigation.PrivacyPolicy"
         android:label="fragment_privacy_policy"
         tools:layout="@layout/fragment_privacy_policy" />
     <fragment
         android:id="@+id/address2"
-        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.Address"
+        android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.Address"
         android:label="fragment_manage_address"
         tools:layout="@layout/fragment_manage_address" />
 

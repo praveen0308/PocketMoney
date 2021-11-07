@@ -1,0 +1,439 @@
+package com.sampurna.pocketmoney.utils
+
+import android.app.Activity
+import android.os.Bundle
+import android.widget.Adapter
+import android.widget.TextView
+import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.RecyclerView
+import com.sampurna.pocketmoney.R
+import com.sampurna.pocketmoney.mlm.model.UniversalFilterItemModel
+import com.sampurna.pocketmoney.mlm.ui.TaskResultDialog
+
+import com.sampurna.pocketmoney.utils.myEnums.DateTimeEnum
+import com.sampurna.pocketmoney.utils.myEnums.FilterEnum
+import com.sampurna.pocketmoney.utils.myEnums.PaymentHistoryFilterEnum
+import com.google.android.material.textfield.TextInputLayout
+import com.jmm.brsap.dialog_builder.Animation
+import com.jmm.brsap.dialog_builder.DialogType
+import com.jmm.brsap.dialog_builder.NordanAlertDialog
+import com.jmm.brsap.dialog_builder.NordanAlertDialogListener
+
+import timber.log.Timber
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+
+
+private val SDF_YMD_WITH_DASH = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+val SDF_d_M_y = SimpleDateFormat("dd MMM yyyy", Locale.US)
+val SDF_dM = SimpleDateFormat("dd MMM", Locale.US)
+val SDF_dmyhms = SimpleDateFormat("dd-MM-yy HH:mm:ss", Locale.US)
+fun convertISOTimeToDateTime(isoTime: String): String? {
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+    var convertedDate: Date? = null
+    var formattedDate: String? = null
+    try {
+        convertedDate = sdf.parse(isoTime)
+        formattedDate = SimpleDateFormat(" dd MMM yyyy").format(convertedDate)
+//        formattedDate = SimpleDateFormat("MMM dd,yyyy | HH:mm").format(convertedDate)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+    }
+
+    return formattedDate
+}
+
+fun convertISOTimeToDate(isoTime: String): String? {
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+    var convertedDate: Date? = null
+    var formattedDate: String? = null
+    try {
+        convertedDate = sdf.parse(isoTime)
+        formattedDate = SimpleDateFormat("MMM dd,yyyy").format(convertedDate)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+    }
+
+    return formattedDate
+}
+
+fun convertTimeStampToDate(isoTime: String): String? {
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+    var convertedDate: Date? = null
+    var formattedDate: String? = null
+    try {
+        convertedDate = sdf.parse(isoTime)
+        formattedDate = SimpleDateFormat("MMM dd,yyyy").format(convertedDate)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+    }
+
+    return formattedDate
+}
+
+fun convertISOTimeToAny(isoTime: String, myFormatter: SimpleDateFormat): String? {
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+    var convertedDate: Date? = null
+    var formattedDate: String? = null
+    try {
+        convertedDate = sdf.parse(isoTime)
+        formattedDate = myFormatter.format(convertedDate)
+    } catch (e: ParseException) {
+        e.printStackTrace()
+    }
+
+    return formattedDate
+}
+
+
+fun getDateRange(type: DateTimeEnum): String {
+    return when (type) {
+        DateTimeEnum.LAST_WEEK ->
+            getDaysAgo(7)
+        DateTimeEnum.LAST_MONTH ->
+            getDaysAgo(30)
+        DateTimeEnum.LAST_3_MONTH ->
+            getDaysAgo(90)
+        DateTimeEnum.LAST_6_MONTH ->
+            getDaysAgo(180)
+
+        else -> getDaysAgo(0)
+    }
+
+}
+
+
+
+fun getDateRange(type: FilterEnum):String{
+    return when(type){
+
+        FilterEnum.LAST_MONTH ->
+            getDayAgo(-30)
+        FilterEnum.LAST_WEEK ->
+            getDayAgo(-7)
+        FilterEnum.YESTERDAY->
+            getDayAgo(-1)
+        FilterEnum.TODAY->
+            getDayAgo(0)
+        FilterEnum.TOMORROW->
+            getDayAgo(1)
+        FilterEnum.THIS_WEEK ->
+            getDayAgo(7)
+        FilterEnum.THIS_MONTH ->
+            getDayAgo(30)
+
+        else-> getDayAgo(0)
+    }
+
+}
+
+fun getDateLabelAcToFilter(type: FilterEnum):String{
+    return when(type){
+
+        FilterEnum.LAST_MONTH ->
+            "Last Month"
+        FilterEnum.LAST_WEEK ->
+            "Last Week"
+        FilterEnum.YESTERDAY->
+            "Yesterday"
+        FilterEnum.TODAY->
+            "Today"
+        FilterEnum.TOMORROW->
+            "Tomorrow"
+        FilterEnum.THIS_WEEK ->
+            "This Week"
+        FilterEnum.THIS_MONTH ->
+            "This Month"
+
+        else-> ""
+    }
+
+}
+
+fun getDateRange(type: PaymentHistoryFilterEnum): String {
+    return when (type) {
+        PaymentHistoryFilterEnum.LAST_WEEK ->
+            getDaysAgo(7)
+        PaymentHistoryFilterEnum.LAST_MONTH ->
+            getDaysAgo(30)
+        PaymentHistoryFilterEnum.LAST_3_MONTH ->
+            getDaysAgo(90)
+        PaymentHistoryFilterEnum.LAST_6_MONTH ->
+            getDaysAgo(180)
+
+        else -> getDaysAgo(0)
+    }
+
+}
+
+fun IntToOrdinal(i: Int): String {
+    val j = i % 10
+    val k = i % 100
+    if (j == 1 && k != 11) {
+        return i.toString() + "st"
+    }
+    if (j == 2 && k != 12) {
+        return i.toString() + "nd"
+    }
+    return if (j == 3 && k != 13) {
+        i.toString() + "rd"
+    } else i.toString() + "th"
+}
+
+fun getTodayDate(): String {
+    return getDaysAgo(0)
+}
+
+
+fun getDaysAgo(daysAgo: Int): String {
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, -daysAgo)
+    return SDF_YMD_WITH_DASH.format(calendar.time)
+}
+fun getDayAgo(daysAgo: Int): String {
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, daysAgo)
+    return SDF_YMD_WITH_DASH.format(calendar.time)
+}
+
+fun convertMillisecondsToDate(milliSeconds: Long?, dateFormat: String?): String {
+    // Create a DateFormatter object for displaying date in specified format.
+    val formatter = SimpleDateFormat(dateFormat)
+
+    // Create a calendar object that will convert the date and time value in milliseconds to date.
+    val calendar = Calendar.getInstance()
+    if (milliSeconds != null) {
+        calendar.timeInMillis = milliSeconds
+    }
+    return formatter.format(calendar.time)
+}
+
+fun getTimeFilter(): List<UniversalFilterItemModel> {
+    val filterList = mutableListOf<UniversalFilterItemModel>()
+
+    filterList.add(UniversalFilterItemModel(ID = DateTimeEnum.LAST_WEEK, displayText = "Last Week"))
+    filterList.add(
+        UniversalFilterItemModel(
+            ID = DateTimeEnum.LAST_MONTH,
+            displayText = "Last Month"
+        )
+    )
+    filterList.add(
+        UniversalFilterItemModel(
+            ID = DateTimeEnum.LAST_3_MONTH,
+            displayText = "Last 3 Months"
+        )
+    )
+    filterList.add(
+        UniversalFilterItemModel(
+            ID = DateTimeEnum.LAST_6_MONTH,
+            displayText = "Last 6 Months"
+        )
+    )
+    filterList.add(UniversalFilterItemModel(ID = DateTimeEnum.CUSTOM, displayText = "Custom"))
+    return filterList
+}
+
+
+fun getTimeFilters(): List<UniversalFilterItemModel> {
+    val filterList = mutableListOf<UniversalFilterItemModel>()
+
+    filterList.add(UniversalFilterItemModel(ID = FilterEnum.LAST_WEEK, displayText = "Last Week"))
+    filterList.add(
+        UniversalFilterItemModel(
+            ID = FilterEnum.LAST_MONTH,
+            displayText = "Last Month"
+        )
+    )
+    filterList.add(
+        UniversalFilterItemModel(
+            ID = FilterEnum.LAST_3_MONTH,
+            displayText = "Last 3 Months"
+        )
+    )
+    filterList.add(
+        UniversalFilterItemModel(
+            ID = FilterEnum.LAST_6_MONTH,
+            displayText = "Last 6 Months"
+        )
+    )
+    filterList.add(UniversalFilterItemModel(ID = FilterEnum.CUSTOM, displayText = "Custom"))
+    return filterList
+}
+
+
+fun getMobileOperatorLogo(id: String): Int {
+
+    val mobileOperators = hashMapOf<String,Int>()
+    /*mobileOperators["Jio"] = R.drawable.ic_jio
+    mobileOperators["Airtel"] = R.drawable.ic_airtel
+    mobileOperators["Idea"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["Vodafone"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["VI"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["BSNL"] = R.drawable.ic_bsnl
+    mobileOperators["MTNL"] = R.drawable.ic_mtnl
+*/
+    mobileOperators["Jio"] = R.drawable.ic_jio
+    mobileOperators["Airtel"] = R.drawable.ic_airtel
+    mobileOperators["Idea"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["Vodafone"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["VI"] = R.drawable.ic_vi_vodafone_idea
+    mobileOperators["Tata Docomo"] = R.drawable.ic_tata_docomo
+    mobileOperators["Docomo Special"] = R.drawable.ic_tata_docomo
+    mobileOperators["BSNL"] = R.drawable.ic_bsnl
+    mobileOperators["BSNL Special"] = R.drawable.ic_bsnl
+    mobileOperators["MTNL"] = R.drawable.ic_mtnl
+    mobileOperators["MTNL Mumbai Special"] = R.drawable.ic_mtnl
+    mobileOperators["MTNL Mumbai Topup"] = R.drawable.ic_mtnl
+    return mobileOperators[id]!!
+
+}
+
+fun getMobileOperatorCode(operator: String): Int {
+    val mobileOperatorCodes = hashMapOf<String,Int>()
+    mobileOperatorCodes["Jio"] = 167
+    mobileOperatorCodes["Airtel"] = 1
+    mobileOperatorCodes["Idea"] = 4
+    mobileOperatorCodes["Vodafone"] = 5
+    mobileOperatorCodes["VI"] = 5
+    mobileOperatorCodes["Tata Docomo"] = 13
+    mobileOperatorCodes["Docomo Special"] = 31
+    mobileOperatorCodes["BSNL"] = 2
+    mobileOperatorCodes["BSNL Special"] = 32
+    mobileOperatorCodes["MTNL"] = 8
+    mobileOperatorCodes["MTNL Mumbai Special"] = 57
+    mobileOperatorCodes["MTNL Mumbai Topup"] = 56
+    return mobileOperatorCodes[operator]!!
+}
+
+fun getDthOperatorCode(operator: String): Int {
+    val mobileOperatorCodes = hashMapOf<String,Int>()
+    mobileOperatorCodes["Dish TV"] = 17
+    mobileOperatorCodes["Big TV"] = 18
+    mobileOperatorCodes["Tata Sky"] = 19
+    mobileOperatorCodes["Sun Direct"] = 20
+    mobileOperatorCodes["Videocon D2h"] = 21
+    mobileOperatorCodes["Airtel DTH"] = 22
+    return mobileOperatorCodes[operator]!!
+
+}
+fun getOperatorLogo(operator: String): Int {
+    val operators = hashMapOf<String,Int>()
+    operators["Dish TV"] = R.drawable.ic_dish_tv
+    operators["Big TV"] = R.drawable.ic_big_tv
+    operators["Tata Sky"] = R.drawable.ic_tata_sky
+    operators["Sun Direct"] = R.drawable.ic_sun_direct
+    operators["Videocon D2h"] = R.drawable.ic_videocon_d2h
+    operators["Airtel DTH"] = R.drawable.ic_airtel
+    operators["Jio"] = R.drawable.ic_jio
+    operators["Airtel"] = R.drawable.ic_airtel
+    operators["Idea"] = R.drawable.ic_vi_vodafone_idea
+    operators["Vodafone"] = R.drawable.ic_vi_vodafone_idea
+    operators["VI"] = R.drawable.ic_vi_vodafone_idea
+    operators["Tata Docomo"] = R.drawable.ic_tata_docomo
+    operators["Docomo Special"] = R.drawable.ic_tata_docomo
+    operators["BSNL"] = R.drawable.ic_bsnl
+    operators["BSNL Special"] = R.drawable.ic_bsnl
+    operators["MTNL"] = R.drawable.ic_mtnl
+    operators["MTNL Mumbai Special"] = R.drawable.ic_mtnl
+    operators["MTNL Mumbai Topup"] = R.drawable.ic_mtnl
+    return operators[operator]!!
+
+}
+
+fun extractMobileNumber(number: String): String {
+    // for removing all whitespaces
+    var mobileNum: String = number.replace("\\s", "")
+
+    // for removing all non-numeric characters
+    mobileNum = mobileNum.replace("[^\\d]".toRegex(), "")
+
+    return when {
+        mobileNum.length == 10 -> {
+            mobileNum
+        }
+        mobileNum.length > 10 -> {
+            mobileNum.substring(mobileNum.length - 10)
+        }
+        mobileNum.length <10 ->{
+            return "0000000000"
+        }
+        else -> {
+            // whatever is appropriate in this case
+            Timber.e(IllegalArgumentException("word has fewer than 10 characters!"))
+            return "ERROR"
+        }
+    }
+}
+
+fun TextView.setAmount(amount: Any) {
+    text = "₹ $amount"
+}
+
+fun RecyclerView.setup(adapter : Adapter){
+
+}
+
+fun lcm(vararg input: Int): Int {
+    var result = input[0]
+    for (i in 1 until input.size) result = lcm(result, input[i])
+    return result
+}
+//
+//fun getQrCodeBitmap(data: String): Bitmap {
+////    val qrCodeContent = "WIFI:S:$ssid;T:WPA;P:$password;;"
+////    val hints = hashMapOf<EncodeHintType, Int>().also { it[EncodeHintType.MARGIN] = 1 } // Make the QR code buffer border narrower
+////    val bits = QRCodeWriter().encode(qrCodeContent, BarcodeFormat.QR_CODE, 200, 200, hints)
+////    val size = 512 //pixels
+////    return Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565).also {
+////        for (x in 0 until size) {
+////            for (y in 0 until size) {
+////                it.setPixel(x, y, if (bits[x, y]) Color.BLACK else Color.WHITE)
+////            }
+////        }
+////    }
+//
+//
+//}
+
+ fun createRandomOrderId(): String {
+    val timeSeed = System.nanoTime()
+    val randSeed = Math.random() * 1234
+    val midSeed = (timeSeed * randSeed).toLong()
+    val s = midSeed.toString()
+    return s.substring(0, 9)
+}
+
+
+fun showActionDialog(
+    mActivity: Activity, type: DialogType, mTitle:String, mMessage:String, positiveBtnText:String="Okay", mListener: NordanAlertDialogListener= NordanAlertDialogListener {  }
+){
+    NordanAlertDialog.Builder(mActivity).
+        setDialogType(type)
+        .setAnimation(Animation.SLIDE)
+        .isCancellable(false)
+        .setTitle(mTitle)
+        .setMessage(mMessage)
+        .setDialogAccentColor(R.color.white)
+        .setPositiveBtnText(positiveBtnText)
+        .onPositiveClicked(mListener)
+        .build().show()
+}
+
+fun showTaskResultDialog(bundle: Bundle,fragmentManager: FragmentManager){
+    val sheet = TaskResultDialog()
+    sheet.arguments = bundle
+    sheet.show(fragmentManager,sheet.tag)
+}
+
+fun validateEditText(textInputLayout: TextInputLayout,msg:String=""){
+
+    if (msg.isEmpty()){
+        textInputLayout.error = null
+        textInputLayout.requestLayout()
+    }else{
+        textInputLayout.error = msg
+        textInputLayout.requestLayout()
+    }
+}

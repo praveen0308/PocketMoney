@@ -75,7 +75,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_outline_delete_outline_24" />
 
-            <com.example.pocketmoney.utils.HorizontalNumberPicker
+            <com.sampurna.pocketmoney.utils.HorizontalNumberPicker
                 android:id="@+id/cart_product_item_quantity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/dthOperator"
-        android:name="com.example.pocketmoney.mlm.ui.dth.DthOperator"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dth.DthOperator"
         android:label="fragment_dth_operator"
         tools:layout="@layout/fragment_dth_operator" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/dthRechargeHost"
-        android:name="com.example.pocketmoney.mlm.ui.dth.DthRechargeHost"
+        android:name="com.sampurna.pocketmoney.mlm.ui.dth.DthRechargeHost"
         android:label="fragment_dth_recharge_host"
         tools:layout="@layout/fragment_dth_recharge_host" />
 </navigation>

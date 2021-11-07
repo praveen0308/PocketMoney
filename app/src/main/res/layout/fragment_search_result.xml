@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".shopping.ui.SearchResult">
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/applicationToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         app:spanCount="2"
         tools:listitem="@layout/template_product_view_for_hr"/>
 
-    <com.example.pocketmoney.utils.MyEmptyView
+    <com.sampurna.pocketmoney.utils.MyEmptyView
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"

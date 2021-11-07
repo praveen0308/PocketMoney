@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".shopping.ui.SearchProductActivity">
 
-<!--    <com.example.pocketmoney.utils.ApplicationToolbar-->
+<!--    <com.sampurna.pocketmoney.utils.ApplicationToolbar-->
 <!--        android:id="@+id/applicationToolbar"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="wrap_content"-->

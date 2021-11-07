@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".mlm.ui.mobilerecharge.SelectContact">
 
-    <com.example.pocketmoney.utils.MyCustomToolbar
+    <com.sampurna.pocketmoney.utils.MyCustomToolbar
         android:id="@+id/myCustomToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="Select Contact" />
 
-    <com.example.pocketmoney.utils.EditTextWithClear
+    <com.sampurna.pocketmoney.utils.EditTextWithClear
         android:id="@+id/editTextWithClear"
         android:layout_width="match_parent"
         android:layout_height="55dp"

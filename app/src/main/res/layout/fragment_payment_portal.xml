@@ -32,7 +32,7 @@ tools:context=".paymentgateway.PaymentPortal">
     tools:itemCount="3"
     tools:listitem="@layout/template_payment_method"/>
 
-<com.example.pocketmoney.utils.LoadingButton
+<com.sampurna.pocketmoney.utils.LoadingButton
     android:id="@+id/btn_make_payment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

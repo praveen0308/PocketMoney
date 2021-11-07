@@ -6,7 +6,7 @@
     app:startDestination="@id/productMainCategories">
     <fragment
         android:id="@+id/productMainCategories"
-        android:name="com.example.pocketmoney.shopping.ui.ProductMainCategories"
+        android:name="com.sampurna.pocketmoney.shopping.ui.ProductMainCategories"
         android:label="ProductMainCategories" >
         <action
             android:id="@+id/action_productMainCategories_to_productCategories"
@@ -14,7 +14,7 @@
     </fragment>
     <fragment
         android:id="@+id/productCategories"
-        android:name="com.example.pocketmoney.shopping.ui.ProductCategories"
+        android:name="com.sampurna.pocketmoney.shopping.ui.ProductCategories"
         android:label="fragment_product_categories"
         tools:layout="@layout/fragment_product_categories" >
         <argument
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/searchResult2"
-        android:name="com.example.pocketmoney.shopping.ui.SearchResult"
+        android:name="com.sampurna.pocketmoney.shopping.ui.SearchResult"
         android:label="fragment_search_result"
         tools:layout="@layout/fragment_search_result" />
 </navigation>

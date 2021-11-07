@@ -8,7 +8,7 @@
     >
 
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_account_activity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

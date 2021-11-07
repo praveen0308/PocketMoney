@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".mlm.ui.transfermoney.ChooseUserId">
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_choose_user_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    </com.example.pocketmoney.utils.ApplicationToolbar>
+    </com.sampurna.pocketmoney.utils.ApplicationToolbar>
 
     <TextView
         android:id="@+id/textView53"

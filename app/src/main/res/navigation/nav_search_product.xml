@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/searchProduct"
-        android:name="com.example.pocketmoney.shopping.ui.SearchProduct"
+        android:name="com.sampurna.pocketmoney.shopping.ui.SearchProduct"
         android:label="fragment_search_product"
         tools:layout="@layout/fragment_search_product" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/searchResult"
-        android:name="com.example.pocketmoney.shopping.ui.SearchResult"
+        android:name="com.sampurna.pocketmoney.shopping.ui.SearchResult"
         android:label="fragment_search_result"
         tools:layout="@layout/fragment_search_result" >
         <argument
@@ -28,12 +28,12 @@
     </fragment>
     <dialog
         android:id="@+id/sortingFilter"
-        android:name="com.example.pocketmoney.shopping.ui.bottomsheetdialogs.SortingFilter"
+        android:name="com.sampurna.pocketmoney.shopping.ui.bottomsheetdialogs.SortingFilter"
         android:label="fragment_sorting_filter"
         tools:layout="@layout/fragment_sorting_filter" >
         <argument
             android:name="filterType"
-            app:argType="com.example.pocketmoney.utils.myEnums.FilterEnum"
+            app:argType="com.sampurna.pocketmoney.utils.myEnums.FilterEnum"
             android:defaultValue="PRICE_DESCENDING" />
     </dialog>
 </navigation>

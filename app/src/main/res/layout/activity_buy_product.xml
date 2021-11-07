@@ -11,7 +11,7 @@
         android:layout_height="wrap_content">
 
 
-        <com.example.pocketmoney.utils.ApplicationToolbar
+        <com.sampurna.pocketmoney.utils.ApplicationToolbar
             android:id="@+id/buy_product_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.example.pocketmoney.utils.ProductImageViewPager
+            <com.sampurna.pocketmoney.utils.ProductImageViewPager
                 android:id="@+id/product_image_view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="420dp"

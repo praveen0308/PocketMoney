@@ -7,7 +7,7 @@
     tools:context=".mlm.ui.dashboard.CustomerCommissionActivity">
 
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_customer_commission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

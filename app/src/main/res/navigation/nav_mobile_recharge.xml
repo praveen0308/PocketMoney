@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/selectRechargePlan"
-        android:name="com.example.pocketmoney.mlm.ui.mobilerecharge.SelectRechargePlan"
+        android:name="com.sampurna.pocketmoney.mlm.ui.mobilerecharge.SelectRechargePlan"
         android:label="fragment_select_recharge_plan"
         tools:layout="@layout/fragment_select_recharge_plan" >
         <action
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/confirmRecharge"
-        android:name="com.example.pocketmoney.mlm.ui.mobilerecharge.ConfirmRecharge"
+        android:name="com.sampurna.pocketmoney.mlm.ui.mobilerecharge.ConfirmRecharge"
         android:label="fragment_confirm_recharge"
         tools:layout="@layout/fragment_confirm_recharge" >
         <argument
@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/enterMobileNumber"
-        android:name="com.example.pocketmoney.mlm.ui.mobilerecharge.EnterMobileNumber"
+        android:name="com.sampurna.pocketmoney.mlm.ui.mobilerecharge.EnterMobileNumber"
         android:label="fragment_enter_mobile_number"
         tools:layout="@layout/fragment_enter_mobile_number" >
 

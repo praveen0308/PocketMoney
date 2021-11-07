@@ -29,7 +29,7 @@
         android:insetBottom="@dimen/dimen_0dp"
         />
 
-    <com.example.pocketmoney.utils.MyCustomToolbar
+    <com.sampurna.pocketmoney.utils.MyCustomToolbar
         android:id="@+id/toolbar_select_recharge_plan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         app:toolbarMenuIcon="@drawable/ic_round_open_in_new_24"
         app:menuIconVisibility="true"/>
 
-    <com.example.pocketmoney.utils.EditTextWithClear
+    <com.sampurna.pocketmoney.utils.EditTextWithClear
         android:id="@+id/et_search_plan"
         android:layout_width="match_parent"
         android:layout_height="55dp"

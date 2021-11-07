@@ -9,7 +9,7 @@
     android:orientation="vertical"
     android:background="@color/colorWhite">
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_order_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -64,7 +64,7 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />-->
 
-    <com.example.pocketmoney.utils.EditTextWithClear
+    <com.sampurna.pocketmoney.utils.EditTextWithClear
         android:id="@+id/et_search_view"
         android:layout_width="0dp"
         android:layout_height="55dp"

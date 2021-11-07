@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".mlm.ui.membership.ActivateAccount">
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_activate_account"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
 
 <!--            <fragment-->
 <!--                android:id="@+id/fragmentContainerView3"-->
-<!--                android:name="com.example.pocketmoney.common.PaymentMethods"-->
+<!--                android:name="com.sampurna.pocketmoney.common.PaymentMethods"-->
 <!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="wrap_content"-->
 <!--                tools:layout="@layout/fragment_payment_methods"/>-->
@@ -62,7 +62,7 @@
 
             <fragment
                 android:id="@+id/fragmentContainerView4"
-                android:name="com.example.pocketmoney.mlm.ui.membership.MembershipPlanDetails"
+                android:name="com.sampurna.pocketmoney.mlm.ui.membership.MembershipPlanDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:layout="@layout/fragment_membership_plan_details"/>

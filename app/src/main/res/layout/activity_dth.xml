@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".mlm.ui.dth.DthActivity">
-    <com.example.pocketmoney.utils.MyCustomToolbar
+    <com.sampurna.pocketmoney.utils.MyCustomToolbar
         android:id="@+id/toolbar_dth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

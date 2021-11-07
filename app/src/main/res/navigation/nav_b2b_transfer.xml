@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/scanQRCode"
-        android:name="com.example.pocketmoney.mlm.ui.transfermoney.ScanQRCode"
+        android:name="com.sampurna.pocketmoney.mlm.ui.transfermoney.ScanQRCode"
         android:label="fragment_scan_q_r_code"
         tools:layout="@layout/fragment_scan_q_r_code" >
         <action
@@ -19,7 +19,7 @@
     </fragment>
     <fragment
         android:id="@+id/chooseUserId"
-        android:name="com.example.pocketmoney.mlm.ui.transfermoney.ChooseUserId"
+        android:name="com.sampurna.pocketmoney.mlm.ui.transfermoney.ChooseUserId"
         android:label="fragment_choose_user_id"
         tools:layout="@layout/fragment_choose_user_id" >
         <action
@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/payToWallet"
-        android:name="com.example.pocketmoney.mlm.ui.transfermoney.PayToWallet"
+        android:name="com.sampurna.pocketmoney.mlm.ui.transfermoney.PayToWallet"
         android:label="fragment_pay_to_wallet"
         tools:layout="@layout/fragment_pay_to_wallet" />
 </navigation>

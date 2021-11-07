@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/orderList"
-        android:name="com.example.pocketmoney.shopping.ui.customernavigation.OrderList"
+        android:name="com.sampurna.pocketmoney.shopping.ui.customernavigation.OrderList"
         android:label="fragment_order_list"
         tools:layout="@layout/fragment_order_list" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderDetails"
-        android:name="com.example.pocketmoney.shopping.ui.customernavigation.OrderDetails"
+        android:name="com.sampurna.pocketmoney.shopping.ui.customernavigation.OrderDetails"
         android:label="fragment_order_details"
         tools:layout="@layout/fragment_order_details" >
         <argument

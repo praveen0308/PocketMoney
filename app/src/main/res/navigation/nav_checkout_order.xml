@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/address"
-        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.Address"
+        android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.Address"
         android:label="fragment_address"
         tools:layout="@layout/fragment_manage_address" >
         <action
@@ -18,12 +18,12 @@
             app:destination="@id/addAddress" />
         <argument
             android:name="source"
-            app:argType="com.example.pocketmoney.utils.myEnums.ShoppingEnum"
+            app:argType="com.sampurna.pocketmoney.utils.myEnums.ShoppingEnum"
             android:defaultValue="CHECKOUT"/>
     </fragment>
     <fragment
         android:id="@+id/orderSummary"
-        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.OrderSummary"
+        android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.OrderSummary"
         android:label="fragment_order_summary"
         tools:layout="@layout/fragment_order_summary" >
         <action
@@ -42,7 +42,7 @@
     </fragment>
     <fragment
         android:id="@+id/payment"
-        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.Payment"
+        android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.Payment"
         android:label="fragment_payment"
         tools:layout="@layout/fragment_payment" >
         <argument
@@ -54,17 +54,17 @@
     </fragment>
     <fragment
         android:id="@+id/addAddress"
-        android:name="com.example.pocketmoney.shopping.ui.AddAddress"
+        android:name="com.sampurna.pocketmoney.shopping.ui.AddAddress"
         android:label="fragment_add_address"
         tools:layout="@layout/fragment_add_address" />
     <activity
         android:id="@+id/orderSuccessful"
-        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.OrderSuccessful"
+        android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.OrderSuccessful"
         android:label="activity_order_successful"
         tools:layout="@layout/activity_order_successful" />
     <fragment
         android:id="@+id/selectAddress"
-        android:name="com.example.pocketmoney.shopping.ui.checkoutorder.SelectAddress"
+        android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.SelectAddress"
         android:label="fragment_select_address"
         tools:layout="@layout/fragment_select_address" >
         <action
@@ -76,7 +76,7 @@
     </fragment>
     <activity
         android:id="@+id/addNewAddress"
-        android:name="com.example.pocketmoney.shopping.ui.AddNewAddress"
+        android:name="com.sampurna.pocketmoney.shopping.ui.AddNewAddress"
         android:label="activity_add_new_address"
         tools:layout="@layout/activity_add_new_address" />
 </navigation>

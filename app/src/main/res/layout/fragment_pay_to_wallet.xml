@@ -30,7 +30,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_pay_to_wallet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    </com.example.pocketmoney.utils.ApplicationToolbar>
+    </com.sampurna.pocketmoney.utils.ApplicationToolbar>
 
     <ImageView
         android:id="@+id/imageView21"

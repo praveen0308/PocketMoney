@@ -144,7 +144,7 @@
 
 
 
-    <com.example.pocketmoney.utils.LoadingButton
+    <com.sampurna.pocketmoney.utils.LoadingButton
         android:id="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

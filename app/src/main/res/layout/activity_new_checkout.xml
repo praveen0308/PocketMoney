@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_checkout_order"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,13 +33,13 @@
                 android:id="@+id/address_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:name="com.example.pocketmoney.shopping.ui.checkoutorder.CheckoutShippingAddress"
+                android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.CheckoutShippingAddress"
                 tools:layout="@layout/fragment_checkout_shipping_address"/>
             <fragment
                 android:id="@+id/order_summary_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:name="com.example.pocketmoney.shopping.ui.checkoutorder.CheckoutItems"
+                android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.CheckoutItems"
                 tools:layout="@layout/fragment_checkout_items"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -48,15 +48,15 @@
         android:id="@+id/layout_checkout_action"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:background="@color/colorWhite"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@color/colorWhite"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="8dp">
+        android:translationZ="@dimen/dimen_10dp">
 
-      <!--  <TextView
+        <!--  <TextView
             android:id="@+id/tv_total_amount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -72,16 +72,29 @@
             tools:text="@string/rupee_zero"
             android:translationZ="@dimen/dimen_10dp"/>-->
 
-        <com.google.android.material.button.MaterialButton
+        <TextView
+            android:id="@+id/tv_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:translationZ="@dimen/dimen_16dp"/>
 
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_continue"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginStart="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/dimen_16dp"
+            android:paddingHorizontal="@dimen/dimen_32dp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
 
-            tools:text="Continue" />
+            tools:layout_editor_absoluteY="8dp"
+            android:text="Continue Payment" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

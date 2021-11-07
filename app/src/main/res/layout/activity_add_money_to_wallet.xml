@@ -8,7 +8,7 @@
     android:focusableInTouchMode="true">
 
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_add_money_to_wallet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    </com.example.pocketmoney.utils.ApplicationToolbar>
+    </com.sampurna.pocketmoney.utils.ApplicationToolbar>
 
     <TextView
         android:id="@+id/textView57"
@@ -89,7 +89,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_amount" />
 
-    <com.example.pocketmoney.utils.LoadingButton
+    <com.sampurna.pocketmoney.utils.LoadingButton
         android:id="@+id/btn_pay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -38,6 +38,7 @@ tools:context=".mlm.ui.payouts.AddPaytmBeneficiary"
 
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_upi_id"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,12 +48,14 @@ tools:context=".mlm.ui.payouts.AddPaytmBeneficiary"
             android:id="@+id/et_upi_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLength="20" />
+            android:hint="Enter UPI Id"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_customer_name"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +70,7 @@ tools:context=".mlm.ui.payouts.AddPaytmBeneficiary"
     </com.google.android.material.textfield.TextInputLayout>
 
 
-    <com.example.pocketmoney.utils.LoadingButton
+    <com.sampurna.pocketmoney.utils.LoadingButton
         android:id="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

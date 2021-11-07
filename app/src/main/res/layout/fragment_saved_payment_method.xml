@@ -9,7 +9,7 @@
 
 
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/applicationToolbar3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <com.example.pocketmoney.utils.CustomKeyboard.NumericKeyboard
+    <com.sampurna.pocketmoney.utils.CustomKeyboard.NumericKeyboard
         android:id="@+id/keyboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/growthNCommissionHome"
-        android:name="com.example.pocketmoney.mlm.ui.customergrowth.GrowthNCommissionHome"
+        android:name="com.sampurna.pocketmoney.mlm.ui.customergrowth.GrowthNCommissionHome"
         android:label="fragment_growth_n_commission_home"
         tools:layout="@layout/fragment_growth_n_commission_home" >
         <action
@@ -15,17 +15,17 @@
             app:destination="@id/growthNCommissionList" />
 <!--        <argument-->
 <!--            android:name="type"-->
-<!--            app:argType="com.example.pocketmoney.utils.myEnums.NavigationEnum"-->
+<!--            app:argType="com.sampurna.pocketmoney.utils.myEnums.NavigationEnum"-->
 <!--            android:defaultValue="NONE" />-->
     </fragment>
     <fragment
         android:id="@+id/growthNCommissionList"
-        android:name="com.example.pocketmoney.mlm.ui.customergrowth.GrowthNCommissionList"
+        android:name="com.sampurna.pocketmoney.mlm.ui.customergrowth.GrowthNCommissionList"
         android:label="fragment_growth_n_commission_list"
         tools:layout="@layout/fragment_growth_n_commission_list" >
         <argument
             android:name="source"
-            app:argType="com.example.pocketmoney.utils.myEnums.NavigationEnum"
+            app:argType="com.sampurna.pocketmoney.utils.myEnums.NavigationEnum"
             android:defaultValue="NONE"/>
     </fragment>
 </navigation>

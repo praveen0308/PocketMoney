@@ -63,7 +63,7 @@
             android:hint="Coupon Serial No." />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.example.pocketmoney.utils.LoadingButton
+    <com.sampurna.pocketmoney.utils.LoadingButton
         android:id="@+id/btn_action"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

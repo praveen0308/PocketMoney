@@ -21,19 +21,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_reg_mobile_no"
         app:length="6"
-        app:otp="123456"
         app:otp_text_size="24sp"
         app:width="40dp" />
 
     <Button
         android:id="@+id/btn_verify"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="Verify"
+        android:paddingVertical="@dimen/dimen_16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/otpTextView" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView67"
@@ -63,7 +65,7 @@
         android:id="@+id/tv_reg_mobile_no"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="+91 9699960540"
+        tools:text="+91 9699960540"
         android:textColor="@color/colorBlack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

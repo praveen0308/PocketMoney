@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".mlm.ui.customergrowth.GrowthNCommissionList">
 
-    <com.example.pocketmoney.utils.MyEmptyView
+    <com.sampurna.pocketmoney.utils.MyEmptyView
         android:id="@+id/layout_no_data"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".shopping.ui.SearchProduct">
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/applicationToolbar4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <com.example.pocketmoney.utils.EditTextWithClear
+    <com.sampurna.pocketmoney.utils.EditTextWithClear
         android:id="@+id/et_search_view"
         android:layout_width="match_parent"
         android:layout_height="55dp"

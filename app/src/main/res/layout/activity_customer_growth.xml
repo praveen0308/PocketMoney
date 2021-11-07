@@ -7,7 +7,7 @@
     tools:context=".mlm.ui.dashboard.CustomerGrowthActivity">
 
 
-    <com.example.pocketmoney.utils.ApplicationToolbar
+    <com.sampurna.pocketmoney.utils.ApplicationToolbar
         android:id="@+id/toolbar_customer_growth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.example.pocketmoney.utils.MyEmptyView
+    <com.sampurna.pocketmoney.utils.MyEmptyView
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.example.pocketmoney.utils.VerticalTextView
+        <com.sampurna.pocketmoney.utils.VerticalTextView
             android:id="@+id/tv_coupon_status"
             android:layout_width="wrap_content"
             android:layout_height="0dp"

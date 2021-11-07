@@ -21,13 +21,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btn_sign_in"
         android:layout_width="0dp"
         android:layout_height="@dimen/dimen_60dp"
         android:layout_marginBottom="8dp"
         android:text="Login"
-        app:cornerRadius="@dimen/dimen_10dp"
+
         app:layout_constraintBottom_toTopOf="@+id/textView60"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -37,7 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/dimen_60dp"
         android:text="@string/register"
-        app:cornerRadius="@dimen/dimen_10dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.571"
