@@ -2,13 +2,13 @@ package com.sampurna.pocketmoney.mlm.ui.payouts
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
+import com.jmm.brsap.dialog_builder.DialogType
 import com.sampurna.pocketmoney.databinding.FragmentAddBankBeneficiaryBinding
 import com.sampurna.pocketmoney.mlm.model.payoutmodels.Beneficiary
 import com.sampurna.pocketmoney.mlm.viewmodel.PayoutViewModel
 import com.sampurna.pocketmoney.utils.*
-import com.jmm.brsap.dialog_builder.DialogType
-
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,15 +24,24 @@ class AddBankBeneficiary : BaseFullScreenDialogFragment<FragmentAddBankBeneficia
 //        binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED,mText = "Submit")
         binding.toolbarAddBeneficiary.setApplicationToolbarListener(this)
 
+        binding.apply {
+            etConfirmAccountNumber.doOnTextChanged { text, start, before, count ->
+                if (text.toString() != etAccountNumber.text.toString()) {
+                    tilConfirmAccountNo.error = "Account no. not matching."
+                } else {
+                    tilConfirmAccountNo.error = null
+                }
+            }
+        }
         binding.actvBank.setOnClickListener {
             val sheet = SelectBank()
-            sheet.show(parentFragmentManager,sheet.tag)
+            sheet.show(parentFragmentManager, sheet.tag)
         }
         binding.btnSubmit.setButtonClick {
             isAddedBeneficiary = true
-            if (userId.isEmpty()){
+            if (userId.isEmpty()) {
                 checkAuthorization()
-            }else{
+            } else {
                 binding.apply {
                     val accountNo = etAccountNumber.text.toString().trim()
                     val confirmAccountNo = etConfirmAccountNumber.text.toString().trim()
@@ -89,6 +98,7 @@ class AddBankBeneficiary : BaseFullScreenDialogFragment<FragmentAddBankBeneficia
         viewModel.selectedBankIfsc.observe(viewLifecycleOwner,{
             if (it.isNotEmpty()){
                 binding.etIfscCode.setText(it.toString())
+                binding.etIfscCode.requestFocus()
             }
         })
         viewModel.selectedBank.observe(viewLifecycleOwner,{

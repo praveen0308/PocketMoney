@@ -48,11 +48,20 @@ tools:context=".mlm.ui.payouts.AddPaytmBeneficiary"
             android:id="@+id/et_upi_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter UPI Id"
-            />
+            android:hint="Enter UPI Id" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_upis"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:overScrollMode="never"
+        android:paddingVertical="@dimen/dimen_8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/template_upi_code_options" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_customer_name"

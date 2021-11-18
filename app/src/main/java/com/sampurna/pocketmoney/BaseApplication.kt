@@ -1,7 +1,6 @@
 package com.sampurna.pocketmoney
 
 import android.app.Application
-import com.sampurna.pocketmoney.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
@@ -14,6 +13,5 @@ class BaseApplication: Application() {
             Timber.plant(Timber.DebugTree())
         }
     }
-
 
 }

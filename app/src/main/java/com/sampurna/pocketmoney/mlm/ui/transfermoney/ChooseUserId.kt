@@ -1,9 +1,11 @@
 package com.sampurna.pocketmoney.mlm.ui.transfermoney
 
 import android.Manifest
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -12,6 +14,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.databinding.FragmentChooseUserIdBinding
 import com.sampurna.pocketmoney.mlm.adapters.ContactAdapter
@@ -21,13 +29,8 @@ import com.sampurna.pocketmoney.utils.ApplicationToolbar
 import com.sampurna.pocketmoney.utils.BaseFragment
 import com.sampurna.pocketmoney.utils.DataState
 import com.sampurna.pocketmoney.utils.extractMobileNumber
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class ChooseUserId : BaseFragment<FragmentChooseUserIdBinding>(FragmentChooseUserIdBinding::inflate),
@@ -36,6 +39,7 @@ class ChooseUserId : BaseFragment<FragmentChooseUserIdBinding>(FragmentChooseUse
     private val viewModel by activityViewModels<B2BTransferViewModel>()
     private lateinit var contactAdapter: ContactAdapter
 
+    private var enteredUserId = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,14 +58,31 @@ class ChooseUserId : BaseFragment<FragmentChooseUserIdBinding>(FragmentChooseUse
         binding.toolbarChooseUserId.setApplicationToolbarListener(this)
         setupRecyclerView()
         binding.etMobileNumber.addTextChangedListener {
+            binding.etMobileNumber.requestFocus()
             binding.rvContacts.isVisible = true
             contactAdapter.getFilter().filter(it.toString())
-//            if (it.toString().isEmpty()){
-//                binding.rvContacts.isVisible = false
-//            }
-//            else{
-//
-//            }
+            enteredUserId = it.toString()
+            if (it.toString().length == 10) hideKeyboard()
+            binding.btnContinue.isVisible = it.toString().length == 10
+
+        }
+        binding.btnContinue.setOnClickListener {
+            viewModel.setRecipientUserId(enteredUserId)
+            findNavController().navigate(R.id.action_chooseUserId_to_payToWallet)
+        }
+    }
+
+    fun hideKeyboard() {
+
+        // Check if no view has focus:
+        val view = requireActivity().currentFocus
+        if (view != null) {
+            val inputManager =
+                requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(
+                view.windowToken,
+                InputMethodManager.HIDE_NOT_ALWAYS
+            )
         }
     }
 

@@ -17,10 +17,10 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cd_symbol_background"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             app:cardBackgroundColor="@color/colorPrimaryDark"
-            app:cardCornerRadius="35dp"
+            app:cardCornerRadius="27dp"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

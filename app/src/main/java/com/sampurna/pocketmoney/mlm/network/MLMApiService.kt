@@ -1,9 +1,9 @@
 package com.sampurna.pocketmoney.mlm.network
 
+import com.google.gson.JsonObject
 import com.sampurna.pocketmoney.mlm.model.*
 import com.sampurna.pocketmoney.mlm.model.mlmModels.*
 import com.sampurna.pocketmoney.mlm.model.serviceModels.*
-import com.google.gson.JsonObject
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -69,7 +69,7 @@ interface MLMApiService {
     @GET("Customer/GetCustomerDetails")
     suspend fun getCustomerDetails(
         @Query("userId") userId: String
-    ): CustomerDetailResponse
+    ): Response<CustomerDetailResponse?>
 
     @POST("Customer/GetCustomerGrowth")
     suspend fun getCustomerGrowth(

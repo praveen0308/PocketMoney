@@ -48,7 +48,9 @@ android:orientation="vertical">
                     android:layout_height="wrap_content"
                     android:hint="Bank Account No."
                     android:inputType="number"
-                    android:maxLength="18" />
+                    android:imeOptions="actionNext"
+                    android:maxLength="18"
+                    android:nextFocusDown="@id/et_confirm_account_number" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,7 +68,10 @@ android:orientation="vertical">
                     android:layout_height="wrap_content"
                     android:hint="Confirm Bank Account No."
                     android:inputType="number"
-                    android:maxLength="14" />
+                    android:imeOptions="actionNext"
+
+                    android:maxLength="18"
+                    android:nextFocusDown="@id/actv_bank" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,8 +104,9 @@ android:orientation="vertical">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Enter IFSC"
-
-                    android:maxLength="12" />
+                    android:imeOptions="actionNext"
+                    android:maxLength="12"
+                    android:nextFocusDown="@id/et_customer_name" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,6 +123,7 @@ android:orientation="vertical">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Customer Name"
+                    android:imeOptions="actionDone"
 
                     />
 

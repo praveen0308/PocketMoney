@@ -6,14 +6,18 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.google.gson.JsonObject
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.databinding.FragmentPayToWalletBinding
 import com.sampurna.pocketmoney.mlm.model.CustomerDetailResponse
 import com.sampurna.pocketmoney.mlm.model.OperationResultModel
 import com.sampurna.pocketmoney.mlm.viewmodel.B2BTransferViewModel
 import com.sampurna.pocketmoney.paymentgateway.OperationResultDialog
-import com.sampurna.pocketmoney.utils.*
-import com.google.gson.JsonObject
+import com.sampurna.pocketmoney.utils.ApplicationToolbar
+import com.sampurna.pocketmoney.utils.BaseFragment
+import com.sampurna.pocketmoney.utils.Status
+import com.sampurna.pocketmoney.utils.getTodayDate
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,7 +38,7 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
                 if(it.toString().toInt()!=0){
                     binding.btnPay.isVisible = true
                 }
-            }else{
+            } else {
                 binding.btnPay.isVisible = false
             }
         }
@@ -42,6 +46,9 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
             binding.btnPay.isEnabled = false
             viewModel.getWalletBalance(userId, roleId)
 
+        }
+        binding.btnGoBack.setOnClickListener {
+            findNavController().navigateUp()
         }
     }
     override fun subscribeObservers() {
@@ -60,11 +67,25 @@ class PayToWallet : BaseFragment<FragmentPayToWalletBinding>(FragmentPayToWallet
         viewModel.customerDetail.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
-                    _result._data?.let {
-                        binding.groupUserDetail.isVisible = true
-                        binding.groupEnterAmount.isVisible = true
-                        populateCustomerDetails(it)
+                    if (_result._data != null) {
+                        binding.apply {
+                            layoutEmptyView.isVisible = false
+                            groupUserDetail.isVisible = true
+                            groupEnterAmount.isVisible = true
+
+                        }
+                        populateCustomerDetails(_result._data)
+                    } else {
+                        binding.apply {
+                            layoutEmptyView.isVisible = true
+                            groupUserDetail.isVisible = false
+                            groupEnterAmount.isVisible = false
+
+                        }
+
+
                     }
+
                     displayLoading(false)
                 }
                 Status.LOADING -> {

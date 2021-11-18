@@ -10,6 +10,7 @@
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/drawable/dialog_bg.xml" value="0.1925925925925926" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/drawable/ic_baseline_check_circle_24.xml" value="0.16296296296296298" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/drawable/ic_baseline_info_24.xml" value="0.16296296296296298" />
+        <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/drawable/ic_round_call_made_24.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/drawable/inactive_dot.xml" value="0.2111111111111111" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/drawable/tab_indicator_selector.xml" value="0.2111111111111111" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/drawable/tab_selector.xml" value="0.17314814814814813" />
@@ -21,6 +22,7 @@
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/activity_add_money_to_wallet.xml" value="0.19537037037037036" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/activity_add_new_address.xml" value="0.18" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/activity_b2b_transfer.xml" value="0.1921875" />
+        <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/activity_change_password.xml" value="0.178125" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/activity_chat.xml" value="0.25" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/activity_checkout_order.xml" value="0.1" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/activity_customer_growth_n_commission.xml" value="0.15185185185185185" />
@@ -54,6 +56,7 @@
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/fragment_checkout_items.xml" value="0.10948905109489052" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/fragment_checkout_shipping_address.xml" value="0.18" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/fragment_choose_recharge_plans.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/fragment_choose_user_id.xml" value="0.17222222222222222" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/fragment_confirm_recharge.xml" value="0.1" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/fragment_dth_operator.xml" value="0.12129629629629629" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/fragment_dth_recharge.xml" value="0.25" />
@@ -124,6 +127,7 @@
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_contact_list_item.xml" value="0.10555555555555556" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_customer_commission.xml" value="0.25" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_discount_coupon.xml" value="0.2740740740740741" />
+        <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_empty_view.xml" value="0.1921875" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_home_services.xml" value="0.3255208333333333" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_main_dashboard_top_layout.xml" value="0.16" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_mobile_operator_simple_plan.xml" value="0.33" />
@@ -146,6 +150,7 @@
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_sender_chat.xml" value="0.33" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_system_growth.xml" value="0.1361111111111111" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_title_subtitle_vertical.xml" value="0.1921875" />
+        <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_upi_code_options.xml" value="0.384375" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/template_variant_text_view.xml" value="0.21203703703703702" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/templater_order_detail_header.xml" value="0.1921875" />
         <entry key="..\:/Users/brsap/AndroidStudioProjects/PocketMoney/app/src/main/res/layout/toolbar_application_display.xml" value="0.1787037037037037" />

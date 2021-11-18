@@ -15,6 +15,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.JsonObject
+import com.google.zxing.WriterException
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.common.ModelTitleValue
 import com.sampurna.pocketmoney.databinding.FragmentAccountBinding
@@ -26,13 +28,15 @@ import com.sampurna.pocketmoney.mlm.model.ModelParentMenu
 import com.sampurna.pocketmoney.mlm.ui.MainActivity
 import com.sampurna.pocketmoney.mlm.ui.coupons.ManageCoupon
 import com.sampurna.pocketmoney.mlm.ui.customergrowth.CustomerGrowthNCommission
-import com.sampurna.pocketmoney.mlm.ui.dashboard.*
+import com.sampurna.pocketmoney.mlm.ui.dashboard.AccountActivity
+import com.sampurna.pocketmoney.mlm.ui.dashboard.ComplaintList
+import com.sampurna.pocketmoney.mlm.ui.dashboard.CustomerProfile
+import com.sampurna.pocketmoney.mlm.ui.dashboard.CustomerWalletActivity
+import com.sampurna.pocketmoney.mlm.ui.forgotpassword.ChangePassword
 import com.sampurna.pocketmoney.mlm.viewmodel.AccountViewModel
 import com.sampurna.pocketmoney.utils.BaseFragment
 import com.sampurna.pocketmoney.utils.Status
 import com.sampurna.pocketmoney.utils.myEnums.NavigationEnum
-import com.google.gson.JsonObject
-import com.google.zxing.WriterException
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -239,7 +243,17 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
             )
         )
 
-        if(userId.isNotEmpty()){
+
+        if(userId.isNotEmpty()) {
+            helpMenuItemList.add(
+                ModelMenuItem(
+                    NavigationEnum.CHANGE_PASSWORD,
+                    "Change Password",
+                    "",
+                    R.drawable.ic_lock
+                )
+            )
+
             helpMenuItemList.add(
                 ModelMenuItem(
                     NavigationEnum.LOG_OUT,
@@ -275,14 +289,18 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
             NavigationEnum.REPORT->{
                 startActivity(Intent(requireActivity(), ComplaintList::class.java))
             }
-            NavigationEnum.ABOUT->{
-                val intent = Intent(requireActivity(),AccountActivity::class.java)
-                intent.putExtra("SOURCE",NavigationEnum.ABOUT)
+            NavigationEnum.ABOUT -> {
+                val intent = Intent(requireActivity(), AccountActivity::class.java)
+                intent.putExtra("SOURCE", NavigationEnum.ABOUT)
                 startActivity(intent)
             }
-            NavigationEnum.SHARE->{
-                val intent = Intent(requireActivity(),AccountActivity::class.java)
-                intent.putExtra("SOURCE",NavigationEnum.SHARE)
+            NavigationEnum.SHARE -> {
+                val intent = Intent(requireActivity(), AccountActivity::class.java)
+                intent.putExtra("SOURCE", NavigationEnum.SHARE)
+                startActivity(intent)
+            }
+            NavigationEnum.CHANGE_PASSWORD -> {
+                val intent = Intent(requireActivity(), ChangePassword::class.java)
                 startActivity(intent)
             }
             NavigationEnum.LOG_OUT -> {

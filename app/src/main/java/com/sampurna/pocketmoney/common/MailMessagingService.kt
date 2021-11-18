@@ -16,4 +16,5 @@ interface MailMessagingService {
         @Query("recipientEmail") recipientEmail: String,
         @Query("subject") subject: String
     ): Boolean
+
 }

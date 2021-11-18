@@ -1,11 +1,15 @@
 package com.sampurna.pocketmoney.mlm.viewmodel
 
 import androidx.lifecycle.*
-import com.sampurna.pocketmoney.mlm.model.*
-import com.sampurna.pocketmoney.mlm.repository.*
+import com.google.gson.JsonObject
+import com.sampurna.pocketmoney.mlm.model.CustomerDetailResponse
+import com.sampurna.pocketmoney.mlm.model.ModelContact
+import com.sampurna.pocketmoney.mlm.repository.CustomerRepository
+import com.sampurna.pocketmoney.mlm.repository.RechargeRepository
+import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository
+import com.sampurna.pocketmoney.mlm.repository.WalletRepository
 import com.sampurna.pocketmoney.utils.DataState
 import com.sampurna.pocketmoney.utils.Resource
-import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,12 +31,12 @@ class B2BTransferViewModel @Inject constructor(
 
     val recipientUserId = MutableLiveData<String>()
 
-    fun setRecipientUserId(userId:String){
+    fun setRecipientUserId(userId: String) {
         recipientUserId.postValue(userId)
     }
 
-    private val _customerDetail = MutableLiveData<Resource<CustomerDetailResponse>>()
-    val customerDetail: LiveData<Resource<CustomerDetailResponse>> = _customerDetail
+    private val _customerDetail = MutableLiveData<Resource<CustomerDetailResponse?>>()
+    val customerDetail: LiveData<Resource<CustomerDetailResponse?>> = _customerDetail
 
 
     fun getCustomerDetail(userId: String) {

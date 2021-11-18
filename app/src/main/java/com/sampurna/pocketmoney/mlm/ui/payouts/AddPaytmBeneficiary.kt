@@ -4,26 +4,35 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.jmm.brsap.dialog_builder.DialogType
+import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.databinding.FragmentAddPaytmBeneficiaryBinding
+import com.sampurna.pocketmoney.mlm.adapters.UpiSelectorAdapter
+import com.sampurna.pocketmoney.mlm.model.UPIModel
 import com.sampurna.pocketmoney.mlm.model.payoutmodels.Beneficiary
 import com.sampurna.pocketmoney.mlm.viewmodel.PayoutViewModel
 import com.sampurna.pocketmoney.utils.*
-import com.jmm.brsap.dialog_builder.DialogType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBeneficiaryBinding>(FragmentAddPaytmBeneficiaryBinding::inflate) {
+class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBeneficiaryBinding>(
+    FragmentAddPaytmBeneficiaryBinding::inflate
+),
+    UpiSelectorAdapter.UpiSelectorInterface {
     private val viewModel by activityViewModels<PayoutViewModel>()
-    private var userId : String = ""
+    private var userId: String = ""
     private var isAddedBeneficiary = false
+
+    private lateinit var upiSelectorAdapter: UpiSelectorAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (viewModel.payoutType.value == 2){
+        if (viewModel.payoutType.value == 2) {
             binding.etUpiId.setHint("Enter UPI Id")
             binding.etUpiId.inputType = EditorInfo.TYPE_CLASS_TEXT
-
-
-        }else{
+            setupRvUpis()
+        } else {
             binding.etUpiId.setHint("Paytm Number")
             binding.etUpiId.inputType = EditorInfo.TYPE_CLASS_NUMBER
         }
@@ -67,9 +76,25 @@ class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBenefi
 
     }
 
+    private fun setupRvUpis() {
+        upiSelectorAdapter = UpiSelectorAdapter(this)
+        binding.rvUpis.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = upiSelectorAdapter
+        }
+
+        val upiList = mutableListOf<UPIModel>()
+        upiList.add(UPIModel("@ybl", R.drawable.ic_phone_pe))
+        upiList.add(UPIModel("@paytm", R.drawable.ic_paytm))
+        upiList.add(UPIModel("@upi", R.drawable.ic_bhim))
+        upiList.add(UPIModel("@okaxis", R.drawable.ic_google_pay))
+        upiSelectorAdapter.setUPIModelList(upiList)
+    }
+
     override fun subscribeObservers() {
-        viewModel.userId.observe(viewLifecycleOwner,{
-            userId=it
+        viewModel.userId.observe(viewLifecycleOwner, {
+            userId = it
         })
 
         viewModel.isBeneficiaryAdded.observe(this, { _result ->
@@ -114,5 +139,16 @@ class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBenefi
     override fun onDestroyView() {
         super.onDestroyView()
         isAddedBeneficiary = false
+    }
+
+    override fun onItemClick(item: UPIModel) {
+        var str = binding.etUpiId.text.toString()
+        if (str.contains("@")) {
+            str = str.substring(0, str.indexOf("@"))
+        }
+
+
+
+        binding.etUpiId.setText("${str}${item.title}")
     }
 }

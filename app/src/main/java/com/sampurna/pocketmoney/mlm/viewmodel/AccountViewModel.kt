@@ -1,31 +1,36 @@
 package com.sampurna.pocketmoney.mlm.viewmodel
 
 import androidx.lifecycle.*
+import com.google.gson.JsonObject
+import com.sampurna.pocketmoney.common.MailMessagingRepository
 import com.sampurna.pocketmoney.mlm.model.ModelCustomerDetail
 import com.sampurna.pocketmoney.mlm.model.UserMenu
 import com.sampurna.pocketmoney.mlm.repository.AccountRepository
 import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.sampurna.pocketmoney.mlm.repository.WalletRepository
 import com.sampurna.pocketmoney.utils.Resource
-import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountViewModel @Inject constructor(
-        private val accountRepository: AccountRepository,
-        private val userPreferencesRepository: UserPreferencesRepository,
-        private val walletRepository: WalletRepository
+    private val accountRepository: AccountRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val walletRepository: WalletRepository,
+    private val mailMessagingRepository: MailMessagingRepository
 
-):ViewModel(){
+) : ViewModel() {
     val loginId = userPreferencesRepository.loginId.asLiveData()
     val userId = userPreferencesRepository.userId.asLiveData()
     val userName = userPreferencesRepository.userName.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
 
-    fun clearUserInfo(){
+    fun clearUserInfo() {
         viewModelScope.launch {
             userPreferencesRepository.clearUserInfo()
         }
@@ -41,18 +46,18 @@ class AccountViewModel @Inject constructor(
         viewModelScope.launch {
 
             accountRepository
-                    .checkAccountAlreadyExist(userId)
-                    .onStart {
-                        _isAccountDuplicate.postValue(Resource.Loading(true))
+                .checkAccountAlreadyExist(userId)
+                .onStart {
+                    _isAccountDuplicate.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _isAccountDuplicate.postValue(Resource.Error(it))
                     }
-                    .catch { exception ->
-                        exception.message?.let {
-                            _isAccountDuplicate.postValue(Resource.Error(it))
-                        }
-                    }
-                    .collect { response->
-                        _isAccountDuplicate.postValue(Resource.Success(response))
-                    }
+                }
+                .collect { response ->
+                    _isAccountDuplicate.postValue(Resource.Success(response))
+                }
         }
 
     }
@@ -63,18 +68,18 @@ class AccountViewModel @Inject constructor(
     fun registerUser(customerDetail: ModelCustomerDetail) {
         viewModelScope.launch {
             accountRepository
-                    .registerUser(customerDetail)
-                    .onStart {
-                        _isSuccessfullyRegistered.postValue(Resource.Loading(true))
+                .registerUser(customerDetail)
+                .onStart {
+                    _isSuccessfullyRegistered.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _isSuccessfullyRegistered.postValue(Resource.Error(it))
                     }
-                    .catch { exception ->
-                        exception.message?.let {
-                            _isSuccessfullyRegistered.postValue(Resource.Error(it))
-                        }
-                    }
-                    .collect { response->
-                        _isSuccessfullyRegistered.postValue(Resource.Success(response))
-                    }
+                }
+                .collect { response ->
+                    _isSuccessfullyRegistered.postValue(Resource.Success(response))
+                }
         }
 
     }
@@ -82,65 +87,43 @@ class AccountViewModel @Inject constructor(
     private val _sponsorName = MutableLiveData<Resource<String>>()
     val sponsorName: LiveData<Resource<String>> = _sponsorName
 
-    fun getSponsorName(id:String) {
+    fun getSponsorName(id: String) {
         viewModelScope.launch {
             accountRepository
-                    .getSponsorName(id)
-                    .onStart {
-                        _sponsorName.postValue(Resource.Loading(true))
+                .getSponsorName(id)
+                .onStart {
+                    _sponsorName.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _sponsorName.postValue(Resource.Error(it))
                     }
-                    .catch { exception ->
-                        exception.message?.let {
-                            _sponsorName.postValue(Resource.Error(it))
-                        }
-                    }
-                    .collect { response->
-                        _sponsorName.postValue(Resource.Success(response))
-                    }
+                }
+                .collect { response ->
+                    _sponsorName.postValue(Resource.Success(response))
+                }
         }
 
     }
 
-//    private val _userName = MutableLiveData<Resource<String>>()
-//    val userName: LiveData<Resource<String>> = _userName
-//
-//    fun getUserName(id:String) {
-//        viewModelScope.launch {
-//            accountRepository
-//                    .getUserName(id)
-//                    .onStart {
-//                        _userName.postValue(Resource.Loading(true))
-//                    }
-//                    .catch { exception ->
-//                        exception.message?.let {
-//                            _userName.postValue(Resource.Error(it))
-//                        }
-//                    }
-//                    .collect { response->
-//                        _userName.postValue(Resource.Success(response))
-//                    }
-//        }
-//
-//    }
-
     private val _isAccountActive = MutableLiveData<Resource<Boolean>>()
     val isAccountActive: LiveData<Resource<Boolean>> = _isAccountActive
 
-    fun checkIsAccountActive(id:String) {
+    fun checkIsAccountActive(id: String) {
         viewModelScope.launch {
             accountRepository
-                    .isUserAccountActive(id)
-                    .onStart {
-                        _isAccountActive.postValue(Resource.Loading(true))
+                .isUserAccountActive(id)
+                .onStart {
+                    _isAccountActive.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _isAccountActive.postValue(Resource.Error(it))
                     }
-                    .catch { exception ->
-                        exception.message?.let {
-                            _isAccountActive.postValue(Resource.Error(it))
-                        }
-                    }
-                    .collect { response->
-                        _isAccountActive.postValue(Resource.Success(response))
-                    }
+                }
+                .collect { response ->
+                    _isAccountActive.postValue(Resource.Success(response))
+                }
         }
 
     }
@@ -152,23 +135,23 @@ class AccountViewModel @Inject constructor(
     fun getUserMenus(userId: String) {
         viewModelScope.launch {
             accountRepository
-                    .getUserMenus(userId)
-                    .onStart {
-                        _userMenus.postValue(Resource.Loading(true))
+                .getUserMenus(userId)
+                .onStart {
+                    _userMenus.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _userMenus.postValue(Resource.Error(it))
                     }
-                    .catch { exception ->
-                        exception.message?.let {
-                            _userMenus.postValue(Resource.Error(it))
-                        }
-                    }
-                    .collect { response->
-                        _userMenus.postValue(Resource.Success(response))
-                    }
+                }
+                .collect { response ->
+                    _userMenus.postValue(Resource.Success(response))
+                }
         }
     }
 
     private val _walletBalance = MutableLiveData<Resource<Double>>()
-    val walletBalance : LiveData<Resource<Double>> = _walletBalance
+    val walletBalance: LiveData<Resource<Double>> = _walletBalance
 
 
     private val _pCash = MutableLiveData<Resource<Double>>()
@@ -189,7 +172,7 @@ class AccountViewModel @Inject constructor(
                         _walletBalance.postValue(Resource.Error(it))
                     }
                 }
-                .collect { _balance->
+                .collect { _balance ->
                     _walletBalance.postValue(Resource.Success(_balance))
                 }
         }
@@ -211,7 +194,7 @@ class AccountViewModel @Inject constructor(
                         _pCash.postValue(Resource.Error(it))
                     }
                 }
-                .collect { _balance->
+                .collect { _balance ->
                     _pCash.postValue(Resource.Success(_balance))
                 }
         }
@@ -237,13 +220,35 @@ class AccountViewModel @Inject constructor(
                         _dashboardData.postValue(Resource.Error(it))
                     }
                 }
-                .collect { response->
+                .collect { response ->
                     _dashboardData.postValue(Resource.Success(response))
                 }
         }
 
     }
 
+    private val _smsResponse = MutableLiveData<Resource<JsonObject>>()
+    val smsResponse: LiveData<Resource<JsonObject>> = _smsResponse
+
+    fun sendRegistrationSms(mobileNo: String, userId: String, password: String) {
+        viewModelScope.launch {
+            mailMessagingRepository
+                .sendRegistrationMessage(mobileNo, userId, password)
+                .onStart {
+                    _smsResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _smsResponse.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error caused by >>>> sendRegistrationSms")
+                        Timber.e("Exception : $it")
+                    }
+                }
+                .collect {
+                    _smsResponse.postValue(Resource.Success(it))
+                }
+        }
+    }
 
 
 }

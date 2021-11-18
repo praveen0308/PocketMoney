@@ -43,11 +43,12 @@ class BankListAdapter(private val sBankListener: BankAdapterInterface): Recycler
 
                     val filteredList: MutableList<BankModel> = ArrayList()
                     for (row in bankList) {
-                        val strRegex = Regex(pattern = "[a-zA-Z]+")
+                        val strRegex = Regex(pattern = "[a-zA-Z ]+")
                         val numberRegex = Regex(pattern = "[0-9]+")
-                        if (charSequence.matches(strRegex)){
-                            if (row.BankName!!.toLowerCase()
-                                    .contains(charString.toLowerCase())) {
+                        if (charSequence.matches(strRegex)) {
+                            if (row.BankName!!.uppercase()
+                                    .contains(charString.uppercase())
+                            ) {
                                 filteredList.add(row)
                             }
                         }else if (charSequence.matches(numberRegex)){

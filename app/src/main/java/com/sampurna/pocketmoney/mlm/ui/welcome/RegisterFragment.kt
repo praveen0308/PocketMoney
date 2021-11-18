@@ -25,12 +25,15 @@ class RegisterFragment : BaseBottomSheetDialogFragment<FragmentRegisterBinding>(
     private lateinit var validator: CustomValidator
 
     // ViewModel
-    private val accountViewModel : AccountViewModel by viewModels()
+    private val accountViewModel: AccountViewModel by viewModels()
 
     // Variables
-    private var userID : String = ""
-    private var roleID : Int=0
+    private var userID: String = ""
+    private var roleID: Int = 0
     private lateinit var customerDetail: ModelCustomerDetail
+
+    private var userId = ""
+    private var password = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,9 +41,9 @@ class RegisterFragment : BaseBottomSheetDialogFragment<FragmentRegisterBinding>(
         initiateFieldsValidation()
         binding.btnRegister.setOnClickListener {
             binding.apply {
-                if (etSponsorId.text.toString().length==10 && tilSponsorId.error==null){
-                    if (validator.validateName(tilFullName,etFullName) &&
-                            validator.validateEmail(tilEmail,etEmail) &&
+                if (etSponsorId.text.toString().length == 10 && tilSponsorId.error == null) {
+                    if (validator.validateName(tilFullName, etFullName) &&
+                        validator.validateEmail(tilEmail, etEmail) &&
                             validator.validateMobileNo(tilMobileNumber,etMobileNumber)
                             && validator.validatePincode(tilPincode,etPincode)){
                                 if(cbTncAgreement.isChecked){
@@ -163,9 +166,16 @@ class RegisterFragment : BaseBottomSheetDialogFragment<FragmentRegisterBinding>(
                 Status.SUCCESS -> {
                     _result._data?.let {
                         if (it) {
-                            Toast.makeText(context, "Registered Successfully !!", Toast.LENGTH_SHORT).show()
+//                            accountViewModel.sendRegistrationSms(
+//                                binding.etMobileNumber.text.toString()
+//                            )
+                            Toast.makeText(
+                                context,
+                                "Registered Successfully !!",
+                                Toast.LENGTH_SHORT
+                            ).show()
 //                            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
-                                dismiss()
+                            dismiss()
                         } else {
                             displayError("Registration failed !!!")
                             displaySubmitting(false)

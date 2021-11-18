@@ -16,11 +16,11 @@ class CustomerRepository @Inject constructor(
     private val customerService: CustomerService
 ) {
 
-    suspend fun getCustomerDetail(userID: String): Flow<CustomerDetailResponse> {
+    suspend fun getCustomerDetail(userID: String): Flow<CustomerDetailResponse?> {
         return flow {
             val response = mlmApiService.getCustomerDetails(userID)
 
-            emit(response)
+            emit(response.body())
         }.flowOn(Dispatchers.IO)
     }
 
