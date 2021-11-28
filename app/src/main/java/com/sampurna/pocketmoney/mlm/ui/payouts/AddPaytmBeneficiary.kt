@@ -1,8 +1,13 @@
 package com.sampurna.pocketmoney.mlm.ui.payouts
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jmm.brsap.dialog_builder.DialogType
@@ -25,21 +30,51 @@ class AddPaytmBeneficiary : BaseBottomSheetDialogFragment<FragmentAddPaytmBenefi
     private var isAddedBeneficiary = false
 
     private lateinit var upiSelectorAdapter: UpiSelectorAdapter
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                val data: Intent? = result.data
+                if (result.resultCode == Activity.RESULT_OK) {
+//                    showToast(data!!.getStringExtra("Message")!!)
+                    data?.let {
+                        binding.apply {
+                            etUpiId.setText(it.getStringExtra("upiId"))
+                            etCustomerName.setText(it.getStringExtra("name"))
+                        }
+                    }
+
+                } else {
+                    showToast("Cancelled !!")
+                }
+
+            }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (viewModel.payoutType.value == 2) {
-            binding.etUpiId.setHint("Enter UPI Id")
+            binding.btnQr.isVisible = true
+            binding.etUpiId.hint = "Enter UPI Id"
             binding.etUpiId.inputType = EditorInfo.TYPE_CLASS_TEXT
             setupRvUpis()
         } else {
-            binding.etUpiId.setHint("Paytm Number")
+            binding.btnQr.isVisible = false
+            binding.etUpiId.hint = "Paytm Number"
             binding.etUpiId.inputType = EditorInfo.TYPE_CLASS_NUMBER
         }
+
+        binding.btnQr.setOnClickListener {
+            val intent = Intent(requireActivity(), ScanQR::class.java)
+            resultLauncher.launch(intent)
+
+        }
         binding.btnSubmit.setButtonClick {
-            if (userId.isEmpty()){
+            if (userId.isEmpty()) {
                 checkAuthorization()
-            }else{
+            } else {
                 binding.apply {
                     val upiID = etUpiId.text.toString().trim()
                     val customerName = etCustomerName.text.toString().trim()

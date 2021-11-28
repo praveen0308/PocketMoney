@@ -8,21 +8,21 @@ android:elevation="10dp"
 android:paddingHorizontal="14dp"
 android:paddingBottom="16dp"
 app:layout_behavior="@string/bottom_sheet_behavior"
-android:minHeight="400dp"
-tools:context=".mlm.ui.payouts.AddPaytmBeneficiary"
+    android:minHeight="500dp"
+    tools:context=".mlm.ui.payouts.AddPaytmBeneficiary"
     android:orientation="vertical">
 
-<ImageView
-    android:id="@+id/imageView4"
-    android:layout_width="60dp"
-    android:layout_height="40dp"
-    android:layout_gravity="center_horizontal"
-    android:scaleType="fitXY"
-    android:src="@drawable/icon_minus"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:tint="@color/Grey" />
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitXY"
+        android:src="@drawable/icon_minus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/Grey" />
 
     <TextView
         android:id="@+id/textView16"
@@ -31,27 +31,54 @@ tools:context=".mlm.ui.payouts.AddPaytmBeneficiary"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
         android:text="Add Beneficiary"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_upi_id"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp">
+        android:layout_marginTop="@dimen/dimen_60dp">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_upi_id"
-            android:layout_width="match_parent"
+        <ImageButton
+            android:id="@+id/btn_qr"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/transparent"
+            android:padding="@dimen/dimen_0dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_round_qr_code_24"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/til_upi_id"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/til_upi_id"
+            app:tint="@color/black"
+            tools:visibility="visible" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_upi_id"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Enter UPI Id" />
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toStartOf="@+id/btn_qr"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_upi_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter UPI Id" />
 
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_upis"

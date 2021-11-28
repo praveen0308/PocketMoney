@@ -2,6 +2,7 @@ package com.sampurna.pocketmoney.mlm.ui.forgotpassword
 
 import androidx.lifecycle.*
 import com.sampurna.pocketmoney.common.MailMessagingRepository
+import com.sampurna.pocketmoney.common.SMSResponseModel
 import com.sampurna.pocketmoney.mlm.repository.AccountRepository
 import com.sampurna.pocketmoney.mlm.repository.CustomerRepository
 import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -111,8 +113,35 @@ class ForgotPasswordViewModel @Inject constructor(
                         _isMessageSent.postValue(Resource.Error(it))
                     }
                 }
-                .collect { response->
+                .collect { response ->
                     _isMessageSent.postValue(Resource.Success(response))
+                }
+        }
+    }
+
+
+    private val _sendSmsResponse = MutableLiveData<Resource<SMSResponseModel>>()
+    val sendSmsResponse: LiveData<Resource<SMSResponseModel>> = _sendSmsResponse
+
+    fun sendOTPSms(
+        mobileNo: String,
+        otp: String
+    ) {
+        viewModelScope.launch {
+            mailMessagingRepository
+                .sendOtpSMS(mobileNo, otp)
+                .onStart {
+                    _sendSmsResponse.postValue(Resource.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        _sendSmsResponse.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error caused by >>>> sendSmsOfTransaction")
+                        Timber.e("Exception : $it")
+                    }
+                }
+                .collect {
+                    _sendSmsResponse.postValue(Resource.Success(it))
                 }
         }
     }

@@ -2,6 +2,8 @@ package com.sampurna.pocketmoney.di
 
 import android.content.Context
 import com.sampurna.pocketmoney.common.MailMessagingService
+import com.sampurna.pocketmoney.common.SMSService
+import com.sampurna.pocketmoney.common.SmsServiceConstants
 import com.sampurna.pocketmoney.mlm.network.*
 import com.sampurna.pocketmoney.mlm.repository.*
 import com.sampurna.pocketmoney.utils.Constants
@@ -68,15 +70,40 @@ object MLMNetworkModule {
         return retrofit.create(MailMessagingService::class.java)
     }
 
+    @Provides
+    fun provideSMSService(): SMSService {
+        val logging = HttpLoggingInterceptor()
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val httpClient = OkHttpClient.Builder()
+
+        httpClient.addInterceptor(logging)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+
+        val smsRetrofit = Retrofit.Builder().baseUrl(SmsServiceConstants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient.build())
+            .build()
+
+        return smsRetrofit.create(SMSService::class.java)
+    }
+
 
     @Provides
-    fun provideUserAuthenticationRepo(mlmApiService: MLMApiService,customerService: CustomerService):AccountRepository{
-        return AccountRepository(mlmApiService,customerService)
+    fun provideUserAuthenticationRepo(
+        mlmApiService: MLMApiService,
+        customerService: CustomerService
+    ): AccountRepository {
+        return AccountRepository(mlmApiService, customerService)
     }
 
     @Provides
-    fun provideRechargeRepo(@ApplicationContext context: Context,mlmApiService: MLMApiService,rechargeAPIService: RechargeAPIService):RechargeRepository{
-        return RechargeRepository(context,mlmApiService,rechargeAPIService)
+    fun provideRechargeRepo(
+        @ApplicationContext context: Context,
+        mlmApiService: MLMApiService,
+        rechargeAPIService: RechargeAPIService
+    ): RechargeRepository {
+        return RechargeRepository(context, mlmApiService, rechargeAPIService)
     }
 
     @Provides

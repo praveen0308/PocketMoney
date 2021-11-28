@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "9671670352",
+    "project_id": "pocketmoney-5523d",
+    "storage_bucket": "pocketmoney-5523d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9671670352:android:cbebf0f18a3a50858aef55",
+        "android_client_info": {
+          "package_name": "com.sampurna.pocketmoney"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9671670352-725is0hiirqh2kn3q8r4ac685sgbhnnr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sampurna.pocketmoney",
+            "certificate_hash": "690f85ce0b3ce97fb18266f178b9ee0d473f482a"
+          }
+        },
+        {
+          "client_id": "9671670352-hs8hlcmmrj627n36b57jrb94h3bf13mj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDziVgbe9eoQnlcv7AKLRL5oYoK1LBijgY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9671670352-hs8hlcmmrj627n36b57jrb94h3bf13mj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

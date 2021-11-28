@@ -3,6 +3,7 @@ package com.sampurna.pocketmoney.mlm.viewmodel
 import androidx.lifecycle.*
 import com.google.gson.JsonObject
 import com.sampurna.pocketmoney.common.MailMessagingRepository
+import com.sampurna.pocketmoney.common.SMSResponseModel
 import com.sampurna.pocketmoney.mlm.model.ModelCustomerDetail
 import com.sampurna.pocketmoney.mlm.model.UserMenu
 import com.sampurna.pocketmoney.mlm.repository.AccountRepository
@@ -227,8 +228,8 @@ class AccountViewModel @Inject constructor(
 
     }
 
-    private val _smsResponse = MutableLiveData<Resource<JsonObject>>()
-    val smsResponse: LiveData<Resource<JsonObject>> = _smsResponse
+    private val _smsResponse = MutableLiveData<Resource<SMSResponseModel>>()
+    val smsResponse: LiveData<Resource<SMSResponseModel>> = _smsResponse
 
     fun sendRegistrationSms(mobileNo: String, userId: String, password: String) {
         viewModelScope.launch {

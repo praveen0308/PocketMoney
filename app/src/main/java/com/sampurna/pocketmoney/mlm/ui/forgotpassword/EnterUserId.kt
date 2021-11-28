@@ -14,20 +14,20 @@ import dagger.hilt.android.AndroidEntryPoint
 class EnterUserId : BaseFragment<FragmentEnterUserIdBinding>(FragmentEnterUserIdBinding::inflate) {
 
     private val viewModel by activityViewModels<ForgotPasswordViewModel>()
-    private lateinit var generatedOtp : String
+    private lateinit var generatedOtp: String
     private var userId = ""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.etUserId.doOnTextChanged { text, start, before, count ->
-            binding.btnConfirm.isEnabled = text.toString().length==10
+            binding.btnConfirm.isEnabled = text.toString().length == 10
         }
 
         binding.btnConfirm.setOnClickListener {
             viewModel.enterUserId = binding.etUserId.text.toString().trim()
 
             generatedOtp = (0..999999).random().toString()
-            viewModel.resetPassword(viewModel.enterUserId,generatedOtp)
+            viewModel.resetPassword(viewModel.enterUserId, generatedOtp)
         }
     }
 
@@ -36,15 +36,16 @@ class EnterUserId : BaseFragment<FragmentEnterUserIdBinding>(FragmentEnterUserId
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        if (it){
-                            val msg = "Your one time password for reset password is ${generatedOtp.toString()} . Do not share this OTP to anyone for security reasons."
-                            viewModel.sendWhatsappMessage(viewModel.enterUserId,msg)
+                        if (it) {
+                            val msg =
+                                "Your one time password for reset password is ${generatedOtp.toString()} . Do not share this OTP to anyone for security reasons."
+                            viewModel.sendWhatsappMessage(viewModel.enterUserId, msg)
                         }
                     }
                     displayLoading(false)
                 }
                 Status.LOADING -> {
-                   displayLoading(true)
+                    displayLoading(true)
                 }
                 Status.ERROR -> {
                     displayLoading(false)
@@ -56,6 +57,27 @@ class EnterUserId : BaseFragment<FragmentEnterUserIdBinding>(FragmentEnterUserId
         })
 
         viewModel.isMessageSent.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    _result._data?.let {
+                        viewModel.sendOTPSms(viewModel.enterUserId, generatedOtp)
+
+                    }
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+        viewModel.sendSmsResponse.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -74,6 +96,7 @@ class EnterUserId : BaseFragment<FragmentEnterUserIdBinding>(FragmentEnterUserId
                 }
             }
         })
+
     }
 
 }

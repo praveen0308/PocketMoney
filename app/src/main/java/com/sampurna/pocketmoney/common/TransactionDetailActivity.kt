@@ -1,15 +1,32 @@
 package com.sampurna.pocketmoney.common
 
+
+import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.text.format.DateFormat
+import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
+import com.sampurna.pocketmoney.BuildConfig
 import com.sampurna.pocketmoney.databinding.ActivityTransactionDetailBinding
 import com.sampurna.pocketmoney.mlm.model.TransactionDetailModel
 import com.sampurna.pocketmoney.mlm.ui.dashboard.ComplaintList
 import com.sampurna.pocketmoney.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.util.*
 
 @AndroidEntryPoint
 class TransactionDetailActivity :
@@ -146,6 +163,70 @@ class TransactionDetailActivity :
     }
 
     override fun onMenuClick() {
-
+        verifyStoragePermission()
+        takeScreenShot(window.decorView)
     }
+
+    private val REQUEST_EXTERNAL_STORAGE = 1
+    private val PERMISSION_STORAGE = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
+
+    private fun takeScreenShot(view: View) {
+        val date = Date()
+        val format: CharSequence = DateFormat.format("MM-dd-yyyy_hh:mm:ss", date)
+        try {
+            val mainDir = File(
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES), "FilShare"
+            )
+            if (!mainDir.exists()) {
+                val mkdir: Boolean = mainDir.mkdir()
+            }
+            val path: String = mainDir.toString() + "/" + "PocketMoney" + "-" + format + ".jpeg"
+            view.isDrawingCacheEnabled = true
+            val bitmap: Bitmap = Bitmap.createBitmap(view.drawingCache)
+            view.isDrawingCacheEnabled = false
+            val imageFile = File(path)
+            val fileOutputStream = FileOutputStream(imageFile)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fileOutputStream)
+            fileOutputStream.flush()
+            fileOutputStream.close()
+            shareScreenShot(imageFile)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    //Share ScreenShot
+    private fun shareScreenShot(imageFile: File) {
+        val uri: Uri = FileProvider.getUriForFile(
+            this,
+            BuildConfig.APPLICATION_ID + ".fileProvider",
+            imageFile
+        )
+        val intent = Intent()
+        intent.action = Intent.ACTION_SEND
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_TEXT, "Transaction Detail")
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        try {
+            this.startActivity(Intent.createChooser(intent, "Share With"))
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "No App Available", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun verifyStoragePermission() {
+        val permission: Int =
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                PERMISSION_STORAGE,
+                REQUEST_EXTERNAL_STORAGE
+            )
+        }
+    }
+
 }
