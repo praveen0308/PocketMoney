@@ -59,6 +59,7 @@ class LoadingButton @kotlin.jvm.JvmOverloads constructor(
                     btnAction.setBackgroundColor(ContextCompat.getColor(context,R.color.colorPrimary))
                     btnAction.setCompoundDrawables(null,null,null,null)
                     btnAction.text = mText
+                    btnAction.setTextColor(ContextCompat.getColor(context, R.color.white))
                     progressStatus.isVisible = false
                     tvStatus.text = msg
                 }
@@ -70,6 +71,7 @@ class LoadingButton @kotlin.jvm.JvmOverloads constructor(
                     btnAction.text = mText
                     progressStatus.isVisible = true
                     tvStatus.isVisible = true
+                    btnAction.setTextColor(ContextCompat.getColor(context, R.color.white))
                     tvStatus.text = msg
                 }
             }

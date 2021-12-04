@@ -25,9 +25,11 @@ class ForgotPasswordViewModel @Inject constructor(
     val userId = userPreferencesRepository.userId.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
 
-    var enterUserId =""
+    var enterUserId = ""
+    var generatedOtp = ""
+    var isNotified = false
 
-    fun clearUserInfo(){
+    fun clearUserInfo() {
         viewModelScope.launch {
             userPreferencesRepository.clearUserInfo()
         }
@@ -110,11 +112,21 @@ class ForgotPasswordViewModel @Inject constructor(
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _isMessageSent.postValue(Resource.Error(it))
+                        _isMessageSent.postValue(Resource.Error("Something went wrong !!!"))
+                        Timber.d("Error caused by >>>> sendWhatsappMessage")
+                        Timber.e("Exception : $it")
+
                     }
                 }
                 .collect { response ->
-                    _isMessageSent.postValue(Resource.Success(response))
+                    if (response) {
+                        _isMessageSent.postValue(Resource.Success(response))
+                        sendOTPSms(enterUserId, generatedOtp)
+                        isNotified = true
+                    } else {
+                        _isMessageSent.postValue(Resource.Error("Something went wrong !!!"))
+                    }
+
                 }
         }
     }

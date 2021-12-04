@@ -253,3 +253,9 @@ class AccountViewModel @Inject constructor(
 
 
 }
+
+
+sealed class RegisterPageState {
+    object Idle : RegisterPageState()
+    object Loading : RegisterPageState()
+}

@@ -5,14 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.databinding.FragmentHomeBinding
 import com.sampurna.pocketmoney.mlm.HomeParentItemListener
 import com.sampurna.pocketmoney.mlm.adapters.HomeParentAdapter
-import com.sampurna.pocketmoney.mlm.model.*
+import com.sampurna.pocketmoney.mlm.model.RechargeEnum
 import com.sampurna.pocketmoney.mlm.repository.WalletRepository
 import com.sampurna.pocketmoney.mlm.ui.AddMoneyToWallet
 import com.sampurna.pocketmoney.mlm.ui.dashboard.CustomerWalletActivity
@@ -21,10 +20,10 @@ import com.sampurna.pocketmoney.mlm.ui.membership.MembershipPlanDetails
 import com.sampurna.pocketmoney.mlm.ui.membership.UpgradeToPro
 import com.sampurna.pocketmoney.mlm.ui.mobilerecharge.simpleui.NewRechargeActivity
 import com.sampurna.pocketmoney.mlm.ui.payouts.NewPayout
+import com.sampurna.pocketmoney.mlm.viewmodel.HomePageState
 import com.sampurna.pocketmoney.mlm.viewmodel.HomeViewModel
 import com.sampurna.pocketmoney.utils.BaseFragment
-
-import com.sampurna.pocketmoney.utils.Status
+import com.sampurna.pocketmoney.utils.ConnectionLiveData
 import com.sampurna.pocketmoney.utils.myEnums.MyEnums
 import com.sampurna.pocketmoney.utils.setAmount
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,9 +38,13 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
     private val viewModel by viewModels<HomeViewModel>()
 
     @Inject
-    lateinit var walletRepo : WalletRepository
+    lateinit var walletRepo: WalletRepository
+
     // Interface
     private lateinit var fragmentListener: HomeFragmentListener
+
+    @Inject
+    lateinit var connectionLiveData: ConnectionLiveData
 
     //Variables
     private var walletDetailVisibility: Boolean = false
@@ -61,7 +64,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
         binding.bottomLayout.mainDashboardParentRecyclerView.layoutManager =
             LinearLayoutManager(context)
         binding.bottomLayout.mainDashboardParentRecyclerView.adapter =
-            HomeParentAdapter(prepareHomeData(), this, requireActivity())
+            HomeParentAdapter(viewModel.prepareHomeData(), this, requireActivity())
 
 
         binding.topLayout.layoutWalletBalanceView.setOnClickListener {
@@ -80,7 +83,6 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
         }
 
         binding.topLayout.ivUserActivation.setOnClickListener {
-//         fragmentListener.onUserProfileClick()
             if (isAccountActive){
                 val bottomSheet = MembershipPlanDetails()
                 bottomSheet.show(parentFragmentManager, bottomSheet.tag)
@@ -95,266 +97,68 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
     }
 
     override fun subscribeObservers() {
-        viewModel.userId.observe(viewLifecycleOwner, {
-            if (it.isNullOrEmpty()){
-                checkAuthorization()
-            }else{
-                userID = it
+        /*binding.topLayout.walletBalanceView.textView7.text=
+            when(connectionLiveData.hasActiveObservers()){
+                true -> "Network Connection Established"
+                false -> "No Internet"
+            }*/
+        /*connectionLiveData.observe(viewLifecycleOwner,{
+            binding.topLayout.walletBalanceView.textView7.text = when(it){
+                true -> "Network Connection Established"
+                false -> "No Internet"
             }
         })
+*/
+        viewModel.userId.observe(viewLifecycleOwner, {
+            if (it.isNullOrEmpty()) {
+                checkAuthorization()
+            } else {
+                userID = it
+                viewModel.userType.observe(viewLifecycleOwner, {
+                    isAccountActive = it
+                    if (isAccountActive) {
+                        binding.topLayout.ivUserActivation.setImageResource(R.drawable.ic_diamond)
+                    } else {
+                        binding.topLayout.ivUserActivation.setImageResource(R.drawable.ic_up_arrow)
+                        val bottomSheet = UpgradeToPro()
+                        bottomSheet.show(parentFragmentManager, bottomSheet.tag)
+                    }
+                })
+            }
+        })
+
         viewModel.userRoleID.observe(viewLifecycleOwner, {
             roleID = it
             if (userID != "" && roleID != 0) {
                 viewModel.getWalletBalance(userID, roleID)
                 viewModel.getPCashBalance(userID, roleID)
-                viewModel.checkIsAccountActive(userID)
             }
 
         })
-        viewModel.walletBalance.observe(viewLifecycleOwner, Observer { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        binding.walletDetailView.tvWalletBalance.setAmount(it)
-                        binding.topLayout.walletBalanceView.tvWalletBalance.setAmount(it)
-                    }
 
-                    displayLoading(false)
+        viewModel.homePageState.observe(viewLifecycleOwner, { state ->
+            displayLoading(false)
+            when (state) {
+                is HomePageState.Loading -> displayLoading(state.isLoading)
+                is HomePageState.Error -> showToast(state.msg)
+                is HomePageState.GotWalletBalance -> {
+                    binding.walletDetailView.tvWalletBalance.setAmount(state.balance)
+                    binding.topLayout.walletBalanceView.tvWalletBalance.setAmount(state.balance)
                 }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
+                is HomePageState.GotPCashBalance -> {
+                    binding.walletDetailView.tvPCash.setAmount(state.balance)
                 }
             }
-        })
-        viewModel.pCash.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        binding.walletDetailView.tvPCash.setAmount(it)
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
 
-        viewModel.isAccountActive.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        isAccountActive = it
-                        if (isAccountActive){
-                            binding.topLayout.ivUserActivation.setImageResource(R.drawable.ic_diamond)
-
-                        }
-                        else{
-                            binding.topLayout.ivUserActivation.setImageResource(R.drawable.ic_up_arrow)
-
-                            val bottomSheet = UpgradeToPro()
-                            bottomSheet.show(parentFragmentManager, bottomSheet.tag)
-                        }
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
         })
 
 
     }
 
 
-    private fun prepareHomeData(): List<HomeParentModel> {
 
-        val dataList: MutableList<HomeParentModel> = ArrayList()
-
-
-        val services1: MutableList<ModelServiceView> = java.util.ArrayList()
-        services1.add(
-            ModelServiceView(
-                "Add Money",
-                R.drawable.ic_add_money,
-                RechargeEnum.ADD_MONEY
-            )
-        )
-        services1.add(
-            ModelServiceView(
-                "History",
-                R.drawable.ic_history,
-                RechargeEnum.PAYMENT_HISTORY
-            )
-        )
-        services1.add(ModelServiceView("Wallet", R.drawable.ic_wallet, RechargeEnum.WALLET))
-        services1.add(
-            ModelServiceView(
-                "Online Shopping",
-                R.drawable.ic_shopping,
-                RechargeEnum.SHOPPING
-            )
-        )
-
-
-        val servicesCategory1 = ModelServiceCategory("My Pocket", services1)
-        val model1 = HomeParentModel(
-            MyEnums.SERVICES,
-            servicesCategory1
-        )
-
-        val services2: MutableList<ModelServiceView> = java.util.ArrayList()
-        services2.add(ModelServiceView("Prepaid", R.drawable.ic_prepaid, RechargeEnum.PREPAID))
-        services2.add(ModelServiceView("Postpaid", R.drawable.ic_postpaid, RechargeEnum.POSTPAID))
-        services2.add(ModelServiceView("DTH", R.drawable.ic_dth, RechargeEnum.DTH))
-        services2.add(ModelServiceView("Landline", R.drawable.ic_landline, RechargeEnum.LANDLINE))
-        services2.add(
-            ModelServiceView(
-                "Electricity",
-                R.drawable.ic_electricity,
-                RechargeEnum.ELECTRICITY
-            )
-        )
-        services2.add(ModelServiceView("Water", R.drawable.ic_water, RechargeEnum.WATER))
-        services2.add(ModelServiceView("Gas Cylinder Booking", R.drawable.ic_gas, RechargeEnum.GAS))
-        services2.add(
-            ModelServiceView(
-                "Broadband",
-                R.drawable.ic_broadband,
-                RechargeEnum.BROADBAND
-            )
-        )
-        services2.add(ModelServiceView("Loans", R.drawable.ic_loan, RechargeEnum.LOAN))
-        services2.add(ModelServiceView("DMT", R.drawable.ic_dmt, RechargeEnum.DMT))
-        services2.add(
-            ModelServiceView(
-                "Life Insurance",
-                R.drawable.ic_life_insurance,
-                RechargeEnum.LIFE_INSURANCE
-            )
-        )
-        services2.add(ModelServiceView("FASTag", R.drawable.ic_fastag, RechargeEnum.FASTAG))
-
-        val servicesCategory2 = ModelServiceCategory("Featured", services2)
-
-        val model2 = HomeParentModel(MyEnums.SERVICES, servicesCategory2)
-
-
-        val bannerList: MutableList<ModelBanner> = java.util.ArrayList()
-        bannerList.add(ModelBanner("First", R.drawable.banner1, 1))
-        bannerList.add(ModelBanner("First", R.drawable.banner2, 1))
-//        bannerList.add(ModelBanner("First", R.drawable.banner3, 1))
-//        bannerList.add(ModelBanner("First", R.drawable.banner4, 1))
-//        bannerList.add(ModelBanner("First", R.drawable.banner5, 1))
-
-        val model3 = HomeParentModel(MyEnums.OFFERS, offerBannerList = bannerList)
-
-
-        // Working Services
-        val workingServices: MutableList<ModelServiceView> = java.util.ArrayList()
-        workingServices.add(ModelServiceView("Mobile Recharge", R.drawable.ic_prepaid, RechargeEnum.PREPAID))
-        workingServices.add(ModelServiceView("DTH", R.drawable.ic_dth, RechargeEnum.DTH))
-        workingServices.add(  ModelServiceView("Electricity", R.drawable.ic_electricity, RechargeEnum.ELECTRICITY))
-        workingServices.add(ModelServiceView("Send Money", R.drawable.ic_bank, RechargeEnum.SEND_MONEY))
-//        workingServices.add(ModelServiceView("Paytm Wallet Transfer", R.drawable.ic_paytm_logo, RechargeEnum.PAYTM_WALLET_TRANSFER))
-
-        val workingServiceCategory = ModelServiceCategory("Featured", workingServices)
-
-        val workingServiceCategoryModel = HomeParentModel(MyEnums.SERVICES, workingServiceCategory)
-
-
-        // Coming Soon
-        val comingSoonServices: MutableList<ModelServiceView> = java.util.ArrayList()
-        /*comingSoonServices.add(
-            ModelServiceView(
-                "Postpaid",
-                R.drawable.ic_postpaid,
-                RechargeEnum.POSTPAID
-            )
-        )*/
-        comingSoonServices.add(
-            ModelServiceView(
-                "Landline",
-                R.drawable.ic_landline,
-                RechargeEnum.LANDLINE
-            )
-        )
-        /*comingSoonServices.add(
-            ModelServiceView(
-                "Electricity",
-                R.drawable.ic_electricity,
-                RechargeEnum.ELECTRICITY
-            )
-        )*/
-        comingSoonServices.add(ModelServiceView("Water", R.drawable.ic_water, RechargeEnum.WATER))
-        comingSoonServices.add(
-            ModelServiceView(
-                "Gas Cylinder Booking",
-                R.drawable.ic_gas,
-                RechargeEnum.GAS
-            )
-        )
-        comingSoonServices.add(
-            ModelServiceView(
-                "Broadband",
-                R.drawable.ic_broadband,
-                RechargeEnum.BROADBAND
-            )
-        )
-        comingSoonServices.add(ModelServiceView("Loans", R.drawable.ic_loan, RechargeEnum.LOAN))
-        comingSoonServices.add(ModelServiceView("DMT", R.drawable.ic_dmt, RechargeEnum.DMT))
-        comingSoonServices.add(
-            ModelServiceView(
-                "Life Insurance",
-                R.drawable.ic_life_insurance,
-                RechargeEnum.LIFE_INSURANCE
-            )
-        )
-        comingSoonServices.add(
-            ModelServiceView(
-                "FASTag",
-                R.drawable.ic_fastag,
-                RechargeEnum.FASTAG
-            )
-        )
-
-        val comingSoonServicesCategory = ModelServiceCategory("Coming Soon", comingSoonServices)
-
-        val comingSoonServicesCategoryModel =
-            HomeParentModel(MyEnums.SERVICES, comingSoonServicesCategory)
-
-
-
-
-        dataList.add(model1)
-        dataList.add(model3)
-//        dataList.add(model2)
-        dataList.add(workingServiceCategoryModel)
-        dataList.add(comingSoonServicesCategoryModel)
-        return dataList
-    }
 
     override fun onItemClick(viewType: MyEnums, action: RechargeEnum) {
-//        Toast.makeText(context, action, Toast.LENGTH_LONG).show()
         when (viewType) {
             MyEnums.SERVICES -> performActionForServices(action)
         }
@@ -367,6 +171,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
                 startActivity(Intent(requireActivity(),NewRechargeActivity::class.java))
             }
             RechargeEnum.DTH -> findNavController().navigate(R.id.action_home_to_dthActivity)
+            RechargeEnum.GOOGLE_PLAY_RECHARGE -> findNavController().navigate(R.id.action_home_to_googlePlayRecharge)
             RechargeEnum.ELECTRICITY -> findNavController().navigate(R.id.action_home_to_electricityActivity)
             RechargeEnum.SHOPPING -> findNavController().navigate(R.id.action_home_to_shop)
             RechargeEnum.WALLET -> {

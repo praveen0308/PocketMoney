@@ -1,25 +1,23 @@
-package com.sampurna.pocketmoney.mlm.ui.welcome
+package com.sampurna.pocketmoney.authentication
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.sampurna.pocketmoney.R
-import com.sampurna.pocketmoney.databinding.FragmentRegisterBinding
+import com.sampurna.pocketmoney.databinding.ActivitySignUpBinding
 import com.sampurna.pocketmoney.mlm.model.ModelCustomerDetail
 import com.sampurna.pocketmoney.mlm.viewmodel.AccountViewModel
-import com.sampurna.pocketmoney.utils.BaseFragment
+import com.sampurna.pocketmoney.utils.ApplicationToolbar
+import com.sampurna.pocketmoney.utils.BaseActivity
 import com.sampurna.pocketmoney.utils.CustomValidator
 import com.sampurna.pocketmoney.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import dmax.dialog.SpotsDialog
 
-
 @AndroidEntryPoint
-class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterBinding::inflate) {
-
+class SignUp : BaseActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflate),
+    ApplicationToolbar.ApplicationToolbarListener {
 
     private lateinit var dialog: android.app.AlertDialog
 
@@ -28,16 +26,12 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterB
     // ViewModel
     private val accountViewModel: AccountViewModel by viewModels()
 
-    // Variables
-    private var userID: String = ""
-    private var roleID: Int = 0
     private lateinit var customerDetail: ModelCustomerDetail
 
-    private var userId = ""
-    private var password = ""
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding.toolbarSignUp.setApplicationToolbarListener(this)
         initialUiState()
         initiateFieldsValidation()
         binding.btnRegister.setOnClickListener {
@@ -45,47 +39,45 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterB
                 if (etSponsorId.text.toString().length == 10 && tilSponsorId.error == null) {
                     if (validator.validateName(tilFullName, etFullName) &&
                         validator.validateEmail(tilEmail, etEmail) &&
-                            validator.validateMobileNo(tilMobileNumber,etMobileNumber)
-                            && validator.validatePincode(tilPincode,etPincode)){
-                                if(cbTncAgreement.isChecked){
-                                    customerDetail = ModelCustomerDetail(
-                                        SponsorID = etSponsorId.text.toString(),
-                                        SponsorName = etSponsorName.text.toString(),
-                                        FullName = etFullName.text.toString(),
-                                        EmailID = etEmail.text.toString(),
-                                        Mobile = etMobileNumber.text.toString(),
-                                        PinNo = etPincode.text.toString(),
-                                        Address1 = "",
-                                        Address2 = "",
-                                    )
+                        validator.validateMobileNo(tilMobileNumber, etMobileNumber)
+                        && validator.validatePincode(tilPincode, etPincode)
+                    ) {
+                        if (cbTncAgreement.isChecked) {
+                            customerDetail = ModelCustomerDetail(
+                                SponsorID = etSponsorId.text.toString(),
+                                SponsorName = etSponsorName.text.toString(),
+                                FullName = etFullName.text.toString(),
+                                EmailID = etEmail.text.toString(),
+                                Mobile = etMobileNumber.text.toString(),
+                                PinNo = etPincode.text.toString(),
+                                Address1 = "",
+                                Address2 = "",
+                            )
 
-                                    accountViewModel.checkAccountAlreadyExist(etMobileNumber.text.toString())
-                                    
-                                }
-                        else{
-                                cbTncAgreement.requestFocus()
+                            accountViewModel.checkAccountAlreadyExist(etMobileNumber.text.toString())
+
+                        } else {
+                            cbTncAgreement.requestFocus()
                         }
-
-
                     }
-                }
-                else{
+                } else {
                     etSponsorId.requestFocus()
                 }
             }
         }
         binding.btnSignIn.setOnClickListener {
-            findNavController().navigateUp()
+            startActivity(Intent(this, SignIn::class.java))
+            finish()
         }
 
 
 
         binding.etSponsorId.doAfterTextChanged {
-            if(it!!.length==10) accountViewModel.getSponsorName(it.toString())
+            if (it!!.length == 10) accountViewModel.getSponsorName(it.toString())
         }
     }
 
-    private fun initialUiState(){
+    private fun initialUiState() {
         createProgressDialog("Verifying....")
         binding.apply {
             etSponsorId.setText(getString(R.string.default_sponsor_id))
@@ -94,21 +86,27 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterB
 
     }
 
-    private fun initiateFieldsValidation(){
+    private fun initiateFieldsValidation() {
         validator =
-            CustomValidator(requireActivity())
+            CustomValidator(this)
         binding.apply {
-            etFullName.doAfterTextChanged { validator.validateName(tilFullName,etFullName) }
-            etEmail.doAfterTextChanged { validator.validateEmail(tilEmail,etEmail) }
-            etMobileNumber.doAfterTextChanged { validator.validateMobileNo(tilMobileNumber,etMobileNumber) }
-            etPincode.doAfterTextChanged { validator.validatePincode(tilPincode,etPincode) }
+            etFullName.doAfterTextChanged { validator.validateName(tilFullName, etFullName) }
+            etEmail.doAfterTextChanged { validator.validateEmail(tilEmail, etEmail) }
+            etMobileNumber.doAfterTextChanged {
+                validator.validateMobileNo(
+                    tilMobileNumber,
+                    etMobileNumber
+                )
+            }
+            etPincode.doAfterTextChanged { validator.validatePincode(tilPincode, etPincode) }
 
         }
 
     }
+
     override fun subscribeObservers() {
 
-        accountViewModel.sponsorName.observe(viewLifecycleOwner, { _result ->
+        accountViewModel.sponsorName.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -133,15 +131,15 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterB
             }
         })
 
-        accountViewModel.isAccountDuplicate.observe(viewLifecycleOwner, { _result ->
+        accountViewModel.isAccountDuplicate.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
                         if (it) {
-                            if (customerDetail!=null) accountViewModel.registerUser(customerDetail)
+                            if (customerDetail != null) accountViewModel.registerUser(customerDetail)
 
                         } else {
-                            Toast.makeText(context, "User Already Exist", Toast.LENGTH_SHORT).show()
+                            showToast("User Already Exist")
                             displaySubmitting(false)
                         }
                     }
@@ -160,7 +158,7 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterB
         })
 
 
-        accountViewModel.isSuccessfullyRegistered.observe(viewLifecycleOwner, { _result ->
+        accountViewModel.isSuccessfullyRegistered.observe(this, { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -168,11 +166,7 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterB
 //                            accountViewModel.sendRegistrationSms(
 //                                binding.etMobileNumber.text.toString()
 //                            )
-                            Toast.makeText(
-                                context,
-                                "Registered Successfully !!",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            showToast("Registered successfully!!!")
 //                            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
 //                            dismiss()
                         } else {
@@ -196,16 +190,15 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterB
         })
 
 
-
     }
 
-    private fun createProgressDialog(msg:String){
+    private fun createProgressDialog(msg: String) {
         dialog = SpotsDialog.Builder()
-                .setContext(context)
-                .setMessage(msg)
-                .setCancelable(false)
-                .setTheme(R.style.CustomProgressDialog)
-                .build()
+            .setContext(this)
+            .setMessage(msg)
+            .setCancelable(false)
+            .setTheme(R.style.CustomProgressDialog)
+            .build()
 
     }
 
@@ -214,5 +207,14 @@ class RegisterFragment : BaseFragment<FragmentRegisterBinding>(FragmentRegisterB
         if (state) dialog.show() else dialog.dismiss()
 
     }
+
+    override fun onToolbarNavClick() {
+        finish()
+    }
+
+    override fun onMenuClick() {
+
+    }
+
 
 }

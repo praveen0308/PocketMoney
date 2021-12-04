@@ -4,6 +4,7 @@ import android.util.Log
 import com.sampurna.pocketmoney.mlm.model.payoutmodels.*
 import com.sampurna.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.sampurna.pocketmoney.mlm.network.PaymentService
+import com.sampurna.pocketmoney.mlm.ui.payouts.PayoutTransferMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -54,8 +55,33 @@ class PayoutRepository @Inject constructor(val paymentService: PaymentService){
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun initiatePayoutTransfer(
+        beneficiaryId: String,
+        paytmRequestData: PaytmRequestData
+    ): Flow<PayoutTransactionResponse> {
+        return flow {
 
-    suspend fun initiateBankTransfer(beneficiaryId: String,paytmRequestData: PaytmRequestData): Flow<PayoutTransactionResponse> {
+            val response = when (paytmRequestData.transfermode) {
+                PayoutTransferMode.BankTransfer -> paymentService.initiateBankTransfer(
+                    beneficiaryId,
+                    paytmRequestData
+                )
+                PayoutTransferMode.UpiTransfer -> paymentService.initiateUPITransfer(
+                    beneficiaryId,
+                    paytmRequestData
+                )
+                PayoutTransferMode.PaytmWalletTransfer -> paymentService.initiateWalletTransfer(
+                    beneficiaryId,
+                    paytmRequestData
+                )
+                else -> paymentService.initiateBankTransfer(beneficiaryId, paytmRequestData)
+            }
+
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+/*    suspend fun initiateBankTransfer(beneficiaryId: String,paytmRequestData: PaytmRequestData): Flow<PayoutTransactionResponse> {
         return flow {
             val response = paymentService.initiateBankTransfer(beneficiaryId, paytmRequestData)
 
@@ -77,7 +103,7 @@ class PayoutRepository @Inject constructor(val paymentService: PaymentService){
 
             emit(response)
         }.flowOn(Dispatchers.IO)
-    }
+    }*/
 
     suspend fun getBankIFSC(): Flow<List<BankModel>> {
         return flow {

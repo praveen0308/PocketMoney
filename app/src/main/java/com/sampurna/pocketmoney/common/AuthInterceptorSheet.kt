@@ -1,11 +1,12 @@
 package com.sampurna.pocketmoney.common
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import com.sampurna.pocketmoney.authentication.SignIn
+import com.sampurna.pocketmoney.authentication.SignUp
 import com.sampurna.pocketmoney.databinding.FragmentAuthInterceptorSheetBinding
 
-import com.sampurna.pocketmoney.mlm.ui.welcome.LoginFragment
-import com.sampurna.pocketmoney.mlm.ui.welcome.RegisterFragment
 import com.sampurna.pocketmoney.utils.BaseBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,13 +17,12 @@ class AuthInterceptorSheet : BaseBottomSheetDialogFragment<FragmentAuthIntercept
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             btnSignIn.setOnClickListener {
-                val sheet  = LoginFragment()
-                sheet.show(parentFragmentManager,sheet.tag)
+                startActivity(Intent(requireActivity(), SignIn::class.java))
             }
 
             btnSignUp.setOnClickListener {
-                val sheet  = RegisterFragment()
-                sheet.show(parentFragmentManager,sheet.tag)
+                startActivity(Intent(requireActivity(), SignUp::class.java))
+
             }
         }
     }

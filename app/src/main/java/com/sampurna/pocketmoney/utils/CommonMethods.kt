@@ -6,19 +6,18 @@ import android.widget.Adapter
 import android.widget.TextView
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sampurna.pocketmoney.R
-import com.sampurna.pocketmoney.mlm.model.UniversalFilterItemModel
-import com.sampurna.pocketmoney.mlm.ui.TaskResultDialog
-
-import com.sampurna.pocketmoney.utils.myEnums.DateTimeEnum
-import com.sampurna.pocketmoney.utils.myEnums.FilterEnum
-import com.sampurna.pocketmoney.utils.myEnums.PaymentHistoryFilterEnum
 import com.google.android.material.textfield.TextInputLayout
 import com.jmm.brsap.dialog_builder.Animation
 import com.jmm.brsap.dialog_builder.DialogType
 import com.jmm.brsap.dialog_builder.NordanAlertDialog
 import com.jmm.brsap.dialog_builder.NordanAlertDialogListener
-
+import com.sampurna.pocketmoney.R
+import com.sampurna.pocketmoney.mlm.model.UniversalFilterItemModel
+import com.sampurna.pocketmoney.mlm.ui.TaskResultDialog
+import com.sampurna.pocketmoney.utils.connection.NoConnectivityException
+import com.sampurna.pocketmoney.utils.myEnums.DateTimeEnum
+import com.sampurna.pocketmoney.utils.myEnums.FilterEnum
+import com.sampurna.pocketmoney.utils.myEnums.PaymentHistoryFilterEnum
 import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -427,13 +426,18 @@ fun showTaskResultDialog(bundle: Bundle,fragmentManager: FragmentManager){
     sheet.show(fragmentManager,sheet.tag)
 }
 
-fun validateEditText(textInputLayout: TextInputLayout,msg:String=""){
+fun validateEditText(textInputLayout: TextInputLayout, msg: String = "") {
 
-    if (msg.isEmpty()){
+    if (msg.isEmpty()) {
         textInputLayout.error = null
         textInputLayout.requestLayout()
-    }else{
+    } else {
         textInputLayout.error = msg
         textInputLayout.requestLayout()
     }
+}
+
+fun Throwable.identify(): String {
+    return if (this is NoConnectivityException) this.message
+    else "Something went wrong!!!"
 }

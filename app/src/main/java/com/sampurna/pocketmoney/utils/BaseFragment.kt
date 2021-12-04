@@ -17,11 +17,12 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.airbnb.lottie.LottieAnimationView
+import com.google.android.material.snackbar.Snackbar
+import com.jmm.brsap.dialog_builder.NordanLoadingDialog
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.common.AuthInterceptorSheet
 import com.sampurna.pocketmoney.mlm.model.OperationResultModel
 import com.sampurna.pocketmoney.paymentgateway.OperationResultDialog
-import com.jmm.brsap.dialog_builder.NordanLoadingDialog
 
 
 typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
@@ -34,6 +35,7 @@ abstract class BaseFragment<VB : ViewBinding>(
     val binding get() = _binding!!
     lateinit var progressBarHandler: ProgressBarHandler
     private lateinit var loadingDialog: Dialog
+    private lateinit var snackbar: Snackbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,12 +63,15 @@ abstract class BaseFragment<VB : ViewBinding>(
         super.onDestroyView()
         _binding = null
         displayLoading(false)
+        loadingDialog.dismiss()
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        snackbar = Snackbar.make(binding.root, "No internet!!!", Snackbar.LENGTH_INDEFINITE)
         subscribeObservers()
+
 
 
     }
@@ -174,6 +179,7 @@ abstract class BaseFragment<VB : ViewBinding>(
 
 
     fun showLoadingDialog(msg: String="Processing..."){
+        loadingDialog.dismiss()
         loadingDialog = NordanLoadingDialog.createLoadingDialog(requireActivity(),msg)
         loadingDialog.show()
     }

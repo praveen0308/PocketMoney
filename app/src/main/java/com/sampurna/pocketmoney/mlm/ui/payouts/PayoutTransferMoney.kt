@@ -5,15 +5,17 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
-import com.jmm.brsap.dialog_builder.DialogType
 import com.sampurna.pocketmoney.databinding.FragmentPayoutTransferMoneyBinding
 import com.sampurna.pocketmoney.mlm.model.payoutmodels.Beneficiary
+import com.sampurna.pocketmoney.mlm.model.payoutmodels.PayoutTransactionResponse
 import com.sampurna.pocketmoney.mlm.model.serviceModels.PaytmRequestData
+import com.sampurna.pocketmoney.mlm.ui.TaskResultDialog
+import com.sampurna.pocketmoney.mlm.viewmodel.PayoutTransferState
 import com.sampurna.pocketmoney.mlm.viewmodel.PayoutViewModel
 import com.sampurna.pocketmoney.utils.BaseBottomSheetDialogFragment
 import com.sampurna.pocketmoney.utils.LoadingButton
-import com.sampurna.pocketmoney.utils.Status
-import com.sampurna.pocketmoney.utils.showActionDialog
+import com.sampurna.pocketmoney.utils.myEnums.WalletType
+import com.sampurna.pocketmoney.utils.showTaskResultDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,25 +24,25 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
     private val viewModel by activityViewModels<PayoutViewModel>()
 
     private var payoutType = 1
-    private var paymentMode = "IMPS"
+    private var paymentMode = PayoutTransferMode.BankTransfer
 
     private var userID: String = ""
     private var userName: String = ""
     private var roleID: Int = 0
     private var walletBalance: Double = 0.0
-    private var isTransferred = false
     private lateinit var beneficiary: Beneficiary
-
+    private lateinit var payoutTransactionResponse: PayoutTransactionResponse
+    private var amount = ""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED,"Transfer")
+        binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED, "Transfer")
 
         binding.etAmount.doOnTextChanged { text, start, before, count ->
-            if (text.isNullOrEmpty()){
+            if (text.isNullOrEmpty()) {
                 binding.tilAmount.error = null
-                binding.btnSubmit.setState(LoadingButton.LoadingStates.NORMAL,"Transfer")
-            }else{
-                if (text.toString().toDouble()>walletBalance){
+                binding.btnSubmit.setState(LoadingButton.LoadingStates.NORMAL, "Transfer")
+            } else {
+                if (text.toString().toDouble() > walletBalance) {
                     binding.tilAmount.error = "You can only transfer money in your wallet."
                     binding.btnSubmit.setState(LoadingButton.LoadingStates.DISABLED,"Transfer")
                 }else{
@@ -76,52 +78,23 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
         }
 
         binding.btnSubmit.setButtonClick {
-            val amount = binding.etAmount.text.toString()
+            amount = binding.etAmount.text.toString()
 
             beneficiary = viewModel.selectedBeneficiary.value!!
-            isTransferred = true
-            when (payoutType) {
-                // Bank transfer
-                1 -> {
-                    viewModel.initiateBankTransfer(beneficiary.BeneficiaryID.toString(),
-                    PaytmRequestData(
-                        account = beneficiary.Account,
-                        ifsc = beneficiary.IFSCCode,
-                        amount = amount,
-                        email = beneficiary.BeneficiaryName,
-                        transfermode = "IMPS",
-                        userid = userID
 
-                    )
-                    )
-                }
-                // Upi Transfer
-                2 -> {
-                    viewModel.initiateUpiTransfer(beneficiary.BeneficiaryID.toString(),
-                        PaytmRequestData(
-                            account = beneficiary.Account,
-                            amount = amount,
-                            email = beneficiary.BeneficiaryName,
-                            transfermode = "UPI",
-                            userid = userID
+            viewModel.initiatePayoutTransfer(
+                beneficiary.BeneficiaryID.toString(),
+                PaytmRequestData(
+                    account = beneficiary.Account,
+                    ifsc = beneficiary.IFSCCode,
+                    amount = amount,
+                    email = beneficiary.BeneficiaryName,
+                    transfermode = paymentMode,
+                    userid = userID
 
-                        )
-                    )
-                }
-                // Paytm transfer
-                3 -> {
-                    viewModel.initiatePaytmTransfer(beneficiary.BeneficiaryID.toString(),
-                        PaytmRequestData(
-                            account = beneficiary.Account,
-                            amount = amount,
-                            email = beneficiary.BeneficiaryName,
-                            transfermode = "PAYTMWALLET",
-                            userid = userID
-                        )
-                    )
-                }
+                )
+            )
 
-            }
         }
     }
 
@@ -140,32 +113,12 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             }
         })
 
-        viewModel.walletBalance.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        walletBalance=it
-                        binding.tvWalletBalance.text = "Wallet Balance : $it"
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-        viewModel.payoutType.observe(viewLifecycleOwner,{
+        viewModel.payoutType.observe(viewLifecycleOwner, {
             payoutType = it
-            when(payoutType){
+            when (payoutType) {
                 // Bank transfer
-                1->{
-                    paymentMode = "IMPS"
+                1 -> {
+                    paymentMode = PayoutTransferMode.BankTransfer
                     binding.apply {
                         tvSheetTitle.text = "Bank Transfer"
                         tilAccountNumber.hint = "Bank Account No."
@@ -173,8 +126,8 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
                     }
                 }
                 // Upi Transfer
-                2->{
-                    paymentMode = "UPI"
+                2 -> {
+                    paymentMode = PayoutTransferMode.UpiTransfer
                     binding.apply {
                         tvSheetTitle.text = "UPI Transfer"
                         tilAccountNumber.hint = "UPI ID"
@@ -182,8 +135,8 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
                     }
                 }
                 // Paytm transfer
-                3->{
-                    paymentMode = "PAYTMWALLET"
+                3 -> {
+                    paymentMode = PayoutTransferMode.PaytmWalletTransfer
                     binding.apply {
                         tvSheetTitle.text = "Wallet Transfer"
                         tilAccountNumber.hint = "Paytm UPI ID"
@@ -194,8 +147,7 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             }
         })
 
-        viewModel.selectedBeneficiary.observe(viewLifecycleOwner,{beneficiary->
-
+        viewModel.selectedBeneficiary.observe(viewLifecycleOwner, { beneficiary ->
             binding.apply {
                 etAccountNumber.setText(beneficiary.Account)
                 etCustomerName.setText(beneficiary.BeneficiaryName)
@@ -208,67 +160,117 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
             }
         })
 
-        viewModel.payoutTransferResponse.observe(viewLifecycleOwner, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (isTransferred) {
-                            dismiss()
-//                            binding.btnSubmit.setState(LoadingButton.LoadingStates.SUCCESS,msg = "Transaction successful!")
-                            viewModel.sendSmsOfTransaction(
-                                userID, userName, binding.etAmount.text.toString(),
-                                beneficiary.BeneficiaryName!!,
-                                beneficiary.Account!!,
-                                paymentMode
+        viewModel.payoutTransferMoneyPageState.observe(viewLifecycleOwner, { state ->
 
-                            )
-
-
-                        }
-
-                    }
-
+            when (state) {
+                is PayoutTransferState.Idle -> {
+                    binding.btnSubmit.setState(
+                        LoadingButton.LoadingStates.NORMAL,
+                        msg = "Continue"
+                    )
                 }
-                Status.LOADING -> {
-
-                    binding.btnSubmit.setState(LoadingButton.LoadingStates.LOADING,msg = "Processing...")
+                is PayoutTransferState.Loading -> {
+                    binding.btnSubmit.setState(
+                        LoadingButton.LoadingStates.LOADING,
+                        msg = "Processing..."
+                    )
                 }
-                Status.ERROR -> {
-                    _result.message?.let {
-                        displayError(it)
-                        binding.btnSubmit.setState(LoadingButton.LoadingStates.RETRY, "Retry")
-                    }
+                is PayoutTransferState.Error -> {
+                    showToast(state.message)
+                }
+                is PayoutTransferState.GotWalletBalance -> {
+                    walletBalance = state.balance
+                    binding.tvWalletBalance.text = "Wallet Balance : $walletBalance"
+                    viewModel.payoutTransferMoneyPageState.postValue(PayoutTransferState.Idle)
+                }
+                is PayoutTransferState.PayoutTransactionSuccessful -> {
+                    payoutTransactionResponse = state.response
+                    viewModel.sendSmsOfTransaction(
+                        userID, userName, binding.etAmount.text.toString(),
+                        beneficiary.BeneficiaryName!!,
+                        beneficiary.Account!!,
+                        paymentMode
+                    )
+                }
+
+                is PayoutTransferState.PayoutTransactionFailed -> {
+                    payoutTransactionResponse = state.response
+                    val bundle = Bundle()
+                    bundle.putString(TaskResultDialog.KEY_HEADING, "Transaction failed!")
+                    bundle.putString(
+                        TaskResultDialog.KEY_SUBTITLE,
+                        payoutTransactionResponse.statusMessage
+                    )
+                    bundle.putInt(TaskResultDialog.KEY_STATUS, TaskResultDialog.SUCCESS)
+                    bundle.putString(
+                        TaskResultDialog.KEY_REF_ID,
+                        payoutTransactionResponse.result!!.paytmOrderId
+                    )
+                    bundle.putString(TaskResultDialog.KEY_ACCOUNT_NUMBER, beneficiary.Account)
+                    bundle.putString(TaskResultDialog.KEY_AMOUNT, amount)
+                    bundle.putString(
+                        TaskResultDialog.KEY_PAYMENT_STATUS,
+                        payoutTransactionResponse.status
+                    )
+                    bundle.putInt(TaskResultDialog.KEY_WALLET_TYPE_ID, WalletType.Wallet.id)
+                    showTaskResultDialog(bundle, requireActivity().supportFragmentManager)
+                    dismiss()
+                }
+                is PayoutTransferState.SMSGenerationFailed -> {
+                    val bundle = Bundle()
+                    bundle.putString(TaskResultDialog.KEY_HEADING, "Transaction successful!")
+                    bundle.putString(
+                        TaskResultDialog.KEY_SUBTITLE,
+                        "₹${binding.etAmount.text.toString()} transferred to ${viewModel.selectedBeneficiary.value!!.BeneficiaryName} successfully!!"
+                    )
+                    bundle.putInt(TaskResultDialog.KEY_STATUS, TaskResultDialog.SUCCESS)
+                    bundle.putString(
+                        TaskResultDialog.KEY_REF_ID,
+                        payoutTransactionResponse.result!!.paytmOrderId
+                    )
+                    bundle.putString(TaskResultDialog.KEY_ACCOUNT_NUMBER, beneficiary.Account)
+                    bundle.putString(TaskResultDialog.KEY_AMOUNT, amount)
+                    bundle.putString(
+                        TaskResultDialog.KEY_PAYMENT_STATUS,
+                        payoutTransactionResponse.status
+                    )
+                    bundle.putInt(TaskResultDialog.KEY_WALLET_TYPE_ID, WalletType.Wallet.id)
+                    showTaskResultDialog(bundle, requireActivity().supportFragmentManager)
+
+                    dismiss()
+                }
+                is PayoutTransferState.SentSMS -> {
+
+                    val bundle = Bundle()
+                    bundle.putString(TaskResultDialog.KEY_HEADING, "Transaction successful!")
+                    bundle.putString(
+                        TaskResultDialog.KEY_SUBTITLE,
+                        "₹${binding.etAmount.text.toString()} transferred to ${viewModel.selectedBeneficiary.value!!.BeneficiaryName} successfully!!"
+                    )
+                    bundle.putInt(TaskResultDialog.KEY_STATUS, TaskResultDialog.SUCCESS)
+                    bundle.putString(
+                        TaskResultDialog.KEY_REF_ID,
+                        payoutTransactionResponse.result!!.paytmOrderId
+                    )
+                    bundle.putString(TaskResultDialog.KEY_ACCOUNT_NUMBER, beneficiary.Account)
+                    bundle.putString(TaskResultDialog.KEY_AMOUNT, amount)
+                    bundle.putString(
+                        TaskResultDialog.KEY_PAYMENT_STATUS,
+                        payoutTransactionResponse.status
+                    )
+                    bundle.putInt(TaskResultDialog.KEY_WALLET_TYPE_ID, WalletType.Wallet.id)
+                    showTaskResultDialog(bundle, requireActivity().supportFragmentManager)
+
+                    dismiss()
+
                 }
             }
         })
-
-        viewModel.sendSmsResponse.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        showActionDialog(
-                            requireActivity(), DialogType.SUCCESS,
-                            "Transaction successful!",
-                            "₹${binding.etAmount.text.toString()} transferred to ${viewModel.selectedBeneficiary.value!!.BeneficiaryName} successffully!!",
-                            "Continue"
-                        ) {
-                            dismiss()
-                        }
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
-
     }
 
+    override fun onDestroyView() {
+        viewModel.payoutTransferMoneyPageState.postValue(PayoutTransferState.Idle)
+        super.onDestroyView()
+
+    }
 }

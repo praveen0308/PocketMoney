@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import com.paytm.pgsdk.PaytmOrder
+import com.paytm.pgsdk.PaytmPaymentTransactionCallback
+import com.paytm.pgsdk.TransactionManager
 import com.sampurna.pocketmoney.databinding.ActivityAddMoneyToWalletBinding
 import com.sampurna.pocketmoney.mlm.model.serviceModels.PMWalletModel
 import com.sampurna.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
@@ -11,9 +14,6 @@ import com.sampurna.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.sampurna.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
 import com.sampurna.pocketmoney.mlm.viewmodel.AddMoneyToWalletViewModel
 import com.sampurna.pocketmoney.utils.*
-import com.paytm.pgsdk.PaytmOrder
-import com.paytm.pgsdk.PaytmPaymentTransactionCallback
-import com.paytm.pgsdk.TransactionManager
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -147,7 +147,7 @@ class AddMoneyToWallet : BaseActivity<ActivityAddMoneyToWalletBinding>(ActivityA
                     _result._data?.let {
                         if (paytmResponseModel.STATUS == "SUCCESS"){
                             viewModel.actionOnWalletDetail(requestId, "Updated as online payment success","Approve",paytmResponseModel.PAYMENTMODE.toString())
-                            viewModel.addCompanyTransactionResponse(userId,userId,paytmResponseModel.TXNAMOUNT!!.toDouble(),1,1,it,"0")
+//                            viewModel.addCompanyTransactionResponse(userId,userId,paytmResponseModel.TXNAMOUNT!!.toDouble(),1,1,it,"0")
                         }else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE"){
                             viewModel.actionOnWalletDetail(requestId, "Updated as online payment failed","Rejected",paytmResponseModel.PAYMENTMODE.toString())
                         }

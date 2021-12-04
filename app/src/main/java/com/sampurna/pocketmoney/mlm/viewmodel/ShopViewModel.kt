@@ -8,6 +8,7 @@ import com.sampurna.pocketmoney.shopping.repository.CartRepository
 import com.sampurna.pocketmoney.shopping.repository.ProductRepository
 import com.sampurna.pocketmoney.shopping.viewmodel.ShoppingHomeEvent
 import com.sampurna.pocketmoney.utils.Resource
+import com.sampurna.pocketmoney.utils.connection.NoConnectivityException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -39,9 +40,14 @@ class ShopViewModel @Inject constructor(
                     _productList.postValue(Resource.Loading(true))
                 }
                 .catch { exception ->
-                    exception.message?.let {
-                        _productList.postValue(Resource.Error(it))
+                    if (exception is NoConnectivityException) {
+                        _productList.postValue(Resource.Error("No internet"))
+                    } else {
+                        exception.message?.let {
+                            _productList.postValue(Resource.Error(it))
+                        }
                     }
+
                 }
                 .collect { response->
                     _productList.postValue(Resource.Success(response))

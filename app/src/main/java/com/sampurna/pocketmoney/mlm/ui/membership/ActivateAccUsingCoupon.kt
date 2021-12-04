@@ -5,9 +5,9 @@ import android.view.View
 import androidx.fragment.app.activityViewModels
 import com.sampurna.pocketmoney.databinding.FragmentActivateAccUsingCouponBinding
 import com.sampurna.pocketmoney.mlm.viewmodel.ActivateAccountViewModel
+import com.sampurna.pocketmoney.mlm.viewmodel.ActivateUsingCouponPageState
 import com.sampurna.pocketmoney.utils.BaseBottomSheetDialogFragment
 import com.sampurna.pocketmoney.utils.LoadingButton.LoadingStates
-import com.sampurna.pocketmoney.utils.Status
 
 class ActivateAccUsingCoupon : BaseBottomSheetDialogFragment<FragmentActivateAccUsingCouponBinding>(FragmentActivateAccUsingCouponBinding::inflate) {
 
@@ -41,48 +41,31 @@ class ActivateAccUsingCoupon : BaseBottomSheetDialogFragment<FragmentActivateAcc
     }
 
     override fun subscribeObservers() {
-        viewModel.userId.observe(this,{
+        viewModel.userId.observe(this, {
             userId = it
         })
+        viewModel.couponPageState.observe(viewLifecycleOwner, { state ->
+            when (state) {
+                is ActivateUsingCouponPageState.Idle -> {
 
-        viewModel.isValid.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        viewModel.activateAccountUsingCoupon(userId,pinNo, pinSerial)
-                    }
                 }
-                Status.LOADING -> {
-                    binding.btnAction.setState(LoadingStates.LOADING,msg = "Validating...")
+                is ActivateUsingCouponPageState.Loading -> {
+                    binding.btnAction.setState(LoadingStates.LOADING, msg = "Processing...")
                 }
-                Status.ERROR -> {
-                    binding.btnAction.setState(LoadingStates.RETRY,"Retry")
-                    _result.message?.let {
-                        displayError(it)
-                    }
+                is ActivateUsingCouponPageState.Valid -> {
+                    dismiss()
+                }
+                is ActivateUsingCouponPageState.Invalid -> {
+                    binding.btnAction.setState(LoadingStates.RETRY, "Retry")
+                }
+                is ActivateUsingCouponPageState.ValidatingCustomerRegistration -> {
+                    binding.btnAction.setState(LoadingStates.LOADING, msg = "Validating...")
                 }
             }
+
+
         })
 
-        viewModel.isActivationSuccessful.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        showToast("Account activated successfully !!!")
-                        requireActivity().finish()
-                    }
-                }
-                Status.LOADING -> {
-                    binding.btnAction.setState(LoadingStates.LOADING,msg = "Activating...")
-                }
-                Status.ERROR -> {
-                    binding.btnAction.setState(LoadingStates.RETRY,"Retry")
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        })
 
     }
 

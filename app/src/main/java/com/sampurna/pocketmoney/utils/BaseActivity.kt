@@ -6,8 +6,10 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -15,29 +17,46 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.airbnb.lottie.LottieAnimationView
+import com.google.android.material.snackbar.Snackbar
+import com.jmm.brsap.dialog_builder.NordanLoadingDialog
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.common.AuthInterceptorSheet
-import android.view.WindowManager
-
-import android.util.DisplayMetrics
 import com.sampurna.pocketmoney.mlm.model.OperationResultModel
 import com.sampurna.pocketmoney.paymentgateway.OperationResultDialog
-import com.jmm.brsap.dialog_builder.NordanLoadingDialog
 
 
 abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (LayoutInflater) -> B) : AppCompatActivity() {
     lateinit var binding: B
     private lateinit var progressBarHandler: ProgressBarHandler
     private lateinit var loadingDialog: Dialog
-
+    private lateinit var connectionLiveData: ConnectionLiveData
+    private lateinit var snackbar: Snackbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadingDialog = NordanLoadingDialog.createLoadingDialog(this,"Loading")
+        loadingDialog = NordanLoadingDialog.createLoadingDialog(this, "Loading")
         binding = bindingFactory(layoutInflater)
         setContentView(binding.root)
+        connectionLiveData = ConnectionLiveData(this)
+        snackbar = Snackbar.make(binding.root, "No internet!!!", Snackbar.LENGTH_INDEFINITE)
+        connectionLiveData.observe(this, {
+            when (it) {
+                true -> {
+                    snackbar.setText("Back Online")
+                    snackbar.duration = 2000
+                }
+                false -> snackbar.show()
+            }
+        })
         subscribeObservers()
         progressBarHandler =
             ProgressBarHandler(this)
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        loadingDialog.dismiss()
+
 
     }
 
@@ -147,6 +166,7 @@ abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (Layout
 
 
     fun showLoadingDialog(msg: String="Processing..."){
+        loadingDialog.dismiss()
         loadingDialog = NordanLoadingDialog.createLoadingDialog(this,msg)
         loadingDialog.show()
     }

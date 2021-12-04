@@ -123,6 +123,35 @@ class UserPreferencesRepository @Inject constructor(
             pref
         }
 
+    val isBlocked: Flow<Boolean> = context.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            // No type safety.
+            val pref = preferences[IS_BLOCKED] ?: false
+            pref
+        }
+
+    val isActive: Flow<Boolean> = context.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            // No type safety.
+            val pref = preferences[IS_ACTIVE] ?: false
+            pref
+        }
+
+
     suspend fun updateWelcomeStatus(status: Int) {
         context.dataStore.edit { preference ->
             preference[WELCOME_STATUS] = status
@@ -165,6 +194,18 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun updateStatus(status: Boolean) {
+        context.dataStore.edit { preference ->
+            preference[IS_BLOCKED] = status
+        }
+    }
+
+    suspend fun updateUserType(isActive: Boolean) {
+        context.dataStore.edit { preference ->
+            preference[IS_ACTIVE] = isActive
+        }
+    }
+
     suspend fun clearUserInfo() {
         updateLoginId(0)
         updateUserId("")
@@ -172,6 +213,9 @@ class UserPreferencesRepository @Inject constructor(
         updateUserRoleId(0)
         updateUserFirstName("")
         updateUserLastName("")
+        updateWelcomeStatus(1)
+        updateStatus(false)
+        updateUserType(false)
         updateWelcomeStatus(1)
         delay(1000)
     }
@@ -206,6 +250,12 @@ class UserPreferencesRepository @Inject constructor(
 
         val USER_FIRST_NAME = stringPreferencesKey("user_first_name")
         val USER_LAST_NAME = stringPreferencesKey("user_last_name")
+
+
+        val IS_BLOCKED = booleanPreferencesKey("status")
+        val IS_ACTIVE = booleanPreferencesKey("active")
+
+
     }
 }
 

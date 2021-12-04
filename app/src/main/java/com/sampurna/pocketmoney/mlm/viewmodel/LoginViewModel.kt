@@ -1,10 +1,13 @@
 package com.sampurna.pocketmoney.mlm.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.sampurna.pocketmoney.mlm.model.UserModel
 import com.sampurna.pocketmoney.mlm.repository.AccountRepository
 import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository
-import com.sampurna.pocketmoney.utils.Resource
+import com.sampurna.pocketmoney.utils.identify
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -37,50 +40,76 @@ class LoginViewModel @Inject constructor(
         userPreferencesRepository.updateUserId(userId)
     }
 
-    fun updateUserName(userName:String)=viewModelScope.launch {
+    fun updateUserName(userName: String) = viewModelScope.launch {
         userPreferencesRepository.updateUserName(userName)
     }
 
-    fun updateUserRoleID(roleId:Int)=viewModelScope.launch {
+    fun updateUserRoleID(roleId: Int) = viewModelScope.launch {
         userPreferencesRepository.updateUserRoleId(roleId)
     }
 
-    fun updateFirstName(firstName:String)=viewModelScope.launch {
-        userPreferencesRepository.updateUserFirstName(firstName)
+    fun updateUserStatus(status: Boolean) = viewModelScope.launch {
+        userPreferencesRepository.updateStatus(status)
     }
 
-    fun updateLastName(lastName:String)=viewModelScope.launch {
-        userPreferencesRepository.updateUserLastName(lastName)
+    fun updateUserType(isActive: Boolean) = viewModelScope.launch {
+        userPreferencesRepository.updateUserType(isActive)
     }
 
-    private val _userModel = MutableLiveData<Resource<UserModel>>()
-    val userModel: LiveData<Resource<UserModel>> = _userModel
 
-    fun doLogin(userId:String,password: String) {
+    val pageState: MutableLiveData<LoginPageState> = MutableLiveData(LoginPageState.Idle)
+
+    fun doLogin(userId: String, password: String) {
 
         viewModelScope.launch {
 
             accountRepository
-                    .doLogin(userId,password)
-                    .onStart {
-                        _userModel.postValue(Resource.Loading(true))
-                    }
+                .doLogin(userId, password)
+                .onStart {
+                    pageState.postValue(LoginPageState.Loading(true))
+                }
                     .catch { exception ->
                         exception.message?.let {
-                            _userModel.postValue(Resource.Error("Something went wrong !!"))
-                            Timber.e(exception)
+                            pageState.postValue(LoginPageState.Error(exception.identify()))
+                            Timber.e("Error caused by >>> doLogin")
+                            Timber.e("Exception >>> ${exception.message}")
                         }
                     }
                     .collect {
                         if (it != null) {
-                            _userModel.postValue(Resource.Success(it))
+                            pageState.postValue(LoginPageState.LoginSuccessful(it))
                         } else {
-                            _userModel.postValue(Resource.Error("Invalid username or password!!!"))
+                            pageState.postValue(LoginPageState.Error("Invalid username or password!!!"))
+
                         }
                     }
         }
     }
 
+    fun checkIsAccountActive(id: String) {
+        viewModelScope.launch {
+            accountRepository
+                .isUserAccountActive(id)
+                .onStart {
+                    pageState.postValue(LoginPageState.Loading(true))
+                }
+                .catch { exception ->
+                    pageState.postValue(LoginPageState.Error(exception.identify()))
+                    Timber.e("Error caused by >>> checkIsAccountActive")
+                    Timber.e("Exception >>> ${exception.message}")
+                }
+                .collect { response ->
+                    pageState.postValue(LoginPageState.GotAccountStatus(response))
+                }
+        }
+    }
 
+}
 
+sealed class LoginPageState {
+    object Idle : LoginPageState()
+    data class Loading(val isLoading: Boolean) : LoginPageState()
+    data class Error(val msg: String) : LoginPageState()
+    data class LoginSuccessful(val userModel: UserModel) : LoginPageState()
+    data class GotAccountStatus(val status: Boolean) : LoginPageState()
 }

@@ -42,7 +42,7 @@
             app:layout_constraintStart_toEndOf="@+id/progress_status"
             app:layout_constraintTop_toTopOf="@+id/progress_status"
             tools:visibility="visible"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="@dimen/dimen_18sp"/>
 
         <ProgressBar
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:translationZ="@dimen/dimen_10dp"
             android:visibility="gone"
-            android:indeterminateTint="@color/colorBlack"
+            android:indeterminateTint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tv_status"
             app:layout_constraintHorizontal_bias="0.5"

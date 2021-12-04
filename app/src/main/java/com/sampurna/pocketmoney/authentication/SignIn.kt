@@ -1,62 +1,56 @@
-package com.sampurna.pocketmoney.mlm.ui.welcome
+package com.sampurna.pocketmoney.authentication
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
+import androidx.activity.viewModels
 import com.sampurna.pocketmoney.R
-import com.sampurna.pocketmoney.databinding.FragmentLoginBinding
-import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository.Companion.LOGIN_DONE
+import com.sampurna.pocketmoney.databinding.ActivitySignInBinding
+import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.sampurna.pocketmoney.mlm.ui.dashboard.MainDashboard
 import com.sampurna.pocketmoney.mlm.ui.forgotpassword.ForgotPassword
 import com.sampurna.pocketmoney.mlm.viewmodel.LoginPageState
 import com.sampurna.pocketmoney.mlm.viewmodel.LoginViewModel
-import com.sampurna.pocketmoney.utils.BaseFragment
+import com.sampurna.pocketmoney.utils.ApplicationToolbar
+import com.sampurna.pocketmoney.utils.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import dmax.dialog.SpotsDialog
 
 @AndroidEntryPoint
-class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
+class SignIn : BaseActivity<ActivitySignInBinding>(ActivitySignInBinding::inflate),
+    ApplicationToolbar.ApplicationToolbarListener {
 
-
-    private val viewModel: LoginViewModel by viewModels()
+    private val viewModel by viewModels<LoginViewModel>()
 
     private lateinit var dialog: android.app.AlertDialog
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         createProgressDialog()
+        binding.toolbarSignIn.setApplicationToolbarListener(this)
         binding.btnForgotPassword.setOnClickListener {
-            startActivity(Intent(requireActivity(),ForgotPassword::class.java))
+            startActivity(Intent(this, ForgotPassword::class.java))
         }
 
         binding.btnRegister.setOnClickListener {
-            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
-            /* val sheet = RegisterFragment()
-             sheet.show(parentFragmentManager,sheet.tag)
-             dismiss()*/
+            startActivity(Intent(this, SignUp::class.java))
+            finish()
         }
 
-        binding.btnSignIn.setOnClickListener{
+        binding.btnSignIn.setOnClickListener {
             if (!binding.etUsername.text.isNullOrBlank()) {
-                if (!binding.etPassword.text.isNullOrBlank()){
-                viewModel.doLogin(
-                    binding.etUsername.text.toString().trim(),
-                    binding.etPassword.text.toString().trim()
-                )}
-                else Toast.makeText(context, "Password cannot be empty !!", Toast.LENGTH_SHORT).show()
-            } else Toast.makeText(context, "Enter valid username..", Toast.LENGTH_SHORT).show()
+                if (!binding.etPassword.text.isNullOrBlank()) {
+                    viewModel.doLogin(
+                        binding.etUsername.text.toString().trim(),
+                        binding.etPassword.text.toString().trim()
+                    )
+                } else showToast("Password cannot be empty !!")
+            } else showToast("Enter valid username...")
 
         }
     }
 
-
     override fun subscribeObservers() {
-        viewModel.pageState.observe(viewLifecycleOwner, { state ->
+        viewModel.pageState.observe(this, { state ->
             dialog.hide()
             when (state) {
 
@@ -68,7 +62,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
                 }
                 is LoginPageState.LoginSuccessful -> {
                     try {
-                        viewModel.updateWelcomeStatus(LOGIN_DONE)
+                        viewModel.updateWelcomeStatus(UserPreferencesRepository.LOGIN_DONE)
                         viewModel.updateLoginId(state.userModel.LoginID!!)
                         viewModel.updateUserId(state.userModel.UserID!!)
                         viewModel.updateUserName(state.userModel.UserName!!)
@@ -87,10 +81,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
                 is LoginPageState.GotAccountStatus -> {
                     viewModel.updateUserType(state.status)
 
-                    val intent = Intent(requireActivity(), MainDashboard::class.java)
+                    val intent = Intent(this, MainDashboard::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
-                    requireActivity().finish()
+                    finish()
                 }
                 is LoginPageState.Error -> {
                     showToast(state.msg)
@@ -101,15 +95,22 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
     }
 
 
-    private fun createProgressDialog(){
+    private fun createProgressDialog() {
         dialog = SpotsDialog.Builder()
-                .setContext(context)
-                .setMessage("Logging In...")
-                .setCancelable(false)
-                .setTheme(R.style.CustomProgressDialog)
-                .build()
+            .setContext(this)
+            .setMessage("Logging In...")
+            .setCancelable(false)
+            .setTheme(R.style.CustomProgressDialog)
+            .build()
     }
 
+    override fun onToolbarNavClick() {
+        finish()
+    }
+
+    override fun onMenuClick() {
+
+    }
 
 
 }

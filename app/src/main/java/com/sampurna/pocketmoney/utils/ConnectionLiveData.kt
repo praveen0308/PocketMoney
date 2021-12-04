@@ -9,7 +9,6 @@ import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import android.util.Log
 import androidx.lifecycle.LiveData
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,10 +61,10 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
             if (hasInternetCapability == true) {
                 // check if this network actually has internet
                 CoroutineScope(Dispatchers.IO).launch {
-//                    val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
-                    val hasInternet =true
-                    if(hasInternet){
-                        withContext(Dispatchers.Main){
+                    val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
+
+                    if (hasInternet) {
+                        withContext(Dispatchers.Main) {
                             Log.d(TAG, "onAvailable: adding network. ${network}")
                             validNetworks.add(network)
                             checkValidNetworks()

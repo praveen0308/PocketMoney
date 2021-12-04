@@ -42,6 +42,9 @@ class PayoutViewModel @Inject constructor(
     val selectedBank = MutableLiveData("")
     val selectedBankIfsc = MutableLiveData("")
 
+    val payoutTransferMoneyPageState =
+        MutableLiveData<PayoutTransferState>(PayoutTransferState.Idle)
+
 
     fun getWalletBalance(userId: String, roleId: Int) {
 
@@ -50,22 +53,31 @@ class PayoutViewModel @Inject constructor(
             walletRepository
                 .getWalletBalance(userId, roleId, 1)
                 .onStart {
-                    _walletBalance.postValue(Resource.Loading(true))
+                    payoutTransferMoneyPageState.postValue(PayoutTransferState.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _walletBalance.postValue(Resource.Error(it))
+                        payoutTransferMoneyPageState.postValue(
+                            PayoutTransferState.Error(
+                                "Something went wrong!!!",
+                                it
+                            )
+                        )
+
+                        Timber.d("Error caused by >>>> getWalletBalance")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { _balance ->
-                    _walletBalance.postValue(Resource.Success(_balance))
+                    payoutTransferMoneyPageState.postValue(PayoutTransferState.Idle)
+                    payoutTransferMoneyPageState.postValue(
+                        PayoutTransferState.GotWalletBalance(_balance)
+                    )
                 }
         }
 
     }
 
-    private val _walletBalance = MutableLiveData<Resource<Double>>()
-    val walletBalance: LiveData<Resource<Double>> = _walletBalance
 
     private val _addPayoutCustomer = MutableLiveData<Resource<Int>>()
     val addPayoutCustomer: LiveData<Resource<Int>> = _addPayoutCustomer
@@ -208,73 +220,45 @@ class PayoutViewModel @Inject constructor(
         }
     }
 
-    private val _payoutTransferResponse = MutableLiveData<Resource<PayoutTransactionResponse>>()
-    val payoutTransferResponse: LiveData<Resource<PayoutTransactionResponse>> =
-        _payoutTransferResponse
 
-    fun initiateBankTransfer(beneficiaryID: String, paytmRequestData: PaytmRequestData) {
-
+    fun initiatePayoutTransfer(beneficiaryId: String, paytmRequestData: PaytmRequestData) {
         viewModelScope.launch {
-
             payoutRepository
-                .initiateBankTransfer(beneficiaryID, paytmRequestData)
+                .initiatePayoutTransfer(beneficiaryId, paytmRequestData)
                 .onStart {
-                    _payoutTransferResponse.postValue(Resource.Loading(true))
+                    payoutTransferMoneyPageState.postValue(PayoutTransferState.Loading(true))
+
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _payoutTransferResponse.postValue(Resource.Error(it))
+                        payoutTransferMoneyPageState.postValue(
+                            PayoutTransferState.Error(
+                                "Something went wrong !!!",
+                                it
+                            )
+                        )
+                        Timber.d("Error caused by >>>> initiatePayoutTransfer")
+                        Timber.e("Exception : $it")
                     }
                 }
                 .collect { response ->
-                    _payoutTransferResponse.postValue(Resource.Success(response))
-                }
-        }
-    }
-
-    fun initiateUpiTransfer(beneficiaryID: String, paytmRequestData: PaytmRequestData) {
-
-        viewModelScope.launch {
-
-            payoutRepository
-                .initiateUpiTransfer(beneficiaryID, paytmRequestData)
-                .onStart {
-                    _payoutTransferResponse.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _payoutTransferResponse.postValue(Resource.Error(it))
+                    if (response.status == "SUCCESS") {
+                        payoutTransferMoneyPageState.postValue(
+                            PayoutTransferState.PayoutTransactionSuccessful(
+                                response
+                            )
+                        )
+                    } else {
+                        payoutTransferMoneyPageState.postValue(
+                            PayoutTransferState.PayoutTransactionFailed(
+                                response
+                            )
+                        )
                     }
-                }
-                .collect { response ->
-                    _payoutTransferResponse.postValue(Resource.Success(response))
+
                 }
         }
     }
-
-    fun initiatePaytmTransfer(beneficiaryID: String, paytmRequestData: PaytmRequestData) {
-
-        viewModelScope.launch {
-
-            payoutRepository
-                .initiateWalletTransfer(beneficiaryID, paytmRequestData)
-                .onStart {
-                    _payoutTransferResponse.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _payoutTransferResponse.postValue(Resource.Error(it))
-                    }
-                }
-                .collect { response ->
-                    _payoutTransferResponse.postValue(Resource.Success(response))
-                }
-        }
-    }
-
-
-    private val _sendSmsResponse = MutableLiveData<Resource<SMSResponseModel>>()
-    val sendSmsResponse: LiveData<Resource<SMSResponseModel>> = _sendSmsResponse
 
     fun sendSmsOfTransaction(
         mobileNo: String,
@@ -288,20 +272,45 @@ class PayoutViewModel @Inject constructor(
             mailMessagingRepository
                 .sendPayoutSMS(mobileNo, senderName, amount, accountNumber, beneficiary, mode)
                 .onStart {
-                    _sendSmsResponse.postValue(Resource.Loading(true))
+                    payoutTransferMoneyPageState.postValue(PayoutTransferState.Loading(true))
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _sendSmsResponse.postValue(Resource.Error("Something went wrong !!!"))
-                        Timber.d("Error caused by >>>> sendSmsOfTransaction")
+                        payoutTransferMoneyPageState.postValue(
+                            PayoutTransferState.SMSGenerationFailed(
+                                it
+                            )
+                        )
+                        Timber.d("Error caused by >>> sendSmsOfTransaction")
                         Timber.e("Exception : $it")
                     }
                 }
                 .collect {
-                    _sendSmsResponse.postValue(Resource.Success(it))
+                    payoutTransferMoneyPageState.postValue(PayoutTransferState.SentSMS(it))
                 }
         }
     }
 
+
+}
+
+
+sealed class PayoutTransferState {
+    object Idle : PayoutTransferState()
+    data class Loading(val isLoading: Boolean) : PayoutTransferState()
+    data class Error(val message: String, val exception: String) : PayoutTransferState()
+    data class FetchedPayoutCustomer(val customer: PayoutCustomer) : PayoutTransferState()
+    data class AddedPayoutCustomer(val response: Int) : PayoutTransferState()
+    data class PayoutCustomerDetail(val payoutCustomer: PayoutCustomer) : PayoutTransferState()
+    data class GotWalletBalance(val balance: Double) : PayoutTransferState()
+    data class BankList(val banks: List<BankModel>) : PayoutTransferState()
+    data class BeneficiaryAdded(val response: Int) : PayoutTransferState()
+    data class SentSMS(val response: SMSResponseModel) : PayoutTransferState()
+    data class SMSGenerationFailed(val response: String) : PayoutTransferState()
+    data class PayoutTransactionSuccessful(val response: PayoutTransactionResponse) :
+        PayoutTransferState()
+
+    data class PayoutTransactionFailed(val response: PayoutTransactionResponse) :
+        PayoutTransferState()
 
 }

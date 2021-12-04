@@ -6,7 +6,9 @@ import com.sampurna.pocketmoney.common.SMSService
 import com.sampurna.pocketmoney.common.SmsServiceConstants
 import com.sampurna.pocketmoney.mlm.network.*
 import com.sampurna.pocketmoney.mlm.repository.*
+import com.sampurna.pocketmoney.utils.ConnectionLiveData
 import com.sampurna.pocketmoney.utils.Constants
+import com.sampurna.pocketmoney.utils.connection.ConnectivityInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,15 +26,16 @@ import javax.inject.Singleton
 object MLMNetworkModule {
 
     @Provides
-    fun provideRetrofit(): Retrofit {
+    fun provideRetrofit(@ApplicationContext context: Context): Retrofit {
         val logging = HttpLoggingInterceptor()
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
         val httpClient = OkHttpClient.Builder()
 
         httpClient.addInterceptor(logging)
+//            .addNetworkInterceptor(CacheInterceptor())
             .readTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
-
+        httpClient.addInterceptor(ConnectivityInterceptor(context))
         return Retrofit.Builder().baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient.build())
@@ -89,6 +92,7 @@ object MLMNetworkModule {
     }
 
 
+
     @Provides
     fun provideUserAuthenticationRepo(
         mlmApiService: MLMApiService,
@@ -113,13 +117,20 @@ object MLMNetworkModule {
 
     @Provides
     @Singleton
-    fun providePaymentFilterRepo(mlmApiService: MLMApiService):PaymentHistoryFilterRepository{
+    fun providePaymentFilterRepo(mlmApiService: MLMApiService): PaymentHistoryFilterRepository {
         return PaymentHistoryFilterRepository(mlmApiService)
     }
+
     @Singleton
     @Provides
     fun provideUserPreferencesRepository(@ApplicationContext context: Context): UserPreferencesRepository {
         return UserPreferencesRepository(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideConnectionLiveData(@ApplicationContext context: Context): ConnectionLiveData {
+        return ConnectionLiveData(context)
     }
 
     @Singleton

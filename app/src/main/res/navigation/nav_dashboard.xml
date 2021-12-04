@@ -18,8 +18,7 @@
             app:destination="@id/paymentHistory" />
         <action
             android:id="@+id/action_home_to_rechargeActivity"
-            app:destination="@id/rechargeActivity">
-        </action>
+            app:destination="@id/rechargeActivity"></action>
         <action
             android:id="@+id/action_home_to_mobileRechargeActivity"
             app:destination="@id/mobileRechargeActivity" />
@@ -29,6 +28,9 @@
         <action
             android:id="@+id/action_home_to_electricityActivity"
             app:destination="@id/electricityActivity" />
+        <action
+            android:id="@+id/action_home_to_googlePlayRecharge"
+            app:destination="@id/googlePlayRecharge" />
     </fragment>
     <fragment
         android:id="@+id/shop"
@@ -107,5 +109,10 @@
         android:name="com.sampurna.pocketmoney.shopping.ui.checkoutorder.Address"
         android:label="fragment_manage_address"
         tools:layout="@layout/fragment_manage_address" />
+    <activity
+        android:id="@+id/googlePlayRecharge"
+        android:name="com.sampurna.pocketmoney.mlm.ui.playrecharge.GooglePlayRecharge"
+        android:label="activity_google_play_recharge"
+        tools:layout="@layout/activity_google_play_recharge" />
 
 </navigation>

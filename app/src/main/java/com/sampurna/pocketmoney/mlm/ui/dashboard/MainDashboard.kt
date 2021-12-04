@@ -12,19 +12,21 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
+import com.google.android.material.navigation.NavigationView
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.databinding.ActivityMainDashboardBinding
 import com.sampurna.pocketmoney.mlm.ui.coupons.MyCoupons
 import com.sampurna.pocketmoney.mlm.ui.customergrowth.CustomerGrowthNCommission
 import com.sampurna.pocketmoney.mlm.ui.dashboard.pages.Home
 import com.sampurna.pocketmoney.mlm.ui.dashboard.pages.Shop
-import com.sampurna.pocketmoney.shopping.ui.*
-import com.sampurna.pocketmoney.shopping.ui.customernavigation.*
+import com.sampurna.pocketmoney.shopping.ui.YourCart
+import com.sampurna.pocketmoney.shopping.ui.customernavigation.AllCategories
+import com.sampurna.pocketmoney.shopping.ui.customernavigation.MyNotifications
+import com.sampurna.pocketmoney.shopping.ui.customernavigation.MyOrders
 import com.sampurna.pocketmoney.utils.MyCustomNavigationDrawer.ModelItem
 import com.sampurna.pocketmoney.utils.MyCustomNavigationDrawer.ModelSubItem
 import com.sampurna.pocketmoney.utils.MyCustomNavigationDrawer.MyNavigationDrawer
 import com.sampurna.pocketmoney.utils.myEnums.NavigationEnum
-import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,6 +59,7 @@ class MainDashboard : AppCompatActivity(), Home.HomeFragmentListener, Shop.ShopF
         binding.mainDashboardDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, binding.mainDashboardShoppingNavigationDrawer)
 //        binding.customUserNavigation.setNavigationItemList(getUserNavigationItems())
 //        binding.customUserNavigation.setNavigationListener(this)
+
 
     }
 

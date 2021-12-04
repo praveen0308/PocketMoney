@@ -1,17 +1,21 @@
 package com.sampurna.pocketmoney.mlm.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.sampurna.pocketmoney.common.MailMessagingRepository
 import com.sampurna.pocketmoney.mlm.model.serviceModels.PaymentGatewayTransactionModel
+import com.sampurna.pocketmoney.mlm.model.serviceModels.PaytmRequestData
 import com.sampurna.pocketmoney.mlm.model.serviceModels.PaytmResponseModel
 import com.sampurna.pocketmoney.mlm.repository.*
-import com.sampurna.pocketmoney.utils.Resource
+import com.sampurna.pocketmoney.utils.identify
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,35 +30,96 @@ class ActivateAccountViewModel @Inject constructor(
 ): ViewModel() {
     val userId = userPreferencesRepository.userId.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
-    val selectedMethod = MutableStateFlow(1)
 
+    fun updateUserType(status: Boolean) = viewModelScope.launch {
+        userPreferencesRepository.updateUserType(status)
+    }
+
+    fun clearUserInfo() {
+        viewModelScope.launch {
+            userPreferencesRepository.clearUserInfo()
+        }
+
+    }
+
+    val activationCharge = 300.0
     lateinit var paytmResponseModel: PaytmResponseModel
 
-    private val _isValid = MutableLiveData<Resource<Int>>()
-    val isValid: LiveData<Resource<Int>> = _isValid
+    val pageState: MutableLiveData<ActivateAccountPageState> =
+        MutableLiveData(ActivateAccountPageState.Idle)
 
+    val couponPageState: MutableLiveData<ActivateUsingCouponPageState> =
+        MutableLiveData(ActivateUsingCouponPageState.Idle)
 
-    fun validateCustomerRegistration(mobile: String,pin:String,pinSerial:String) {
+    fun getWalletBalance(userId: String, roleId: Int) {
+        viewModelScope.launch {
+            walletRepository
+                .getWalletBalance(userId, roleId, 1)
+                .onStart {
+                    pageState.postValue(ActivateAccountPageState.Loading(true))
+                }
+                .catch { exception ->
+                    pageState.postValue(ActivateAccountPageState.Error(exception.identify()))
+                    Timber.e("Error caused by >>> getWalletBalance")
+                    Timber.e("Exception >>> ${exception.message}")
+                }
+                .collect { _balance ->
+                    if (_balance < activationCharge) pageState.postValue(ActivateAccountPageState.InsufficientBalance)
+                    else pageState.postValue(ActivateAccountPageState.GotWalletBalance(_balance))
+                }
+        }
+
+    }
+
+    fun getPCashBalance(userId: String, roleId: Int) {
+        viewModelScope.launch {
+            walletRepository
+                .getWalletBalance(userId, roleId, 2)
+                .onStart {
+                    pageState.postValue(ActivateAccountPageState.Loading(true))
+                }
+                .catch { exception ->
+                    pageState.postValue(ActivateAccountPageState.Error(exception.identify()))
+                    Timber.e("Error caused by >>> getPCashBalance")
+                    Timber.e("Exception >>> ${exception.message}")
+                }
+                .collect { _balance ->
+                    if (_balance < activationCharge) pageState.postValue(ActivateAccountPageState.InsufficientBalance)
+                    else pageState.postValue(ActivateAccountPageState.GotPCashBalance(_balance))
+                }
+        }
+
+    }
+
+    fun validateCustomerRegistration(mobile: String, pin: String, pinSerial: String) {
         viewModelScope.launch {
             customerRepository
-                .validateCustomerRegistration(mobile,pin,pinSerial)
+                .validateCustomerRegistration(mobile, pin, pinSerial)
                 .onStart {
-                    _isValid.postValue(Resource.Loading(true))
+                    couponPageState.postValue(ActivateUsingCouponPageState.ValidatingCustomerRegistration)
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _isValid.postValue(Resource.Error(it))
+                        couponPageState.postValue(ActivateUsingCouponPageState.Error(exception.identify()))
+                        Timber.e("Error Caused by >>> validateCustomerRegistration")
+                        Timber.e("Exception >>> ${exception.message}")
                     }
                 }
                 .collect { response->
-                    _isValid.postValue(Resource.Success(response))
-                    when(response){
-                        1->_isValid.postValue(Resource.Error("Mobile no. already registered. Please register with new Mobile no"))
-                        2->_isValid.postValue(Resource.Error("PIN or Serial no. does not exist, Please contact Admin"))
-                        3->_isValid.postValue(Resource.Error("PIN or Serial no. already used, please contact Admin"))
-                        4->_isValid.postValue(Resource.Error("PIN and Serial no. mismatched"))
-                        else->{
 
+                    when (response) {
+                        1 -> couponPageState.postValue(ActivateUsingCouponPageState.Error("Mobile no. already registered. Please register with new Mobile no"))
+                        2 -> couponPageState.postValue(ActivateUsingCouponPageState.Error("PIN or Serial no. does not exist, Please contact Admin"))
+                        3 -> couponPageState.postValue(ActivateUsingCouponPageState.Error("PIN or Serial no. already used, please contact Admin"))
+                        4 -> couponPageState.postValue(ActivateUsingCouponPageState.Error("PIN and Serial no. mismatched"))
+                        else -> {
+                            couponPageState.postValue(ActivateUsingCouponPageState.Valid)
+                            pageState.postValue(
+                                ActivateAccountPageState.CouponValidated(
+                                    pin,
+                                    pinSerial
+                                )
+                            )
                         }
                     }
 
@@ -63,164 +128,179 @@ class ActivateAccountViewModel @Inject constructor(
 
     }
 
-    private val _isActivationSuccessful = MutableLiveData<Resource<Int>>()
-    val isActivationSuccessful: LiveData<Resource<Int>> = _isActivationSuccessful
 
     fun activateAccountUsingCoupon(userId: String,pin:String,pinSerial:String) {
         viewModelScope.launch {
             customerRepository
                 .activateAccountUsingCoupon(userId,pinSerial,pin)
                 .onStart {
-                    _isActivationSuccessful.postValue(Resource.Loading(true))
+                    pageState.postValue(ActivateAccountPageState.RequestingActivation)
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _isActivationSuccessful.postValue(Resource.Error(it))
+                        pageState.postValue(ActivateAccountPageState.Error(exception.identify()))
+                        Timber.e("Error Caused by >>> activateAccountUsingCoupon")
+                        Timber.e("Exception >>> ${exception.message}")
                     }
                 }
                 .collect { response->
-                    _isActivationSuccessful.postValue(Resource.Success(response))
+                    pageState.postValue(ActivateAccountPageState.ActivationDone(response, "coupon"))
                 }
         }
 
     }
-
-    private val _isActivatedByPayment = MutableLiveData<Resource<Int>>()
-    val isActivatedByPayment: LiveData<Resource<Int>> = _isActivatedByPayment
 
     fun activateAccountByPayment(userId: String,walletTypeId:Int) {
         viewModelScope.launch {
             customerRepository
                 .onlineActivateAccount(userId,walletTypeId)
                 .onStart {
-                    _isActivatedByPayment.postValue(Resource.Loading(true))
+                    pageState.postValue(ActivateAccountPageState.RequestingActivation)
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _isActivatedByPayment.postValue(Resource.Error(it))
+                        pageState.postValue(ActivateAccountPageState.Error(exception.identify()))
+                        Timber.e("Error Caused by >>> activateAccountUsingCoupon")
+                        Timber.e("Exception >>> ${exception.message}")
                     }
                 }
                 .collect { response->
-                    _isActivatedByPayment.postValue(Resource.Success(response))
+                    pageState.postValue(
+                        ActivateAccountPageState.ActivationDone(
+                            response,
+                            "payment"
+                        )
+                    )
                 }
         }
 
     }
-
-    private val _walletBalance = MutableLiveData<Resource<Double>>()
-    val walletBalance : LiveData<Resource<Double>> = _walletBalance
-
-    private val _pCash = MutableLiveData<Resource<Double>>()
-    val pCash: LiveData<Resource<Double>> = _pCash
-
-
-    fun getWalletBalance(userId: String, roleId: Int) {
-
-        viewModelScope.launch {
-
-            walletRepository
-                .getWalletBalance(userId, roleId, 1)
-                .onStart {
-                    _walletBalance.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _walletBalance.postValue(Resource.Error(it))
-                    }
-                }
-                .collect { _balance->
-                    _walletBalance.postValue(Resource.Success(_balance))
-                }
-        }
-
-    }
-
-
-    fun getPCashBalance(userId: String, roleId: Int) {
-
-        viewModelScope.launch {
-
-            walletRepository
-                .getWalletBalance(userId, roleId, 2)
-                .onStart {
-                    _pCash.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _pCash.postValue(Resource.Error(it))
-                    }
-                }
-                .collect { _balance->
-                    _pCash.postValue(Resource.Success(_balance))
-                }
-        }
-
-    }
-
-    private val _isMessageSent = MutableLiveData<Resource<Boolean>>()
-    val isMessageSent : LiveData<Resource<Boolean>> = _isMessageSent
-
-    fun sendWhatsappMessage(mobileNumber:String,message:String) {
-
-        viewModelScope.launch {
-            mailMessagingRepository
-                .sendWhatsappMessage(mobileNumber, message)
-                .onStart {
-                    _isMessageSent.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _isMessageSent.postValue(Resource.Error(it))
-                    }
-                }
-                .collect { response->
-                    _isMessageSent.postValue(Resource.Success(response))
-                }
-        }
-    }
-
-    private val _addPaymentTransResponse = MutableLiveData<Resource<String>>()
-    val addPaymentTransResponse : LiveData<Resource<String>> = _addPaymentTransResponse
 
     fun addPaymentTransactionDetail(paymentGatewayTransactionModel: PaymentGatewayTransactionModel) {
-
         viewModelScope.launch {
             paytmRepository
                 .addPaymentTransactionDetails(paymentGatewayTransactionModel)
                 .onStart {
-                    _addPaymentTransResponse.postValue(Resource.Loading(true))
+                    pageState.postValue(ActivateAccountPageState.SendingPaymentTransDetail)
+
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _addPaymentTransResponse.postValue(Resource.Error(it))
+                        pageState.postValue(ActivateAccountPageState.Error(exception.identify()))
+                        Timber.e("Error Caused by >>> addPaymentTransactionDetail")
+                        Timber.e("Exception >>> ${exception.message}")
                     }
                 }
-                .collect { response->
-                    _addPaymentTransResponse.postValue(Resource.Success(response))
+                .collect { response ->
+                    pageState.postValue(ActivateAccountPageState.SubmittedPaymentTransDetail)
                 }
         }
     }
-
-    private val _isAccountActive = MutableLiveData<Resource<Boolean>>()
-    val isAccountActive: LiveData<Resource<Boolean>> = _isAccountActive
 
     fun checkIsAccountActive(id: String) {
         viewModelScope.launch {
             accountRepository
                 .isUserAccountActive(id)
                 .onStart {
-                    _isAccountActive.postValue(Resource.Loading(true))
+                    pageState.postValue(ActivateAccountPageState.CheckingActivationState)
                 }
                 .catch { exception ->
                     exception.message?.let {
-                        _isAccountActive.postValue(Resource.Error(it))
+                        pageState.postValue(ActivateAccountPageState.Error(exception.identify()))
+                        Timber.e("Error Caused by >>> checkIsAccountActive")
+                        Timber.e("Exception >>> ${exception.message}")
                     }
                 }
                 .collect { response ->
-                    _isAccountActive.postValue(Resource.Success(response))
+                    pageState.postValue(ActivateAccountPageState.GotActivationState(response))
+                }
+        }
+    }
+
+    fun initiateTransactionApi(paytmRequestData: PaytmRequestData) {
+        viewModelScope.launch {
+            paytmRepository
+                .initiateTransactionApi(paytmRequestData)
+                .onStart {
+                    pageState.postValue(ActivateAccountPageState.InitiatingTransaction)
+                }
+                .catch { exception ->
+                    pageState.postValue(ActivateAccountPageState.Error(exception.identify()))
+                    Timber.e("Error Caused by >>> initiateTransactionApi")
+                    Timber.e("Exception >>> ${exception.message}")
+
+                }
+                .collect { response->
+                    pageState.postValue(ActivateAccountPageState.ReceivedCheckSum(response))
                 }
         }
 
     }
 
+
+    fun sendWhatsappMessage(mobileNumber: String, message: String) {
+        viewModelScope.launch {
+            mailMessagingRepository
+                .sendWhatsappMessage(mobileNumber, message)
+                .onStart {
+                    pageState.postValue(ActivateAccountPageState.Loading(true))
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        pageState.postValue(ActivateAccountPageState.MessageFailed)
+                        Timber.e("Error Caused by >>> sendWhatsappMessage")
+                        Timber.e("Exception >>> ${exception.message}")
+                    }
+                }
+                .collect { response ->
+                    pageState.postValue(ActivateAccountPageState.MessageSent)
+                }
+        }
+    }
+
+
+}
+
+sealed class ActivateAccountPageState {
+
+    object Idle : ActivateAccountPageState()
+    object NoInternet : ActivateAccountPageState()
+    data class Loading(val isLoading: Boolean) : ActivateAccountPageState()
+    data class GotWalletBalance(val balance: Double) : ActivateAccountPageState()
+    data class GotPCashBalance(val balance: Double) : ActivateAccountPageState()
+    object InsufficientBalance : ActivateAccountPageState()
+
+    object InitiatingTransaction : ActivateAccountPageState()
+    data class ReceivedCheckSum(val token: String) : ActivateAccountPageState()
+    object RequestingGateway : ActivateAccountPageState()
+    object WaitingForGatewayResponse : ActivateAccountPageState()
+    data class ReceivedGatewayResponse(val response: PaytmResponseModel) :
+        ActivateAccountPageState()
+
+    object SendingPaymentTransDetail : ActivateAccountPageState()
+    object SubmittedPaymentTransDetail : ActivateAccountPageState()
+
+    object RequestingActivation : ActivateAccountPageState()
+    data class ActivationDone(val response: Int, val by: String) : ActivateAccountPageState()
+
+    object CheckingActivationState : ActivateAccountPageState()
+    data class GotActivationState(val isActive: Boolean) : ActivateAccountPageState()
+
+    data class CouponValidated(val pinNo: String, val pinSerial: String) :
+        ActivateAccountPageState()
+
+    data class Error(val msg: String) : ActivateAccountPageState()
+
+    object MessageSent : ActivateAccountPageState()
+    object MessageFailed : ActivateAccountPageState()
+
+}
+
+sealed class ActivateUsingCouponPageState {
+    object Idle : ActivateUsingCouponPageState()
+    object Loading : ActivateUsingCouponPageState()
+    data class Error(val msg: String) : ActivateUsingCouponPageState()
+    object ValidatingCustomerRegistration : ActivateUsingCouponPageState()
+    object Invalid : ActivateUsingCouponPageState()
+    object Valid : ActivateUsingCouponPageState()
 }

@@ -25,4 +25,16 @@ class ForgotPassword : BaseActivity<ActivityForgotPasswordBinding>(ActivityForgo
     override fun onMenuClick() {
 
     }
+
+    override fun onBackPressed() {
+        val count = supportFragmentManager.backStackEntryCount
+        if (count == 0) {
+            finish()
+            super.onBackPressed()
+            //additional code
+        } else {
+//            supportFragmentManager.popBackStack()
+            finish()
+        }
+    }
 }
