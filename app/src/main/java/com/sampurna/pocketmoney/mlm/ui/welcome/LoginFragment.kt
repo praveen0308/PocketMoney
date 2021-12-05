@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.databinding.FragmentLoginBinding
 import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository.Companion.LOGIN_DONE
@@ -35,7 +34,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
         }
 
         binding.btnRegister.setOnClickListener {
-            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
+//            findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment())
             /* val sheet = RegisterFragment()
              sheet.show(parentFragmentManager,sheet.tag)
              dismiss()*/

@@ -234,7 +234,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 R.drawable.ic_round_info_24
             )
         )
-        helpMenuItemList.add(
+        if (userId.isNotEmpty()) helpMenuItemList.add(
             ModelMenuItem(
                 NavigationEnum.SHARE,
                 "Share",

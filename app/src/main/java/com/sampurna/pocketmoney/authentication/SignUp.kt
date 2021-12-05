@@ -28,10 +28,15 @@ class SignUp : BaseActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflat
 
     private lateinit var customerDetail: ModelCustomerDetail
 
+    private var sponsorId = ""
+    private var sponsorName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.toolbarSignUp.setApplicationToolbarListener(this)
+
+
+
         initialUiState()
         initiateFieldsValidation()
         binding.btnRegister.setOnClickListener {
@@ -79,10 +84,7 @@ class SignUp : BaseActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflat
 
     private fun initialUiState() {
         createProgressDialog("Verifying....")
-        binding.apply {
-            etSponsorId.setText(getString(R.string.default_sponsor_id))
 
-        }
 
     }
 
@@ -105,6 +107,16 @@ class SignUp : BaseActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflat
     }
 
     override fun subscribeObservers() {
+        accountViewModel.userSponsorId.observe(this, {
+            sponsorId = it
+            binding.etSponsorId.setText(sponsorId)
+        })
+
+        accountViewModel.userSponsorName.observe(this, {
+            sponsorName = it
+            binding.etSponsorName.setText(sponsorName)
+        })
+
 
         accountViewModel.sponsorName.observe(this, { _result ->
             when (_result.status) {

@@ -5,21 +5,30 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.net.toUri
+import androidx.fragment.app.viewModels
 import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.ktx.Firebase
 import com.sampurna.pocketmoney.BuildConfig.APPLICATION_ID
 import com.sampurna.pocketmoney.databinding.FragmentShareUsBinding
+import com.sampurna.pocketmoney.mlm.viewmodel.AccountViewModel
 import com.sampurna.pocketmoney.utils.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
+@AndroidEntryPoint
 class ShareUs : BaseFragment<FragmentShareUsBinding>(FragmentShareUsBinding::inflate) {
+
+    private val viewModel by viewModels<AccountViewModel>()
+    private lateinit var userId: String
+    private lateinit var userName: String
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnShare.setOnClickListener {
             Firebase.dynamicLinks.shortLinkAsync {
-                link = Uri.parse("https://www.pocketmoney.net.in/")
+                val fUsr = userName.replace(" ", "_")
+                link = Uri.parse("https://www.pocketmoney.net.in/refer=$userId-$fUsr")
                 domainUriPrefix = "https://app.pocketmoney.net.in/"
                 androidParameters(APPLICATION_ID) {
                     minimumVersion = 1
@@ -55,7 +64,12 @@ class ShareUs : BaseFragment<FragmentShareUsBinding>(FragmentShareUsBinding::inf
     }
 
     override fun subscribeObservers() {
-
+        viewModel.userId.observe(viewLifecycleOwner, {
+            userId = it
+        })
+        viewModel.userName.observe(viewLifecycleOwner, {
+            userName = it
+        })
     }
 
 

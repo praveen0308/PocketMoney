@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.sampurna.pocketmoney.common.MailMessagingRepository
 import com.sampurna.pocketmoney.common.SMSResponseModel
 import com.sampurna.pocketmoney.mlm.model.ModelCustomerDetail
-import com.sampurna.pocketmoney.mlm.model.UserMenu
 import com.sampurna.pocketmoney.mlm.repository.AccountRepository
 import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.sampurna.pocketmoney.mlm.repository.WalletRepository
@@ -30,6 +29,11 @@ class AccountViewModel @Inject constructor(
     val userId = userPreferencesRepository.userId.asLiveData()
     val userName = userPreferencesRepository.userName.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
+    val userSponsorId = userPreferencesRepository.sponsorId.asLiveData()
+    val userSponsorName = userPreferencesRepository.sponsorName.asLiveData()
+
+
+    val pageState: MutableLiveData<RegisterPageState> = MutableLiveData(RegisterPageState.Idle)
 
     fun clearUserInfo() {
         viewModelScope.launch {
@@ -107,100 +111,6 @@ class AccountViewModel @Inject constructor(
 
     }
 
-    private val _isAccountActive = MutableLiveData<Resource<Boolean>>()
-    val isAccountActive: LiveData<Resource<Boolean>> = _isAccountActive
-
-    fun checkIsAccountActive(id: String) {
-        viewModelScope.launch {
-            accountRepository
-                .isUserAccountActive(id)
-                .onStart {
-                    _isAccountActive.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _isAccountActive.postValue(Resource.Error(it))
-                    }
-                }
-                .collect { response ->
-                    _isAccountActive.postValue(Resource.Success(response))
-                }
-        }
-
-    }
-
-
-    private val _userMenus = MutableLiveData<Resource<List<UserMenu>>>()
-    val userMenus: LiveData<Resource<List<UserMenu>>> = _userMenus
-
-    fun getUserMenus(userId: String) {
-        viewModelScope.launch {
-            accountRepository
-                .getUserMenus(userId)
-                .onStart {
-                    _userMenus.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _userMenus.postValue(Resource.Error(it))
-                    }
-                }
-                .collect { response ->
-                    _userMenus.postValue(Resource.Success(response))
-                }
-        }
-    }
-
-    private val _walletBalance = MutableLiveData<Resource<Double>>()
-    val walletBalance: LiveData<Resource<Double>> = _walletBalance
-
-
-    private val _pCash = MutableLiveData<Resource<Double>>()
-    val pCash: LiveData<Resource<Double>> = _pCash
-
-
-    fun getWalletBalance(userId: String, roleId: Int) {
-
-        viewModelScope.launch {
-
-            walletRepository
-                .getWalletBalance(userId, roleId, 1)
-                .onStart {
-                    _walletBalance.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _walletBalance.postValue(Resource.Error(it))
-                    }
-                }
-                .collect { _balance ->
-                    _walletBalance.postValue(Resource.Success(_balance))
-                }
-        }
-
-    }
-
-
-    fun getPCashBalance(userId: String, roleId: Int) {
-
-        viewModelScope.launch {
-
-            walletRepository
-                .getWalletBalance(userId, roleId, 2)
-                .onStart {
-                    _pCash.postValue(Resource.Loading(true))
-                }
-                .catch { exception ->
-                    exception.message?.let {
-                        _pCash.postValue(Resource.Error(it))
-                    }
-                }
-                .collect { _balance ->
-                    _pCash.postValue(Resource.Success(_balance))
-                }
-        }
-
-    }
 
 
     private val _dashboardData = MutableLiveData<Resource<JsonObject>>()
@@ -258,4 +168,5 @@ class AccountViewModel @Inject constructor(
 sealed class RegisterPageState {
     object Idle : RegisterPageState()
     object Loading : RegisterPageState()
+
 }

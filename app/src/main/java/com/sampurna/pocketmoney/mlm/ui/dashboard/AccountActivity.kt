@@ -5,7 +5,9 @@ import com.sampurna.pocketmoney.databinding.ActivityAccountBinding
 import com.sampurna.pocketmoney.utils.ApplicationToolbar
 import com.sampurna.pocketmoney.utils.BaseActivity
 import com.sampurna.pocketmoney.utils.myEnums.NavigationEnum
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AccountActivity : BaseActivity<ActivityAccountBinding>(ActivityAccountBinding::inflate),
     ApplicationToolbar.ApplicationToolbarListener {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -95,7 +95,7 @@ class UserPreferencesRepository @Inject constructor(
             pref
         }
 
-    val firstName: Flow<String> = context.dataStore.data
+    val sponsorId: Flow<String> = context.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -105,11 +105,11 @@ class UserPreferencesRepository @Inject constructor(
         }
         .map { preferences ->
             // No type safety.
-            val pref = preferences[USER_FIRST_NAME] ?: ""
+            val pref = preferences[SPONSOR_ID] ?: "9168435483"
             pref
         }
 
-    val lastName: Flow<String> = context.dataStore.data
+    val sponsorName: Flow<String> = context.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -119,7 +119,7 @@ class UserPreferencesRepository @Inject constructor(
         }
         .map { preferences ->
             // No type safety.
-            val pref = preferences[USER_LAST_NAME] ?: ""
+            val pref = preferences[SPONSOR_NAME] ?: "Pocket Money"
             pref
         }
 
@@ -206,6 +206,20 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
+
+    suspend fun updateSponsorId(sponsorId: String) {
+        context.dataStore.edit { preference ->
+            preference[SPONSOR_ID] = sponsorId
+        }
+    }
+
+    suspend fun updateSponsorName(sponsorName: String) {
+        context.dataStore.edit { preference ->
+            preference[SPONSOR_NAME] = sponsorName
+        }
+    }
+
+
     suspend fun clearUserInfo() {
         updateLoginId(0)
         updateUserId("")
@@ -255,6 +269,8 @@ class UserPreferencesRepository @Inject constructor(
         val IS_BLOCKED = booleanPreferencesKey("status")
         val IS_ACTIVE = booleanPreferencesKey("active")
 
+        val SPONSOR_ID = stringPreferencesKey("sponsor_id")
+        val SPONSOR_NAME = stringPreferencesKey("sponsor_name")
 
     }
 }

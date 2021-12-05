@@ -219,6 +219,7 @@ You, while providing your personal information over the Platform or any partner 
     <string name="sponsor_name">Sponsor name</string>
     <string name="sponsor_id">Sponsor ID</string>
     <string name="default_sponsor_id">9168435483</string>
+    <string name="default_sponsor_name">Pocket Money</string>
     <string name="validity">Validity</string>
     <string name="allow">Allow</string>
     <string name="msg_contact_permission_denied">Allow permission to select contact from contact list.</string>
