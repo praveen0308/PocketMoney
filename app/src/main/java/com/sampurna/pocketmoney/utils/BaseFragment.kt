@@ -17,7 +17,6 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.airbnb.lottie.LottieAnimationView
-import com.google.android.material.snackbar.Snackbar
 import com.jmm.brsap.dialog_builder.NordanLoadingDialog
 import com.sampurna.pocketmoney.R
 import com.sampurna.pocketmoney.common.AuthInterceptorSheet
@@ -35,7 +34,7 @@ abstract class BaseFragment<VB : ViewBinding>(
     val binding get() = _binding!!
     lateinit var progressBarHandler: ProgressBarHandler
     private lateinit var loadingDialog: Dialog
-    private lateinit var snackbar: Snackbar
+//    private lateinit var snackbar: Snackbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +68,7 @@ abstract class BaseFragment<VB : ViewBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        snackbar = Snackbar.make(binding.root, "No internet!!!", Snackbar.LENGTH_INDEFINITE)
+//        snackbar = Snackbar.make(view, "No internet!!!", Snackbar.LENGTH_INDEFINITE)
         subscribeObservers()
 
 

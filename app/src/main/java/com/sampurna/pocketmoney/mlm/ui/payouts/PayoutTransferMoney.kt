@@ -201,7 +201,7 @@ class PayoutTransferMoney : BaseBottomSheetDialogFragment<FragmentPayoutTransfer
                         TaskResultDialog.KEY_SUBTITLE,
                         payoutTransactionResponse.statusMessage
                     )
-                    bundle.putInt(TaskResultDialog.KEY_STATUS, TaskResultDialog.SUCCESS)
+                    bundle.putInt(TaskResultDialog.KEY_STATUS, TaskResultDialog.FAILURE)
                     bundle.putString(
                         TaskResultDialog.KEY_REF_ID,
                         payoutTransactionResponse.result!!.paytmOrderId
