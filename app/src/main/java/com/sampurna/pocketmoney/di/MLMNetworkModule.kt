@@ -6,8 +6,8 @@ import com.sampurna.pocketmoney.common.SMSService
 import com.sampurna.pocketmoney.common.SmsServiceConstants
 import com.sampurna.pocketmoney.mlm.network.*
 import com.sampurna.pocketmoney.mlm.repository.*
-import com.sampurna.pocketmoney.utils.ConnectionLiveData
 import com.sampurna.pocketmoney.utils.Constants
+import com.sampurna.pocketmoney.utils.connection.ConnectionLiveData
 import com.sampurna.pocketmoney.utils.connection.ConnectivityInterceptor
 import dagger.Module
 import dagger.Provides

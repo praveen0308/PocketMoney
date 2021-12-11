@@ -1,4 +1,4 @@
-package com.sampurna.pocketmoney.utils
+package com.sampurna.pocketmoney.utils.connection
 
 
 import android.content.Context

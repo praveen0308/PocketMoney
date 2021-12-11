@@ -23,7 +23,7 @@ import com.sampurna.pocketmoney.mlm.ui.payouts.NewPayout
 import com.sampurna.pocketmoney.mlm.viewmodel.HomePageState
 import com.sampurna.pocketmoney.mlm.viewmodel.HomeViewModel
 import com.sampurna.pocketmoney.utils.BaseFragment
-import com.sampurna.pocketmoney.utils.ConnectionLiveData
+import com.sampurna.pocketmoney.utils.connection.ConnectionLiveData
 import com.sampurna.pocketmoney.utils.myEnums.MyEnums
 import com.sampurna.pocketmoney.utils.setAmount
 import dagger.hilt.android.AndroidEntryPoint

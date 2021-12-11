@@ -9,7 +9,7 @@ import com.sampurna.pocketmoney.mlm.model.*
 import com.sampurna.pocketmoney.mlm.repository.AccountRepository
 import com.sampurna.pocketmoney.mlm.repository.UserPreferencesRepository
 import com.sampurna.pocketmoney.mlm.repository.WalletRepository
-import com.sampurna.pocketmoney.utils.ConnectionLiveData
+import com.sampurna.pocketmoney.utils.connection.ConnectionLiveData
 import com.sampurna.pocketmoney.utils.identify
 import com.sampurna.pocketmoney.utils.myEnums.MyEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
