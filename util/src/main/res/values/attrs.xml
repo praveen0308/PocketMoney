@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ApplicationToolbar">
+
+        <attr name="ATNavIcon" format="reference"/>
+
+        <attr name="ATMenuIcon" format="reference"/>
+        <attr name="ATMenuIconVisibility" format="boolean" />
+
+        <attr name="ATTitle" format="string" />
+        <attr name="ATTitleVisibility" format="boolean" />
+        <attr name="ATTitleTextSize" format="dimension"/>
+        <attr name="ATTitleGravity" format="enum">
+            <enum name="LEFT" value="-1"/>
+            <enum name="CENTER" value="0"/>
+            <enum name="RIGHT" value="1"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="LoadingButton">
+        <attr name="android:text" format="string"/>
+
+    </declare-styleable>
+</resources>

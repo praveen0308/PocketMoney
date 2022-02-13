@@ -9,15 +9,14 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.google.firebase.crashlytics'
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.sampurna.pocketmoney"
-        minSdkVersion 24
-        targetSdkVersion 30
-        versionCode 4
-        versionName "1.4"
+        minSdk rootProject.ext.minSdkVersion
+        targetSdk rootProject.ext.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,6 +50,37 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":dialog_builder"))
+    implementation(project(":kyc"))
+    implementation(project(":repository"))
+    implementation(project(":network"))
+    implementation(project(":model"))
+    implementation(project(":util"))
+    implementation(project(":core"))
+    implementation(project(":services:mobile_recharge"))
+    implementation(project(":services:dth"))
+    implementation(project(":services:play_recharge"))
+    implementation(project(":mlm"))
+    implementation(project(":shopping"))
+    implementation(project(":payment_gateway"))
+    implementation(project(":profile"))
+    implementation(project(":lock_screen"))
+    implementation(project(":payout"))
+    implementation(project(":authentication"))
+    implementation(project(":membership"))
+    implementation(project(":add_money"))
+    implementation(project(":commission"))
+    implementation(project(":coupon"))
+    implementation(project(":complaint_report"))
+    implementation(project(":transfer_money"))
+    implementation(project(":forgot_password"))
+    implementation(project(":custom_views:custom_keyboard"))
+    implementation(project(":services:electricity"))
+    implementation(project(":transactions"))
+    implementation(project(":onboarding"))
+    implementation(project(":navigation"))
+
 
     // Default dependencies
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -132,8 +162,6 @@ dependencies {
 
     //Dexter for Permission
     implementation 'com.karumi:dexter:6.2.2'
-
-
 
     implementation 'com.github.aabhasr1:OtpView:v1.1.2-ktx' // kotlin
 

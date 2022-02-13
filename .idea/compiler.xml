@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="13" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="Pocket_Money.add_money" target="13" />
+      <module name="Pocket_Money.app" target="13" />
+      <module name="Pocket_Money.authentication" target="13" />
+      <module name="Pocket_Money.commission" target="13" />
+      <module name="Pocket_Money.complaint_report" target="13" />
+      <module name="Pocket_Money.core" target="13" />
+      <module name="Pocket_Money.coupon" target="13" />
+      <module name="Pocket_Money.custom_keyboard" target="13" />
+      <module name="Pocket_Money.custom_views.custom_keyboard" target="13" />
+      <module name="Pocket_Money.custom_views.custom_navigation_drawer" target="13" />
+      <module name="Pocket_Money.dialog_builder" target="13" />
+      <module name="Pocket_Money.forgot_password" target="13" />
+      <module name="Pocket_Money.kyc" target="13" />
+      <module name="Pocket_Money.lock_screen" target="13" />
+      <module name="Pocket_Money.membership" target="13" />
+      <module name="Pocket_Money.mlm" target="13" />
+      <module name="Pocket_Money.navigation" target="13" />
+      <module name="Pocket_Money.network" target="13" />
+      <module name="Pocket_Money.new_model" target="13" />
+      <module name="Pocket_Money.onboarding" target="13" />
+      <module name="Pocket_Money.payment_gateway" target="13" />
+      <module name="Pocket_Money.payout" target="13" />
+      <module name="Pocket_Money.profile" target="13" />
+      <module name="Pocket_Money.repository" target="13" />
+      <module name="Pocket_Money.services.dth" target="13" />
+      <module name="Pocket_Money.services.electricity" target="13" />
+      <module name="Pocket_Money.services.mobile_recharge" target="13" />
+      <module name="Pocket_Money.services.play_recharge" target="13" />
+      <module name="Pocket_Money.shopping" target="13" />
+      <module name="Pocket_Money.transactions" target="13" />
+      <module name="Pocket_Money.transfer_money" target="13" />
+      <module name="Pocket_Money.util" target="13" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,0 +1,239 @@
+package com.jmm.network.services
+
+import com.google.gson.JsonObject
+import com.jmm.model.*
+import com.jmm.model.mlmModels.*
+import com.jmm.model.serviceModels.*
+import retrofit2.Response
+import retrofit2.http.*
+
+interface MLMApiService {
+
+    // Account
+    @GET("Account/UserLogin")
+    suspend fun doLogin(
+        @Query("username") userName: String,
+        @Query("password") password: String
+    ): Response<UserModel?>
+
+
+    @GET("Account/IsUserAccountActive")
+    suspend fun getUserAccountStatus(
+        @Query("id") id: String
+    ): Boolean
+
+
+    @GET("Account/ValidateDuplicate")
+    suspend fun validateDuplicateAccount(
+        @Query("tblName") tblName: String,
+        @Query("colName") colName: String,
+        @Query("value") value: String,
+    ): Boolean
+
+    @GET("Account/GetUserMenus")
+    suspend fun getUserMenus(
+        @Query("userId") userId: String
+    ): List<UserMenu>
+
+
+    @GET("")
+    suspend fun getOperatorList(
+        @Query("operatorOf") operatorOf: String
+    ): List<ModelOperator>
+
+    // Wallet
+    @POST("Wallet/GetAllTransactionHistory")
+    suspend fun getAllTransactionHistory(
+        @Body requestModel: CustomerRequestModel1
+    ): List<TransactionModel>
+
+
+    @POST("Wallet/GetTransactionHistory")
+    suspend fun getTransactionHistory(
+        @Body requestModel1: CustomerRequestModel1
+    ): List<TransactionModel>
+
+
+    @GET("Wallet/GetWalletBalance")
+    suspend fun getWalletBalance(
+        @Query("userId") userId: Double,
+        @Query("roleId") roleId: Int,
+        @Query("walletType") walletType: Int
+    ): Double
+
+    @GET("Wallet/GetTransactionTypes")
+    suspend fun getTransactionTypes(): List<TransactionTypeModel>
+
+
+    //Customer
+    @GET("Customer/GetCustomerDetails")
+    suspend fun getCustomerDetails(
+        @Query("userId") userId: String
+    ): Response<CustomerDetailResponse?>
+
+    @POST("Customer/GetCustomerGrowth")
+    suspend fun getCustomerGrowth(
+        @Body requestModel1: CustomerRequestModel1
+    ): CustomerGrowthResponse
+
+
+    @POST("Customer/GetGrowthCommission")
+    suspend fun getGrowthCommission(
+        @Body requestModel: GrowthComissionRequestModel
+    ): GrowthCommissionResponse
+
+    @POST("Customer/GetCustomerDirectCommssion")
+    suspend fun getCustomerDirectCommission(
+        @Body requestModel: GrowthComissionRequestModel
+    ): List<CommissionHistoryModel>
+
+    @POST("Customer/GetCustomerServiceCommssion")
+    suspend fun getCustomerServiceCommission(
+        @Body requestModel: GrowthComissionRequestModel
+    ): List<CommissionHistoryModel>
+
+    @POST("Customer/GetCustomerUpdateCommssion")
+    suspend fun getCustomerUpdateCommission(
+        @Body requestModel: GrowthComissionRequestModel
+    ): List<CommissionHistoryModel>
+
+    @POST("Customer/GetCustomerShoppingCommission")
+    suspend fun getCustomerShoppingCommission(
+        @Body requestModel: GrowthComissionRequestModel
+    ): List<CommissionHistoryModel>
+
+    @POST("Customer/GetCouponList")
+    suspend fun getCouponList(
+        @Query("userId") userId: String,
+        @Query("roleId") roleId: Int,
+        @Query("from") fromDate: String,
+        @Query("to") toDate: String,
+    ): List<CouponModel>
+
+
+    @POST("Customer/GetComplainsHistory")
+    suspend fun getComplaintHistory(
+        @Query("userId") userId: String,
+        @Query("roleId") roleId: Int,
+        @Query("from") fromDate: String,
+        @Query("to") toDate: String,
+        @Query("filter") filter: String,
+        @Query("condition") condition: String,
+    ): List<CustomerComplaintModel>
+
+
+    @GET("Customer/GetSponsorName")
+    suspend fun getSponsorName(
+        @Query("id") sponsorId: String
+    ): String
+
+    @GET("Customer/GetUserName")
+    suspend fun getUserName(
+        @Query("id") id: String
+    ): String
+
+    @POST("Customer/GetCustomerProfileInfo")
+    suspend fun getCustomerProfileInfo(
+        @Query("id") id: String
+    ): CustomerProfileModel
+
+    @POST("Customer/AddCustomerDetailsWithoutEmail")
+    suspend fun addCustomerDetails(
+        @Body customerDetail: ModelCustomerDetail
+    ): ModelCustomerDetail
+
+
+    //Recharge
+    @POST("Recharge/FetchMobileCircleOperator")
+    suspend fun fetchOperatorNCircleOfMobile(
+        @Query("mobileno") mobileNumber: String
+    ): MobileCircleOperator
+
+    @POST("Recharge/FetchSimplePlan")
+    suspend fun fetchMobileSimplePlan(
+        @Query("circle") circle: String,
+        @Query("mobileOperator") mobileOperator: String
+    ): SimplePlanResponse
+
+    @POST("Recharge/FetchSpecialPlan")
+    suspend fun fetchMobileSpecialPlan(
+        @Query("mobileno") mobileNumber: String,
+        @Query("mobileOperator") mobileOperator: String
+    ): List<MobileOperatorPlan>
+
+
+//    @POST("Recharge/FetchSpecialPlan")
+//    suspend fun fetchMobileSpecialPlan(
+//            @Query("mobileno") mobileNumber: String,
+//            @Query("mobileOperator") mobileOperator:String
+//    ): List<SpecialPlan>
+
+
+    @GET("Recharge/GetServiceCircle")
+    suspend fun getMobileServiceCircle(
+        @Query("providerId") providerId: Int
+    ): List<IdNameModel>
+
+    @GET("Recharge/GetServiceOperator")
+    suspend fun getMobileServiceOperator(
+        @Query("ServiceTypeId") serviceTypeId: Int,
+        @Query("ServiceProviderId") serviceProviderId: Int,
+        @Query("CircleCode") circleCode: String?
+    ): List<IdNameModel>
+
+    @POST("Payment/InitiateTransactionAPI")
+    suspend fun initiateTransactionApi(
+        @Body paytmRequestData: PaytmRequestData
+    ): String
+
+    @Headers("Content-Type: application/json")
+    @POST("Wallet/TransferB2BBalanceWithoutEmail")
+    suspend fun b2bWalletTransfer(
+        @Body requestData : JsonObject
+    ):Int
+
+    /*@Headers("Content-Type: application/json")
+    @POST("Wallet/TransferB2BBalance")
+    suspend fun b2bWalletTransfer(
+        @Body requestData : JsonObject
+    ):Int
+*/
+    @POST("Wallet/AddCustWalletDetails")
+    suspend fun addCustomerWalletDetails(
+        @Body pmWalletModel: PMWalletModel
+    ): String
+
+    @POST("Payment/AddPaymentTransDetails")
+    suspend fun addPaymentTransactionDetails(
+        @Body paymentGatewayTransactionModel: PaymentGatewayTransactionModel
+    ): String
+
+    @POST("Wallet/ActionOnWalletRequest")
+    suspend fun actionOnWalletRequest(
+        @Query("requestId") requestId: String,
+        @Query("comment") comment: String,
+        @Query("status") status: String,
+        @Query("paymentmode") paymentMode: String
+    ): Int
+
+
+    @POST("Wallet/AddCompanyTransaction")
+    suspend fun addCompanyTransaction(
+        @Query("TransferBy") transferBy: String,
+        @Query("UserId") userId: String,
+        @Query("amount") amount: Double,
+        @Query("wallet") wallet: Int,
+        @Query("transtype") transType: Int,
+        @Query("referenceId") referenceId: String,
+        @Query("action") action: String
+    ): Int
+
+    @GET("Account/CustomerDashboardData")
+    suspend fun getDashboardData(
+        @Query("userId") userId: String,
+        @Query("roleId") roleId: Int
+    ): JsonObject
+
+}
+
+

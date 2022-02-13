@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_kyc"
+    app:startDestination="@id/enterAddressDetails">
+
+    <fragment
+        android:id="@+id/selectDocument"
+        android:name="com.jmm.kyc.ui.SelectDocument"
+        android:label=""
+        tools:layout="@layout/fragment_select_document" >
+        <action
+            android:id="@+id/action_selectDocument_to_uploadDocument"
+            app:destination="@id/uploadDocument" />
+    </fragment>
+    <fragment
+        android:id="@+id/uploadDocument"
+        android:name="com.jmm.kyc.ui.UploadDocument"
+        android:label=""
+        tools:layout="@layout/fragment_upload_document" />
+    <fragment
+        android:id="@+id/enterAddressDetails"
+        android:name="com.jmm.kyc.ui.EnterAddressDetails"
+        android:label=""
+        tools:layout="@layout/fragment_enter_address_details" >
+        <action
+            android:id="@+id/action_enterAddressDetails_to_selectDocument"
+            app:destination="@id/selectDocument" />
+    </fragment>
+</navigation>

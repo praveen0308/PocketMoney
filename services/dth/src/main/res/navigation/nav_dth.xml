@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_dth"
+    app:startDestination="@id/dthOperator">
+
+    <fragment
+        android:id="@+id/dthOperator"
+        android:name="com.jmm.dth.DthOperator"
+        android:label="fragment_dth_operator"
+        tools:layout="@layout/fragment_dth_operator" >
+        <action
+            android:id="@+id/action_dthOperator_to_dthRechargeHost"
+            app:destination="@id/dthRechargeHost" />
+    </fragment>
+    <fragment
+        android:id="@+id/dthRechargeHost"
+        android:name="com.jmm.dth.DthRechargeHost"
+        android:label="fragment_dth_recharge_host"
+        tools:layout="@layout/fragment_dth_recharge_host" />
+</navigation>

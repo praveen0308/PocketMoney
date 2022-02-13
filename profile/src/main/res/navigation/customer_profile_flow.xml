@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/customer_profile_flow"
+    app:startDestination="@id/customerProfile">
+
+    <fragment
+        android:id="@+id/customerProfile"
+        android:name="com.jmm.profile.CustomerProfile"
+        android:label="Profile"
+        tools:layout="@layout/fragment_customer_profile" >
+        <action
+            android:id="@+id/action_customerProfile_to_verifyPan"
+            app:destination="@id/verifyPan" />
+    </fragment>
+    <fragment
+        android:id="@+id/verifyPan"
+        android:name="com.jmm.kyc.ui.VerifyPan"
+        android:label="VerifyPan"
+        tools:layout="@layout/fragment_verify_pan"/>
+</navigation>

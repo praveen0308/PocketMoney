@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.CAMERA" />
+<!--    <uses-permission android:name="android.permission.CAMERA" />-->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -23,76 +23,76 @@
         android:theme="@style/Theme.PocketMoney"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".authentication.SignUp"
+            android:name="com.jmm.authentication.SignUp"
             android:exported="true" />
         <activity
-            android:name=".authentication.SignIn"
+            android:name="com.jmm.authentication.SignIn"
             android:exported="true" />
         <activity
-            android:name=".mlm.ui.payouts.ScanQR"
+            android:name="com.jmm.payout.ScanQR"
             android:exported="true" />
         <activity
-            android:name=".mlm.ui.forgotpassword.ChangePassword"
+            android:name="com.jmm.forgot_password.ChangePassword"
             android:exported="true" />
         <activity
-            android:name=".mlm.ui.coupons.ManageCoupon"
+            android:name="com.jmm.coupon.ManageCoupon"
             android:exported="true" />
         <activity
-            android:name=".mlm.ui.forgotpassword.ForgotPassword"
+            android:name="com.jmm.forgot_password.ForgotPassword"
             android:exported="true" />
         <activity
-            android:name=".common.ChatActivity"
+            android:name="com.jmm.complaint_report.ChatActivity"
             android:exported="true" />
         <activity
-            android:name=".common.TransactionDetailActivity"
+            android:name="com.jmm.transactions.TransactionDetailActivity"
             android:exported="true" />
         <activity
-            android:name=".mlm.ui.payouts.NewPayout"
+            android:name="com.jmm.payout.NewPayout"
             android:exported="true" />
         <activity
-            android:name=".mlm.ui.mobilerecharge.simpleui.NewRechargeActivity"
+            android:name="com.jmm.mobile_recharge.NewRechargeActivity"
             android:exported="true" />
         <activity
-            android:name=".shopping.ui.checkoutorder.NewCheckout"
+            android:name="com.jmm.shopping.ui.checkoutorder.NewCheckout"
             android:exported="true" />
         <activity
-            android:name=".mlm.ui.membership.ActivateAccount"
+            android:name="com.jmm.membership.ActivateAccount"
             android:exported="true" />
-        <activity android:name=".mlm.ui.mobilerecharge.MobileNumberDetail" /> <!-- <activity android:name=".mlm.ui.mobilerecharge.SelectLocation" /> -->
-        <activity android:name=".mlm.ui.AddMoneyToWallet" />
-        <activity android:name=".mlm.ui.payouts.Payouts" />
-        <activity android:name=".mlm.ui.transfermoney.B2BTransfer" /> <!-- <activity android:name=".mlm.ui.transfermoney.PayToWallet" /> -->
-        <activity android:name=".mlm.ui.dashboard.AccountActivity" />
-        <activity android:name=".mlm.ui.transfermoney.QRCodeScanner" />
-        <activity android:name=".mlm.ui.customergrowth.CustomerGrowthNCommission" />
-        <activity android:name=".shopping.ui.AddNewAddress" />
-        <activity android:name=".mlm.ui.dashboard.ComplaintList" />
-        <activity android:name=".mlm.ui.dashboard.CustomerWalletActivity" />
-        <activity android:name=".mlm.ui.dashboard.CustomerProfile" />
-        <activity android:name=".mlm.ui.dashboard.IncomeActivity" />
-        <activity android:name=".shopping.ui.ExtraNavigationActivity" />
-        <activity android:name=".shopping.ui.customernavigation.AllCategories" />
-        <activity android:name=".shopping.ui.checkoutorder.OrderSuccessful" />
-        <activity android:name=".shopping.ui.SearchProductActivity" />
-        <activity android:name=".shopping.ui.customernavigation.MyAccount" />
-        <activity android:name=".shopping.ui.customernavigation.MyNotifications" />
-        <activity android:name=".shopping.ui.customernavigation.MyWishlist" />
-        <activity android:name=".shopping.ui.ShoppingOfferZone" />
-        <activity android:name=".shopping.ui.customernavigation.MyOrders" />
-        <activity android:name=".shopping.ui.checkoutorder.CheckoutOrder" />
-        <activity android:name=".shopping.ui.YourCart" />
-        <activity android:name=".mlm.ui.mobilerecharge.MobileRechargeActivity" />
-        <activity android:name=".mlm.ui.electricity.ElectricityActivity" />
-        <activity android:name=".mlm.ui.dashboard.pages.PaymentHistoryFilter" />
-        <activity android:name=".mlm.ui.dth.DthActivity" />
-        <activity android:name=".mlm.ui.mobilerecharge.SelectContact" /> <!-- <activity android:name=".mlm.ui.recharge.OperatorsPlan" /> -->
+
+        <activity android:name="com.jmm.add_money.AddMoneyToWallet" android:exported="true"/>
+
+        <activity android:name="com.jmm.transfer_money.B2BTransfer" android:exported="true"/> <!-- <activity android:name=".mlm.ui.transfermoney.PayToWallet" /> -->
+        <activity android:name="com.jmm.mlm.ui.AccountActivity" android:exported="true"/>
+
+        <activity android:name="com.jmm.commission.CustomerGrowthNCommission" android:exported="true"/>
+        <activity android:name="com.jmm.shopping.ui.AddNewAddress" android:exported="true"/>
+        <activity android:name="com.jmm.complaint_report.ComplaintList" android:exported="true"/>
+        <activity android:name="com.jmm.mlm.ui.CustomerWalletActivity" android:exported="true"/>
+<!--        <activity android:name="com.jmm.profile.CustomerProfile" android:exported="true"/>-->
+
+
+        <activity android:name="com.jmm.shopping.ui.customernavigation.AllCategories" android:exported="true"/>
+        <activity android:name="com.jmm.shopping.ui.checkoutorder.OrderSuccessful" android:exported="true"/>
+        <activity android:name="com.jmm.shopping.ui.SearchProductActivity" android:exported="true"/>
+
+
+
+
+        <activity android:name="com.jmm.shopping.ui.customernavigation.MyOrders" android:exported="true"/>
+<!--        <activity android:name="com.jmm.shopping.ui.checkoutorder.CheckoutOrder" android:exported="true"/>-->
+        <activity android:name="com.jmm.shopping.ui.YourCart" android:exported="true"/>
+
+        <activity android:name="com.jmm.dth.DthActivity" android:exported="true"/>
+        <activity android:name="com.jmm.mobile_recharge.SelectContact" android:exported="true"/> <!-- <activity android:name=".mlm.ui.recharge.OperatorsPlan" /> -->
         <!-- <activity android:name=".mlm.ui.recharge.RechargeActivity" /> -->
-        <activity android:name=".shopping.ui.BuyProduct" />
-        <activity android:name=".mlm.ui.playrecharge.GooglePlayRecharge" />
+        <activity android:name="com.jmm.shopping.ui.BuyProduct" android:exported="true"/>
+        <activity android:name="com.jmm.play_recharge.GooglePlayRecharge" android:exported="true"/>
         <activity
-            android:name=".mlm.ui.dashboard.MainDashboard"
-            android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".mlm.ui.MainActivity">
+            android:name="com.jmm.mlm.MainDashboard"
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true"/>
+        <activity android:name="com.jmm.core.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

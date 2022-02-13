@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="base_flow" type="id" />
+    <item name="onboarding_flow" type="id" />
+    <item name="welcome_flow" type="id" />
+
+
+    <item name="home_flow" type="id" />
+    <item name="payment_history_flow" type="id" />
+    <item name="account_flow" type="id" />
+</resources>

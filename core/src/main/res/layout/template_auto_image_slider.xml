@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    android:clipChildren="true"
+    >
+ <!--   <com.jmm.core.utils.MyAutoImageSlider
+        android:id="@+id/my_auto_image_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+-->
+
+    <org.imaginativeworld.whynotimagecarousel.ImageCarousel
+        android:id="@+id/carousel"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        app:autoPlay="true"
+        app:carouselType="BLOCK"
+        app:showNavigationButtons="false"
+        app:imageScaleType="fitXY"
+        app:showTopShadow="false"
+        app:showBottomShadow="false"
+        />
+</com.google.android.material.card.MaterialCardView>

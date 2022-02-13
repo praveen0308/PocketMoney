@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/payment_history_flow"
+    app:startDestination="@id/paymentHistory3">
+
+
+    <fragment
+        android:id="@+id/paymentHistory3"
+        android:name="com.jmm.transactions.PaymentHistory"
+        android:label="fragment_payment_history"
+        tools:layout="@layout/fragment_payment_history" />
+</navigation>

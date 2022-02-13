@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pocket Money</string>
+    <string name="msg_splash_subtitle">India\'s Payments and Shopping App</string>
+    <string name="jmm_infotech">JMM Infotech</string>
+    <string name="from">From</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="next">Next</string>
+    <string name="register">Register</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="email">Email</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="home">Home</string>
+    <string name="all_services">All Services</string>
+    <string name="shop">Shop</string>
+    <string name="history">History</string>
+    <string name="offers">Offers</string>
+    <string name="balance">Balance</string>
+    <string name="view_details">View Details</string>
+    <string name="balanced">Balance:</string>
+    <string name="_0">0</string>
+    <string name="see_all_services">See all services</string>
+    <string name="dummy_text_1"><![CDATA[Recharge & Get 5% cashback]]></string>
+    <string name="dummy_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500</string>
+    <string name="recharge_pay_bills"><![CDATA[Recharge & Pay Bills]]></string>
+    <string name="coming_soon">Coming Soon</string>
+    <string name="get_started">Get Started</string>
+    <string name="help">Help</string>
+    <string name="all_transactions">All Transactions</string>
+    <string name="all">All</string>
+    <string name="msg_no_transaction_history">You don\'t have any transaction history.</string>
+    <string name="redeem_supercash">Redeem Supercash</string>
+    <string name="earn_supercash">Earn Supercash</string>
+    <string name="categories">Categories</string>
+    <string name="see_all">See All</string>
+    <string name="notification">Notification</string>
+    <string name="cart">Cart</string>
+    <string name="msg_search">Search for Products,Brands and More</string>
+    <string name="all_categories">All Categories</string>
+    <string name="offer_zone">Offer Zone</string>
+    <string name="choose_language">Choose Language</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_coupons">My Coupons</string>
+    <string name="my_cart">My cart</string>
+    <string name="my_wishlist">My Wishlist</string>
+    <string name="my_notifications">My Notifications</string>
+    <string name="my_account">My Account</string>
+    <string name="notification_preferences">Notification Preferences</string>
+    <string name="help_centre">Help Centre</string>
+    <string name="privacy_policy">Privacy Policy</string>
+
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+    <string name="search">Search</string>
+    <string name="add_to_cart">Add to Cart</string>
+    <string name="buy_now">Buy Now</string>
+    <string name="scan_pay"><![CDATA[Scan & Pay]]></string>
+    <string name="msg_enter_name_n_mobile_no">Please Enter Name or Mobile No.</string>
+    <string name="electricity_boards">Electricity Boards</string>
+    <string name="dth_operators">DTH Operators</string>
+    <string name="operators">Operators</string>
+
+
+    <string name="number_zero">0</string>
+    <string name="number_one">1</string>
+    <string name="number_two">2</string>
+    <string name="number_three">3</string>
+    <string name="number_four">4</string>
+    <string name="number_five">5</string>
+    <string name="number_six">6</string>
+    <string name="number_seven">7</string>
+    <string name="number_eight">8</string>
+    <string name="number_nine">9</string>
+    <string name="btn_clear">Clear</string>
+    <string name="btn_backspace">Back</string>
+    <string name="recharge_for">Recharge for</string>
+    <string name="see_plans">See Plans</string>
+    <string name="enter_amount_or_search_contact">Enter amount or search contact</string>
+    <string name="change_plan">Change Plan</string>
+    <string name="pay">Pay</string>
+    <string name="select_operator">Select Operator</string>
+    <string name="amount">Amount</string>
+    <string name="select_state">Select State</string>
+    <string name="proceed">Proceed</string>
+    <string name="consumer_details">Consumer Details</string>
+    <string name="select_board">Select Board</string>
+    <string name="customer_account_number">Customer Account Number</string>
+    <string name="title">Title</string>
+    <string name="your_cart">Your Cart</string>
+    <string name="checkout">Checkout</string>
+    <string name="rupee_zero">₹0</string>
+    <string name="msg_emi">EMI starts from ₹100</string>
+    <string name="in_stock">In Stock</string>
+    <string name="out_of_stock">Out Of Stock</string>
+    <string name="address">Address</string>
+    <string name="dummy_address">Shop 16, Bhoomi Enclave, Mahavir Nagar, Above Sarawat Bank, Kandivali (west) Mumbai, Maharashtra, 400067</string>
+    <string name="dummy_mobile_number">9897154545</string>
+    <string name="dummy_user_name">Joe Mark</string>
+    <string name="edit">Edit</string>
+    <string name="dummy_payment_card_num">**** **** **** 1234</string>
+    <string name="full_name">Full Name</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="pincode">Pincode</string>
+    <string name="country">Country</string>
+    <string name="save_address">Save Address</string>
+    <string name="add_address">Add Address</string>
+    <string name="adding_new_address">Adding New Address</string>
+    <string name="add_new_card">Add New Card</string>
+    <string name="name_on_card">Name On Card</string>
+    <string name="card_number">Card Number</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="cvv">CVV</string>
+    <string name="add_card">Add Card</string>
+    <string name="use_this_for_shipping_address">Use this for shipping address</string>
+    <string name="deliver_here">Deliver Here</string>
+    <string name="saved_payment_methods">Saved Payment Methods</string>
+    <string name="payment_methods">Payment Methods</string>
+    <string name="street">Street</string>
+    <string name="locality">Locality</string>
+    <string name="india">India</string>
+    <string name="select_city">Select city</string>
+    <string name="_default">Default</string>
+    <string name="filters">Filters</string>
+    <string name="txt_new">New</string>
+    <string name="featured">Featured</string>
+    <string name="saving">Saving</string>
+    <string name="str_continue">Continue</string>
+    <string name="your_order_will_be_delivered_soon">Your order will be delivered soon.</string>
+    <string name="thank_you_for_choosing_our_app">Thank you for choosing our app!</string>
+    <string name="ordered_successfully">Ordered Successfully !</string>
+    <string name="continue_shopping">Continue Shopping</string>
+    <string name="sort_by">Sort by</string>
+    <string name="details">Details</string>
+    <string name="privacy_policy_content">
+        Privacy Policy
+
+    </string>
+
+    <string name="policy_title_1">1. Collection of Your Information</string>
+    <string name="policy_title_2">2. Use of Demographic / Profile Data / Your Information</string>
+    <string name="policy_title_3">3. Sharing of personal information</string>
+    <string name="policy_title_4">4. Links to Other Sites</string>
+    <string name="policy_title_5">5. Security Precautions</string>
+    <string name="policy_title_6">6. Advertisements on Platform</string>
+    <string name="policy_title_7">7. Children Information</string>
+    <string name="policy_title_8">8. Data Retention</string>
+    <string name="policy_title_9">9. Your Consent</string>
+    <string name="policy_title_10">10. Changes to this Privacy Policy</string>
+    <string name="policy_title_11">11. Queries</string>
+
+
+    <string name="policy_text_1">
+        When you use our Platform, we collect and store your information which is provided by you from time to time. In general, you can browse the Platform without telling us who you are or revealing any personal information about yourself. Once you give us your personal information, you are not anonymous to us. Where possible, we indicate which fields are required and which fields are optional. You always have the option to not provide information by choosing not to use a particular service, product or feature on the Platform.
+
+We may track your buying behaviour, preferences, and other information that you choose to provide on our Platform. We use this information to do internal research on our users\' demographics, interests, and behaviour to better understand, protect and serve our users. This information is compiled and analysed on an aggregated basis. This information may include the URL that you just came from (whether this URL is on our Platform or not), which URL you next go to (whether this URL is on our Platform or not), your computer browser information, and your IP address.
+
+We collect personal information (such as email address, delivery address, name, phone number, credit card/debit card and other payment instrument details) from you when you set up an account or transact with us. While you can browse some sections of our Platform without being a registered member, certain activities (such as placing an order or consuming our online content or services) do require registration. We do use your contact information to send you offers based on your previous orders and your interests.
+
+If you choose to post messages on our message boards, chat rooms or other message areas or leave feedback or if you use voice commands to shop on the Platform, we will collect that information you provide to us. We retain this information as necessary to resolve disputes, provide customer support and troubleshoot problems as permitted by law.
+
+If you send us personal correspondence, such as emails or letters, or if other users or third parties send us correspondence about your activities or postings on the Platform, we may collect such information into a file specific to you.
+
+If you enrol into our SuperCoins Loyalty Program, we will collect and store your personal information such as name, contact number, email address, communication address, date of birth, gender, zip code, lifestyle information, demographic and work details which is provided by you to Pocket Money or a third-party business partner that operates online/offline establishments or platforms where you can earn SuperCoins for purchase of goods and services, and redeem SuperCoins. We will also collect your information related to your transactions on Pocket Money platform and such third-party business partner platforms. When such third-party business partner collects your personal information directly from you, you will be governed by their privacy policies. Pocket Money shall not be responsible for the third-party business partner’s privacy practices or the content of their privacy policies, and we request you to read their privacy policies prior to disclosing any information.
+
+Pocket Money has onboarded certain third-party business partners on the Platform who specialise in the categories like travel ticket reservations, booking online movie tickets, paying online bills and more (Ultra-Partners). If you use the services of Ultra-Partners, you will be redirected to Ultra-Partners websites/applications and your entry to Ultra-Partners websites/applications will be based on your Pocket Money login credentials after seeking your permissions to share the data further. Pocket Money shall not be responsible for the Ultra-Partner’s privacy practices or the content of their privacy policies, and we request you to read their privacy policies prior to disclosing any information.
+    </string>
+    <string name="policy_text_2">
+        We use your personal information to provide the product and services you request. To the extent we use your personal information to market to you, we will provide you the ability to opt-out of such uses. We use your personal information to assist sellers and business partners in handling and fulfilling orders; enhancing customer experience; resolve disputes; troubleshoot problems; help promote a safe service; collect money; measure consumer interest in our products and services; inform you about online and offline offers, products, services, and updates; customize and enhance your experience; detect and protect us against error, fraud and other criminal activity; enforce our terms and conditions; and as otherwise described to you at the time of collection of information.
+
+With your consent, we will have access to your SMS, contacts in your directory, location and device information. We may also request you to provide your PAN, GST Number, Government issued ID cards/number and Know-Your-Customer (KYC) details to: (i) check your eligibility for certain products and services including but not limited to credit and payment products; (ii) issue GST invoice for the products and services purchased for your business requirements; (iii) enhance your experience on the Platform and provide you access to the products and services being offered by us, sellers, affiliates or lending partners. You understand that your access to these products/services may be affected in the event consent is not provided to us.
+
+In our efforts to continually improve our product and service offerings, we and our affiliates collect and analyse demographic and profile data about our users\' activity on our Platform. We identify and use your IP address to help diagnose problems with our server, and to administer our Platform. Your IP address is also used to help identify you and to gather broad demographic information.
+
+We will occasionally ask you to participate in optional surveys conducted either by us or through a third party market research agency. These surveys may ask you for personal information, contact information, date of birth, demographic information (like zip code, age, or income level), attributes such as your interests, household or lifestyle information, your purchasing behaviour or history, preferences, and other such information that you may choose to provide. The surveys may involve collection of voice data or video recordings, the participation of which would purely be voluntary in nature. We use this data to tailor your experience at our Platform, providing you with content that we think you might be interested in and to display content according to your preferences.
+
+    </string>
+    <string name="policy_text_3">
+        We may share personal information with our other corporate entities and affiliates for purposes of providing products and services offered by them, such as, the deferred payment options Pocket Money PayLater offered by Pocket Money Advanz Private Limited through its lending partners. These entities and affiliates may share such information with their affiliates, business partners and other third parties for the purpose of providing you their products and services, and may market to you as a result of such sharing unless you explicitly opt-out.
+
+We may disclose your personal information to third parties, such as sellers, business partners. This disclosure may be required for us to provide you access to our products and services; for fulfilment of your orders; for enhancing your experience; for providing feedback on products; to collect payments from you; to comply with our legal obligations; to conduct market research or surveys; to enforce our Terms of Use; to facilitate our marketing and advertising activities; to analyse data; for customer service assistance; to prevent, detect, mitigate, and investigate fraudulent or illegal activities related to our product and services. We do not disclose your personal information to third parties for their marketing and advertising purposes without your explicit consent.
+
+We may disclose personal information if required to do so by law or in the good faith belief that such disclosure is reasonably necessary to respond to subpoenas, court orders, or other legal process. We may disclose personal information to law enforcement agencies, third party rights owners, or others in the good faith belief that such disclosure is reasonably necessary to: enforce our Terms of Use or Privacy Policy; respond to claims that an advertisement, posting or other content violates the rights of a third party; or protect the rights, property or personal safety of our users or the general public.
+
+We and our affiliates will share / sell some or all of your personal information with another business entity should we (or our assets) plan to merge with, or be acquired by that business entity, or re-organization, amalgamation, restructuring of business. Should such a transaction occur that other business entity (or the new combined entity) will be required to follow this Privacy Policy with respect to your personal information.
+
+    </string>
+    <string name="policy_text_4">
+        Our Platform may provide links to other websites or application that may collect personal information about you. We are not responsible for the privacy practices or the content of those linked websites.
+    </string>
+    <string name="policy_text_5">
+        We maintain reasonable physical, electronic and procedural safeguards to protect your information. Whenever you access your account information, we offer the use of a secure server. Once your information is in our possession we adhere to our security guidelines to protect it against unauthorized access. However, by using the Platform, the users accept the inherent security implications of data transmission over the internet and the World Wide Web which cannot always be guaranteed as completely secure, and therefore, there would always remain certain inherent risks regarding use of the Platform. Users are responsible for ensuring the protection of login and password records for their account.
+    </string>
+    <string name="policy_text_6">
+        We use third-party advertising companies to serve ads when you visit our Platform. These companies may use information (not including your name, address, email address, or telephone number) about your visits to this and other websites in order to provide advertisements about goods and services of interest to you.
+    </string>
+    <string name="policy_text_7">
+We do not knowingly solicit or collect personal information from children under the age of 18 and use of our Platform is available only to persons who can form a legally binding contract under the Indian Contract Act, 1872. If you are under the age of 18 years then you must use the Platform, application or services under the supervision of your parent, legal guardian, or any responsible adult.
+    </string>
+    <string name="policy_text_8">
+        We retain your personal information in accordance with appliable laws, for a period no longer than is required for the purpose for which it was collected or as required under any applicable law. However, we may retain data related to you if we believe it may be necessary to prevent fraud or future abuse or if required by law or for other legitimate purposes. We may continue to retain your data in anonymised form for analytical and research purposes.
+    </string>
+    <string name="policy_text_9">
+        By visiting our Platform or by providing your information, you consent to the collection, use, storage, disclosure and otherwise processing of your information (including sensitive personal information) on the Platform in accordance with this Privacy Policy. If you disclose to us any personal information relating to other people, you represent that you have the authority to do so and to permit us to use the information in accordance with this Privacy Policy.
+You, while providing your personal information over the Platform or any partner platforms or establishments, consent to us (including our other corporate entities, affiliates, lending partners, technology partners, marketing channels, business partners and other third parties) to contact you through SMS, instant messaging apps, call and/or e-mail for the purposes specified in this Privacy Policy.
+
+    </string>
+    <string name="policy_text_10">Please check our Privacy Policy periodically for changes. We may update this Privacy Policy to reflect changes to our information practices. We will alert you to significant changes by posting the date our policy got last updated, placing a notice on our Platform, or by sending you an email when we are required to do so by applicable law.</string>
+    <string name="policy_text_11">If you have a query, issue, concern, or complaint in relation to collection or usage of your personal information under this Privacy Policy, please contact us at the contact information provided above.</string>
+
+    <string name="enter_your_pincode">Enter your pincode</string>
+    <string name="terms_conditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="sponsor_name">Sponsor name</string>
+    <string name="sponsor_id">Sponsor ID</string>
+    <string name="default_sponsor_id">9168435483</string>
+    <string name="default_sponsor_name">Pocket Money</string>
+    <string name="validity">Validity</string>
+    <string name="allow">Allow</string>
+    <string name="msg_contact_permission_denied">Allow permission to select contact from contact list.</string>
+    <string name="mobile">Mobile:</string>
+    <string name="remove">Remove</string>
+    <string name="default_address">default address</string>
+    <string name="last_month">Last Month</string>
+    <string name="create_coupon">Create Coupon</string>
+    <string name="transfer">Transfer</string>
+    <string name="income">Income</string>
+    <string name="add_new_address">Add new address</string>
+    <string name="scan_pay_by_pocket_money"><![CDATA[Scan & Pay by Pocket Money]]></string>
+    <string name="welcome_to_pocket_money">Welcome to Pocket Money</string>
+    <string name="about_pocket_money">We has brought an amazing multi-state venture POCKET MONEY which can remember all the recharge and all the bill payments and shoppings and get done.  POCKET MONEY is a venture the provides the opportunity to change life by helping its recharges reach the basics needs through business opportunitys.</string>
+    <string name="send_money_to_mobile_no">Send Money to Mobile No.</string>
+    <string name="enter_mobile_no">Enter Mobile No.</string>
+    <string name="confirm">Confirm</string>
+    <string name="msg_go_to_pro">Please Activate your account to become a PRO Member to get the commissions, all Recharge services and Shopping commission will be provided to only PRO Member</string>
+    <string name="using_coupon">Using Coupon</string>
+    <string name="using_wallet">Using Wallet</string>
+    <string name="using_payment">Using Payment</string>
+    <string name="recharge">Recharge</string>
+    <string name="google_play_policy">Google Play recharge code purchases are non-refundable. Google Play recharge codes can only be used on the Google Play Store to purchase apps, games, digital content and in-app items available on the Store. See play.google.com/ in-card-termsfor full terms. Issued by Google Payment Singapore Pte. Ltd. for purchases of eligible items on Google Play only. Users must be Indian residents aged 18+. Between the ages of 13 and 17, the consent of a parent or guardian is required prior to making a purchase. Requires a Google Payments account and Internet access to redeem. Not usable for hardware and certain subscriptions. Other limits may apply. No fees or expiration. Card not redeemable for cash or other cards, not reloadable or refundable and cannot be combined with non-Google Play balances, resold, exchanged or transferred for value. User is responsible for loss of card. For help, visit support.google.com/googleplay/go/cardhelp. Only use this gift card\'s code on Google Play. Any other request for the code may be a scam. Visit play.google.com/giftcardscam</string>
+
+</resources>

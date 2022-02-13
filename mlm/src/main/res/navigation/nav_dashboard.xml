@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_dashboard"
+    app:startDestination="@id/home">
+
+    <fragment
+        android:id="@+id/home"
+        android:name="com.jmm.mlm.ui.Home"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+
+        <action
+            android:id="@+id/action_home_to_payment_history_flow"
+            app:destination="@id/payment_history_flow" />
+        <action
+            android:id="@+id/action_home_to_shop"
+            app:destination="@id/shop" />
+    </fragment>
+
+    <include app:graph="@navigation/payment_history_flow" />
+    <fragment
+        android:id="@+id/account"
+        android:name="com.jmm.mlm.ui.Account"
+        android:label="fragment_account"
+        tools:layout="@layout/fragment_account" >
+        <action
+            android:id="@+id/action_account_to_shareUs"
+            app:destination="@id/shareUs" />
+        <action
+            android:id="@+id/action_account_to_aboutUs"
+            app:destination="@id/aboutUs" />
+    </fragment>
+    <fragment
+        android:id="@+id/shop"
+        android:name="com.jmm.mlm.ui.Shop"
+        android:label="Shop"
+        tools:layout="@layout/fragment_shop">
+        <action
+            android:id="@+id/action_shop_to_manageAddress"
+            app:destination="@id/manageAddress" />
+        <action
+            android:id="@+id/action_shop_to_privacyPolicy2"
+            app:destination="@id/privacyPolicy2" />
+    </fragment>
+    <fragment
+        android:id="@+id/manageAddress"
+        android:name="com.jmm.shopping.ui.checkoutorder.ManageAddress"
+        android:label="fragment_manage_address"
+        tools:layout="@layout/fragment_manage_address" />
+    <fragment
+        android:id="@+id/privacyPolicy2"
+        android:name="com.jmm.shopping.ui.customernavigation.PrivacyPolicy"
+        android:label="fragment_privacy_policy"
+        tools:layout="@layout/fragment_privacy_policy" />
+    <fragment
+        android:id="@+id/shareUs"
+        android:name="com.jmm.mlm.ui.ShareUs"
+        android:label="fragment_share_us"
+        tools:layout="@layout/fragment_share_us" />
+    <fragment
+        android:id="@+id/aboutUs"
+        android:name="com.jmm.mlm.ui.AboutUs"
+        android:label="fragment_about_us"
+        tools:layout="@layout/fragment_about_us" />
+</navigation>

@@ -1,0 +1,220 @@
+package com.jmm.payout
+
+import android.R
+import android.os.Bundle
+import android.widget.ArrayAdapter
+import androidx.activity.viewModels
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayoutMediator
+import com.jmm.model.payoutmodels.PayoutCustomer
+import com.jmm.payout.databinding.ActivityNewPayoutBinding
+import com.jmm.util.ApplicationToolbar
+import com.jmm.util.BaseActivity
+import com.jmm.util.Status
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class NewPayout : BaseActivity<ActivityNewPayoutBinding>(ActivityNewPayoutBinding::inflate),
+    ApplicationToolbar.ApplicationToolbarListener {
+    private val viewModel by viewModels<PayoutViewModel>()
+    var btnState = "SEARCH"
+    private var userId = ""
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding.toolbarActivityPayout.setApplicationToolbarListener(this)
+        setupViewPager()
+        populatePayoutTypes()
+        binding.etSearchView.doAfterTextChanged {
+            if (it.toString().length < 10){
+                viewModel.btnState.postValue(0)
+            }else{
+                viewModel.btnState.postValue(1)
+            }
+
+        }
+
+        binding.btnSearch.setOnClickListener {
+            if(userId.isEmpty()){
+                checkAuthorization()
+            }else{
+                viewModel.customerNumber.postValue(binding.etSearchView.text.toString().trim())
+                viewModel.searchPayoutCustomer(binding.etSearchView.text.toString())
+            }
+
+        }
+
+        binding.btnAddCustomer.setOnClickListener {
+            if(userId.isEmpty()){
+                checkAuthorization()
+            }else{
+                val sheet = AddPayoutCustomer()
+                sheet.show(supportFragmentManager,sheet.tag)
+            }
+        }
+    }
+
+    override fun subscribeObservers() {
+        viewModel.userId.observe(this,{
+            userId = it
+            if(userId.isEmpty()){
+                checkAuthorization()
+            }
+        })
+        viewModel.payoutType.observe(this,{
+
+        })
+
+        viewModel.progressStatus.observe(this,{
+            when(it){
+
+            }
+        })
+        viewModel.btnState.observe(this, {
+            when (it) {
+                0 -> {
+                    btnState = "SEARCH"
+                    binding.btnSearch.isEnabled = false
+                    binding.btnSearch.isVisible = true
+                    binding.btnAddCustomer.isVisible = false
+                }
+                1 -> {
+                    btnState = "SEARCH"
+                    binding.btnSearch.isEnabled = true
+                    binding.btnSearch.isVisible = true
+                    binding.btnAddCustomer.isVisible = false
+                }
+                2 -> {
+                    btnState = "ADD"
+                    binding.apply {
+                        btnSearch.isEnabled = false
+                        btnAddCustomer.isVisible = true
+                        btnSearch.isVisible= false
+                        layoutCustomerDetail.root.isVisible = false
+                        tlPayouts.isVisible = false
+                        vpPayouts.isVisible= false
+                    }
+
+                }
+            }
+        })
+
+        viewModel.payoutCustomer.observe(this, { _result ->
+            when (_result.status) {
+                Status.SUCCESS -> {
+                    if (_result._data ==null){
+                        viewModel.btnState.postValue(2)
+                        binding.apply {
+                            layoutCustomerDetail.root.isVisible = false
+                            tlPayouts.isVisible = false
+                            vpPayouts.isVisible= false
+                        }
+                    }else{
+                        populateCustomerUI(_result._data!!)
+                        binding.apply {
+                            tlPayouts.isVisible = true
+                            vpPayouts.isVisible= true
+                        }
+                    }
+
+                    displayLoading(false)
+                }
+                Status.LOADING -> {
+                    displayLoading(true)
+                }
+                Status.ERROR -> {
+                    displayLoading(false)
+                    _result.message?.let {
+                        displayError(it)
+                    }
+                }
+            }
+        })
+
+    }
+
+    private fun populateCustomerUI(customer: PayoutCustomer) {
+        binding.apply {
+            layoutCustomerDetail.root.isVisible =true
+            layoutCustomerDetail.apply {
+                tvSymbol.text = customer.FirstName?.take(1)
+                tvName.text = "${customer.FirstName} ${customer.LastName}"
+                tvSenderId.text = customer.PayoutCustomerID
+                tvLimit.text = customer.TransferLimit.toString()
+            }
+        }
+    }
+
+
+    private fun populatePayoutTypes(){
+        val types = arrayListOf("Bank transfer","Paytm transfer","UPI transfer")
+        val arrayAdapter = ArrayAdapter(this, R.layout.simple_list_item_1, types)
+        binding.actvPayoutType.apply {
+            threshold = 1
+            setAdapter(arrayAdapter)
+
+            setOnItemClickListener { parent, _, position, _ ->
+                val type = parent.getItemAtPosition(position) as String
+                when(type){
+                    "Bank transfer"->viewModel.payoutType.postValue(1)
+                    "UPI transfer"->viewModel.payoutType.postValue(2)
+                    "Paytm transfer"->viewModel.payoutType.postValue(3)
+                }
+
+            }
+        }
+
+    }
+
+    private fun setupViewPager() {
+        binding.apply {
+
+            vpPayouts.adapter = PayoutsVPAdapter(this@NewPayout)
+            val tabLayoutMediator = TabLayoutMediator(
+                tlPayouts, vpPayouts
+            ) { tab, position ->
+                when (position) {
+                    0 -> tab.text = "Beneficiary's List"
+                    1 -> tab.text = "Transaction Details"
+                }
+            }
+            tabLayoutMediator.attach()
+            vpPayouts.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+
+            })
+        }
+    }
+
+    inner class PayoutsVPAdapter(fragmentActivity: FragmentActivity) :
+        FragmentStateAdapter(fragmentActivity) {
+
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> BeneficiaryList()
+                1 -> PayoutTransactions()
+                else -> BeneficiaryList()
+
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return 2
+        }
+    }
+
+    override fun onToolbarNavClick() {
+        finish()
+    }
+
+    override fun onMenuClick() {
+
+    }
+
+    companion object{
+        const val UPDATED = 1
+    }
+}

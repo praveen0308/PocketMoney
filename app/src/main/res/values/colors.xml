@@ -11,8 +11,6 @@
     <color name="colorErrorRed">#B00020</color>
     <color name="colorBackground">#F0F7F9</color>
 
-
-
     <color name="colorWhiteSmoke">#FCFCFC</color>
     <color name="colorLightGrey">#D8EEEEF1</color>
     <color name="colorGrey">#929293</color>
@@ -50,11 +48,14 @@
 
     <color name="success">#2da25c</color>
 
-
     <color name="colorRed">#B71C1C</color>
     <color name="colorYellow">#FFD54F</color>
     <color name="colorBlue">#42A5F5</color>
     <color name="colorPurple">#9C27B0</color>
     <color name="colorGreen">#4CAF50</color>
     <color name="grayFontColor">#424242</color>
+
+    <color name="title_txt_344057">#344057</color>
+    <color name="silevr_e2e4e9">#e2e4e9</color>
+    <color name="gray_a6aebe">#a6aebe</color>
 </resources>

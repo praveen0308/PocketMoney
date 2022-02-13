@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    <declare-styleable name="CustomKeyboardView">-->
+<!--        <attr name="targetEditText" format="reference" />-->
+
+<!--    </declare-styleable>-->
+    <declare-styleable name="VerticalTextView">
+        <attr name="VT_direction">
+            <enum name="uptodown" value="0" />
+            <enum name="downtoup" value="1" />
+            <enum name="lefttoright" value="2" />
+            <enum name="righttoleft" value="3" />
+        </attr>
+    </declare-styleable>
+
+
+
+
+
+    <declare-styleable name="MyEmptyView">
+
+        <attr name="MEVImage" format="reference"/>
+
+        <attr name="MEVTitle" format="string" />
+        <attr name="MEVTitleTextSize" format="dimension"/>
+
+    </declare-styleable>
+
+    <declare-styleable name="MyAddressView">
+        <attr name="mav_type" format="enum">
+            <enum name="type_default" value="0"/>
+            <enum name="type_view" value="1"/>
+
+        </attr>
+
+    </declare-styleable>
+
+
+</resources>

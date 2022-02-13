@@ -1,0 +1,62 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        minSdk 23
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+
+
+    }
+
+    buildTypes {
+
+        debug{
+            buildConfigField("String", "PAN_SERVICE_BASE_URL", "\"https://kyc-api.surepass.io/api/v1/\"")
+            buildConfigField("String", "PM_SERVICE_BASE_URL", "\"https://sampurnaapi.pocketmoney.net.in/api/\"")
+            buildConfigField("String", "SMS_SERVICE_BASE_URL", "\"http://login.webpayservices.in/sms-panel/api/\"")
+
+            buildConfigField("String", "PAN_SERVICE_BEARER_TOKEN", "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY0MDY5ODM0NywianRpIjoiMTdkOTM1YmEtYWJjMi00MDY0LWJhY2UtMmU4NmFhMTc2NDc2IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2Lm1hbm9qa3VtYXJwYW5maUBhYWRoYWFyYXBpLmlvIiwibmJmIjoxNjQwNjk4MzQ3LCJleHAiOjE5NTYwNTgzNDcsInVzZXJfY2xhaW1zIjp7InNjb3BlcyI6WyJyZWFkIl19fQ.1bsiquo1Fq2Ozx7mrOtGA0bfJIQoTJvppU6zSuA8-hE\"")
+
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation(project(":model"))
+    implementation(project(":util"))
+
+    // Retrofit + GSON
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+
+    // Retrofit logging
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttpLogInterceptorVersion"
+
+    // Dagger Hilt
+    implementation "com.google.dagger:hilt-android:$hiltVersion"
+    kapt "com.google.dagger:hilt-compiler:$hiltVersion"
+}

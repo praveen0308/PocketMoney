@@ -20,6 +20,6 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep class com.sampurna.pocketmoney.common.SMSResponseModel {*;}
+-keep class com.jmm.model.SMSResponseModel {*;}
 -keep class com.sampurna.pocketmoney.mlm.model.** {*;}
 -keep class com.sampurna.pocketmoney.shopping.model.** {*;}

@@ -11,8 +11,38 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/add_money" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/authentication" />
+            <option value="$PROJECT_DIR$/commission" />
+            <option value="$PROJECT_DIR$/complaint_report" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/coupon" />
+            <option value="$PROJECT_DIR$/custom_views" />
+            <option value="$PROJECT_DIR$/custom_views/custom_keyboard" />
             <option value="$PROJECT_DIR$/dialog_builder" />
+            <option value="$PROJECT_DIR$/forgot_password" />
+            <option value="$PROJECT_DIR$/kyc" />
+            <option value="$PROJECT_DIR$/lock_screen" />
+            <option value="$PROJECT_DIR$/membership" />
+            <option value="$PROJECT_DIR$/mlm" />
+            <option value="$PROJECT_DIR$/model" />
+            <option value="$PROJECT_DIR$/navigation" />
+            <option value="$PROJECT_DIR$/network" />
+            <option value="$PROJECT_DIR$/onboarding" />
+            <option value="$PROJECT_DIR$/payment_gateway" />
+            <option value="$PROJECT_DIR$/payout" />
+            <option value="$PROJECT_DIR$/profile" />
+            <option value="$PROJECT_DIR$/repository" />
+            <option value="$PROJECT_DIR$/services" />
+            <option value="$PROJECT_DIR$/services/dth" />
+            <option value="$PROJECT_DIR$/services/electricity" />
+            <option value="$PROJECT_DIR$/services/mobile_recharge" />
+            <option value="$PROJECT_DIR$/services/play_recharge" />
+            <option value="$PROJECT_DIR$/shopping" />
+            <option value="$PROJECT_DIR$/transactions" />
+            <option value="$PROJECT_DIR$/transfer_money" />
+            <option value="$PROJECT_DIR$/util" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
