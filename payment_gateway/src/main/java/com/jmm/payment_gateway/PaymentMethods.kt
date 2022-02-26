@@ -4,12 +4,18 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jmm.model.myEnums.PaymentEnum
+import com.jmm.model.serviceModels.PaytmResponseModel
 import com.jmm.model.shopping_models.ModelPaymentMethod
 import com.jmm.payment_gateway.databinding.FragmentPaymentMethodsBinding
 import com.jmm.util.BaseBottomSheetDialogFragment
+import org.json.JSONObject
 
 
-class PaymentMethods(private val paymentMethodsInterface: PaymentMethodsInterface, val isCod:Boolean = false,val isOnline:Boolean=true) :
+class PaymentMethods(
+    private val paymentMethodsInterface: PaymentMethodsInterface,
+    val isCod: Boolean = false,
+    val isOnline: Boolean = true
+) :
     BaseBottomSheetDialogFragment<FragmentPaymentMethodsBinding>(FragmentPaymentMethodsBinding::inflate),
     PaymentMethodAdapter.PaymentMethodInterface {
 
@@ -42,7 +48,14 @@ class PaymentMethods(private val paymentMethodsInterface: PaymentMethodsInterfac
     private fun getPaymentMethods(): MutableList<Any> {
 
         val paymentMethods = mutableListOf<Any>()
-        paymentMethods.add(ModelPaymentMethod(PaymentEnum.WALLET, "Wallet", R.drawable.ic_logo,true))
+        paymentMethods.add(
+            ModelPaymentMethod(
+                PaymentEnum.WALLET,
+                "Wallet",
+                R.drawable.ic_logo,
+                true
+            )
+        )
         paymentMethods.add(ModelPaymentMethod(PaymentEnum.PCASH, "PCash", R.drawable.ic_wallet))
         if (isOnline) paymentMethods.add(
             ModelPaymentMethod(
@@ -53,7 +66,7 @@ class PaymentMethods(private val paymentMethodsInterface: PaymentMethodsInterfac
             )
         )
 
-        if (isCod){
+        if (isCod) {
             paymentMethods.add(
                 ModelPaymentMethod(
                     PaymentEnum.COD,
@@ -80,8 +93,57 @@ class PaymentMethods(private val paymentMethodsInterface: PaymentMethodsInterfac
 
     }
 
-    interface PaymentMethodsInterface{
-        fun onPaymentMethodSelected(method:PaymentEnum)
+    interface PaymentMethodsInterface {
+        fun onPaymentMethodSelected(method: PaymentEnum)
     }
 
+
+    companion object {
+        fun getPaytmResponse(it: Bundle): PaytmResponseModel {
+            val paytmResponseModel = PaytmResponseModel()
+
+            if (it.containsKey("STATUS")) paytmResponseModel.STATUS =
+                it.getString("STATUS")?.substring(4)
+            if (it.containsKey("TXNAMOUNT")) paytmResponseModel.TXNAMOUNT =
+                it.getString("TXNAMOUNT")
+            if (it.containsKey("TXNDATE")) paytmResponseModel.TXNDATE = it.getString("TXNDATE")
+            if (it.containsKey("MID")) paytmResponseModel.MID = it.getString("MID")
+            if (it.containsKey("ORDERID")) paytmResponseModel.ORDERID = it.getString("ORDERID")
+            if (it.containsKey("TXNID")) paytmResponseModel.TXNID = it.getString("TXNID")
+            if (it.containsKey("RESPCODE")) paytmResponseModel.RESPCODE = it.getString("RESPCODE")
+            if (it.containsKey("PAYMENTMODE")) paytmResponseModel.PAYMENTMODE =
+                it.getString("PAYMENTMODE")
+            if (it.containsKey("BANKTXNID")) paytmResponseModel.BANKTXNID =
+                it.getString("BANKTXNID")
+            if (it.containsKey("CURRENCY")) paytmResponseModel.CURRENCY = it.getString("CURRENCY")
+            if (it.containsKey("GATEWAYNAME")) paytmResponseModel.GATEWAYNAME =
+                it.getString("GATEWAYNAME")
+            if (it.containsKey("RESPMSG")) paytmResponseModel.RESPMSG = it.getString("RESPMSG")
+            if (it.containsKey("CHARGEAMOUNT")) paytmResponseModel.CHARGEAMOUNT =
+                it.getString("CHARGEAMOUNT")
+
+            return paytmResponseModel
+        }
+
+        fun getPaytmResponse(it: JSONObject): PaytmResponseModel {
+            val paytmResponseModel = PaytmResponseModel()
+
+            if (it.has("STATUS")) paytmResponseModel.STATUS = it.getString("STATUS").substring(4)
+            if (it.has("TXNAMOUNT")) paytmResponseModel.TXNAMOUNT = it.getString("TXNAMOUNT")
+            if (it.has("TXNDATE")) paytmResponseModel.TXNDATE = it.getString("TXNDATE")
+            if (it.has("MID")) paytmResponseModel.MID = it.getString("MID")
+            if (it.has("ORDERID")) paytmResponseModel.ORDERID = it.getString("ORDERID")
+            if (it.has("TXNID")) paytmResponseModel.TXNID = it.getString("TXNID")
+            if (it.has("RESPCODE")) paytmResponseModel.RESPCODE = it.getString("RESPCODE")
+            if (it.has("PAYMENTMODE")) paytmResponseModel.PAYMENTMODE = it.getString("PAYMENTMODE")
+            if (it.has("BANKTXNID")) paytmResponseModel.BANKTXNID = it.getString("BANKTXNID")
+            if (it.has("CURRENCY")) paytmResponseModel.CURRENCY = it.getString("CURRENCY")
+            if (it.has("GATEWAYNAME")) paytmResponseModel.GATEWAYNAME = it.getString("GATEWAYNAME")
+            if (it.has("RESPMSG")) paytmResponseModel.RESPMSG = it.getString("RESPMSG")
+            if (it.has("CHARGEAMOUNT")) paytmResponseModel.CHARGEAMOUNT =
+                it.getString("CHARGEAMOUNT")
+
+            return paytmResponseModel
+        }
+    }
 }

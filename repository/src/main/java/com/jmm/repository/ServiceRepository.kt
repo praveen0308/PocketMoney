@@ -1,8 +1,10 @@
 package com.jmm.repository
 
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.jmm.model.myEnums.PaymentEnum
 import com.jmm.model.serviceModels.MobileRechargeModel
+import com.jmm.model.serviceModels.PaytmResponseModel
 import com.jmm.model.serviceModels.RechargeHistoryModel
 import com.jmm.network.services.RechargeAPIService
 import kotlinx.coroutines.Dispatchers
@@ -58,4 +60,56 @@ class ServiceRepository @Inject constructor(
             emit(response)
         }.flowOn(Dispatchers.IO)
     }
+
+
+    suspend fun mobileRechargeWithWallet(mobileRechargeModel: MobileRechargeModel): Flow<MobileRechargeModel> {
+        return flow {
+            val response = rechargeAPIService.onlineMobileRechargeWithWallet(mobileRechargeModel)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun callNewMobileRechargeService(mobileRechargeModel: MobileRechargeModel,paytmResponseModel: PaytmResponseModel?): Flow<MobileRechargeModel> {
+        return flow {
+            if (paytmResponseModel==null){
+                val response = rechargeAPIService.onlineMobileRechargeWithWallet(mobileRechargeModel)
+                emit(response)
+            }else{
+                val onlineRechargeModel = JsonObject()
+                onlineRechargeModel.add("MobileRechargeModel",Gson().toJsonTree(mobileRechargeModel))
+                onlineRechargeModel.add("PaytmResponseData",Gson().toJsonTree(paytmResponseModel))
+                val response = rechargeAPIService.onlineMobileRechargeWithGateway(onlineRechargeModel)
+                emit(response)
+            }
+
+
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun dthRechargeWithWallet(mobileRechargeModel: MobileRechargeModel): Flow<MobileRechargeModel> {
+        return flow {
+            val response = rechargeAPIService.onlineDthWithWallet(mobileRechargeModel)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
+
+    suspend fun callNewDthRechargeService(mobileRechargeModel: MobileRechargeModel,paytmResponseModel: PaytmResponseModel?): Flow<MobileRechargeModel> {
+        return flow {
+            if (paytmResponseModel==null){
+                val response = rechargeAPIService.onlineDthWithWallet(mobileRechargeModel)
+                emit(response)
+            }else{
+                val onlineRechargeModel = JsonObject()
+                onlineRechargeModel.add("MobileRechargeModel",Gson().toJsonTree(mobileRechargeModel))
+                onlineRechargeModel.add("PaytmResponseData",Gson().toJsonTree(paytmResponseModel))
+                val response = rechargeAPIService.onlineDthWithGateway(onlineRechargeModel)
+                emit(response)
+            }
+
+
+        }.flowOn(Dispatchers.IO)
+    }
+
 }

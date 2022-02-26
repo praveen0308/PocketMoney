@@ -7,24 +7,18 @@ import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.jmm.add_money.databinding.ActivityAddMoneyToWalletBinding
-import com.jmm.brsap.dialog_builder.DialogType
 import com.jmm.core.utils.Constants
 import com.jmm.core.utils.createRandomOrderId
-import com.jmm.core.utils.getTodayDate
-import com.jmm.core.utils.showActionDialog
-import com.jmm.model.serviceModels.PMWalletModel
-import com.jmm.model.serviceModels.PaymentGatewayTransactionModel
 import com.jmm.model.serviceModels.PaytmRequestData
 import com.jmm.model.serviceModels.PaytmResponseModel
+import com.jmm.payment_gateway.PaymentMethods
 import com.jmm.util.ApplicationToolbar
 import com.jmm.util.BaseActivity
 import com.jmm.util.LoadingButton
-import com.jmm.util.Status
 import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
 import com.paytm.pgsdk.TransactionManager
 import dagger.hilt.android.AndroidEntryPoint
-import org.json.JSONException
 import org.json.JSONObject
 import timber.log.Timber
 
@@ -86,139 +80,72 @@ class AddMoneyToWallet :
         viewModel.userId.observe(this) {
             userId = it
             if (userId.isEmpty()) {
-//                checkAuthorization()
+                checkAuthorization()
             }
         }
 
-        // step 1
-        viewModel.checkSum.observe(this) { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        val paytmOrder = PaytmOrder(
-                            gatewayOrderId,
-                            Constants.P_MERCHANT_ID,
-                            it,
-                            mAmount,
-                            "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$gatewayOrderId"
-                        )
-                        processPaytmTransaction(paytmOrder)
-                    }
-                }
-                Status.LOADING -> {
-                    respondButton(LoadingButton.LoadingStates.LOADING, msg = "Processing..")
-                }
-                Status.ERROR -> {
-                    respondButton(LoadingButton.LoadingStates.NORMAL, msg = "Pay..")
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        }
+        viewModel.pageState.observe(this){state->
 
-        // step 2
-        viewModel.addCustWalletDetailResponse.observe(this) { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        requestId = it
-                        viewModel.addPaymentTransactionDetail(
-                            PaymentGatewayTransactionModel(
-                                UserId = userId,
-                                OrderId = paytmResponseModel.ORDERID,
-                                ReferenceTransactionId = requestId,
-                                ServiceTypeId = 1,
-                                WalletTypeId = 1,
-                                TxnAmount = paytmResponseModel.TXNAMOUNT,
-                                Currency = paytmResponseModel.CURRENCY,
-                                TransactionTypeId = 1,
-                                IsCredit = false,
-                                TxnId = paytmResponseModel.TXNID,
-                                Status = paytmResponseModel.STATUS,
-                                RespCode = paytmResponseModel.RESPCODE,
-                                RespMsg = paytmResponseModel.RESPMSG,
-                                BankTxnId = paytmResponseModel.BANKTXNID,
-                                BankName = paytmResponseModel.GATEWAYNAME,
-                                PaymentMode = paytmResponseModel.PAYMENTMODE
-                            )
-                        )
-                    }
+            when(state){
+                AddMoneyToWalletPageState.Initial -> {}
+                AddMoneyToWalletPageState.Loading -> respondButton(LoadingButton.LoadingStates.LOADING, msg = "Processing..")
+                is AddMoneyToWalletPageState.Error ->{
+                    respondButton(LoadingButton.LoadingStates.RETRY, "Retry")
+                    showToast(state.msg)
                 }
-                Status.LOADING -> {
-                    respondButton(LoadingButton.LoadingStates.LOADING, msg = "Processing..")
+                AddMoneyToWalletPageState.CancelledGateway -> {
+                    respondButton(LoadingButton.LoadingStates.NORMAL, "Make Payment")
+                    showToast("Cancelled!!!")
                 }
-                Status.ERROR -> {
-                    respondButton(LoadingButton.LoadingStates.NORMAL, msg = "Pay..")
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        }
 
-        // step 3
-        viewModel.addPaymentTransResponse.observe(this) { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (paytmResponseModel.STATUS == "SUCCESS") {
-                            viewModel.actionOnWalletDetail(
-                                requestId,
-                                "Updated as online payment success",
-                                "Approve",
-                                paytmResponseModel.PAYMENTMODE.toString()
-                            )
-//                            viewModel.addCompanyTransactionResponse(userId,userId,paytmResponseModel.TXNAMOUNT!!.toDouble(),1,1,it,"0")
-                        } else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE") {
-                            viewModel.actionOnWalletDetail(
-                                requestId,
-                                "Updated as online payment failed",
-                                "Rejected",
-                                paytmResponseModel.PAYMENTMODE.toString()
-                            )
+                AddMoneyToWalletPageState.Failed -> {
+                    respondButton(LoadingButton.LoadingStates.RETRY, "Retry")
+                    showToast("Failed!!!")
+                }
+
+
+                is AddMoneyToWalletPageState.ReceivedChecksum -> {
+                    val paytmOrder = PaytmOrder(
+                        gatewayOrderId,
+                        Constants.MERCHANT_ID,
+                        state.checksum,
+                        mAmount,
+                        Constants.PAYTM_CALLBACK_URL+gatewayOrderId
+                    )
+                    processPaytmTransaction(paytmOrder)
+                }
+                is AddMoneyToWalletPageState.ReceivedGatewayResponse -> {
+                    when (state.paytmResponseModel.STATUS) {
+                        "SUCCESS" -> {
+                            state.paytmResponseModel.MID = userId
+                            viewModel.addMoneyToWallet(state.paytmResponseModel)
+                        }
+                        "FAILURE","FAILED" -> {
+                            showToast("Transaction Failed !!!")
+                            respondButton(LoadingButton.LoadingStates.NORMAL, "Make Payment")
+                        }
+                        "CANCELLED" -> {
+                            showToast("Transaction Cancelled !!!")
+                            respondButton(LoadingButton.LoadingStates.NORMAL, "Make Payment")
+                        }
+                        else -> {
+                            showToast("Something went wrong !!!")
+                            respondButton(LoadingButton.LoadingStates.NORMAL, "Make Payment")
                         }
                     }
                 }
-                Status.LOADING -> {
-                    respondButton(LoadingButton.LoadingStates.LOADING, msg = "Processing..")
-                }
-                Status.ERROR -> {
-                    respondButton(LoadingButton.LoadingStates.NORMAL, msg = "Pay..")
-                    _result.message?.let {
-                        displayError(it)
-                    }
+                AddMoneyToWalletPageState.RequestingGateway -> TODO()
+                AddMoneyToWalletPageState.Success -> {
+                    binding.etAmount.setText("")
+                    binding.btnPay.isVisible = false
+                    showToast("Money added successfully!!!")
                 }
             }
+
         }
 
-        viewModel.actionOnWalletDetailResponse.observe(this) { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        if (paytmResponseModel.STATUS == "SUCCESS") {
-                            showActionDialog(this,DialogType.SUCCESS,"SUCCESS","Money added successfully !!!!", mListener = {
-                                finish()
-                            })
 
-                        } else if (paytmResponseModel.STATUS == "FAILED" || paytmResponseModel.STATUS == "FAILURE") {
-                            showToast("Failed !!!")
-                        }
 
-                    }
-                    respondButton(LoadingButton.LoadingStates.NORMAL, msg = "Pay..")
-                }
-                Status.LOADING -> {
-                    respondButton(LoadingButton.LoadingStates.LOADING, msg = "Processing..")
-                }
-                Status.ERROR -> {
-                    respondButton(LoadingButton.LoadingStates.NORMAL, msg = "Pay..")
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        }
     }
 
     private fun respondButton(
@@ -235,7 +162,7 @@ class AddMoneyToWallet :
                 TransactionManager(paytmOrder, this)
             transactionManager.setAppInvokeEnabled(true)
 //            transactionManager.startTransaction(this, 3)
-            transactionManager.startTransactionAfterCheckingLoginStatus(this,  Constants.P_MERCHANT_ID, mRequestCode)
+            transactionManager.startTransactionAfterCheckingLoginStatus(this,  Constants.MERCHANT_ID, mRequestCode)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -245,8 +172,6 @@ class AddMoneyToWallet :
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == mRequestCode && data != null) {
 //            Toast.makeText(this, data.getStringExtra("nativeSdkForMerchantMessage") + data.getStringExtra("response"), Toast.LENGTH_SHORT).show();
-
-
             if (data.getStringExtra("response").isNullOrEmpty()){
                 showToast("Transaction Cancelled !!!")
                 respondButton(LoadingButton.LoadingStates.NORMAL, "Make Payment")
@@ -256,11 +181,12 @@ class AddMoneyToWallet :
                 val json = JSONObject(data.getStringExtra("response")!!)
                 Timber.d("response from str: $json")
 
-                handleTransactionResponse(json,"appinvoke")
+                viewModel.pageState.postValue(AddMoneyToWalletPageState.ReceivedGatewayResponse(PaymentMethods.getPaytmResponse(json)))
 
             }
-
-
+        }else{
+            showToast("Transaction Cancelled !!!")
+            respondButton(LoadingButton.LoadingStates.NORMAL, "Make Payment")
         }
 
     }
@@ -271,70 +197,12 @@ class AddMoneyToWallet :
     override fun onMenuClick() {
 
     }
-    private fun handleTransactionResponse(it: JSONObject,from:String=""){
-        paytmResponseModel = PaytmResponseModel(
-            STATUS = it.getString("STATUS").substring(4),
-            TXNAMOUNT = it.getString("TXNAMOUNT"),
-            TXNDATE = it.getString("TXNDATE"),
-            MID = it.getString("MID"),
-            ORDERID = it.getString("ORDERID"),
-            TXNID = it.getString("TXNID"),
-            RESPCODE = it.getString("RESPCODE"),
-            PAYMENTMODE = it.getString("PAYMENTMODE"),
-            BANKTXNID = it.getString("BANKTXNID"),
-            CURRENCY = it.getString("CURRENCY"),
-            GATEWAYNAME = it.getString("GATEWAYNAME"),
-            RESPMSG = it.getString("RESPMSG")
 
-        )
-        if (from!="appinvoke"){
-            paytmResponseModel.CHARGEAMOUNT = it.getString("CHARGEAMOUNT")
-        }
-
-
-        when (paytmResponseModel.STATUS) {
-            "SUCCESS" -> {
-                viewModel.addCustomerWalletDetails(
-                    PMWalletModel(
-                        USER_ID = userId.toDouble(),
-                        MODE_TYPE_ID = 5,
-                        PAID_AMOUNT = mAmount.toDouble(),
-                        PAID_DATE = getTodayDate(),
-                        CON_AC_NO = (23225151).toDouble(),
-                        MODE_NO = "PAYTM GATEWAY",
-                        NARRATIONS = "Initiated transaction adding money in wallet"
-
-                    )
-                )
-            }
-            "FAILURE" -> {
-                showToast("Transaction Failed !!!")
-            }
-            "CANCELLED" -> {
-                showToast("Transaction Cancelled !!!")
-            }
-            else -> {
-                showToast("Something went wrong !!!")
-            }
-        }
-    }
     override fun onTransactionResponse(p0: Bundle?) {
         Timber.d("onTransactionResponse : ${p0.toString()}")
         p0?.let {
-            val json = JSONObject()
-            val keys: Set<String> = it.keySet()
-            for (key in keys) {
-                try {
-                    json.put(key, JSONObject.wrap(json.get(key)))
-                } catch (e: JSONException) {
-                    showToast("Something went wrong!!!")
-                    Timber.d("Error while converting json to bundle !!!")
-                    Timber.e("Exception : $e")
-                    respondButton(LoadingButton.LoadingStates.NORMAL, "Make Payment")
-                }
-            }
+            viewModel.pageState.postValue(AddMoneyToWalletPageState.ReceivedGatewayResponse(PaymentMethods.getPaytmResponse(it)))
 
-            handleTransactionResponse(json)
         }
 
 

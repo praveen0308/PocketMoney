@@ -28,6 +28,10 @@ class KycViewModel @Inject constructor(
     ) : ViewModel() {
     val userId = userPreferencesRepository.userId.asLiveData()
     var selectedImage = ""
+    var documentNumber = ""
+
+    var frontPageImage = ""
+    var backPageImage = ""
 
     // Address details
     var address1 = ""
@@ -39,6 +43,7 @@ class KycViewModel @Inject constructor(
     lateinit var selectedDocumentType : DocumentType
     val verifyPanPageState: MutableLiveData<KycPageState> = MutableLiveData(KycPageState.Idle)
     val uploadDocumentPageState: MutableLiveData<KycPageState> = MutableLiveData(KycPageState.Idle)
+
 
     fun verifyPanNumber(panNumber: String) {
         viewModelScope.launch {
@@ -101,9 +106,48 @@ class KycViewModel @Inject constructor(
                     }
                 }
                 .collect {
-
                     uploadDocumentPageState.postValue(KycPageState.DocumentUpdatedSuccessfully)
+                }
+        }
+    }
 
+
+    fun uploadFrontPage(customerKYCModel: CustomerKYCModel) {
+        viewModelScope.launch {
+            kycRepository
+                .addCustomerDetailDocument(customerKYCModel)
+                .onStart {
+                    uploadDocumentPageState.postValue(KycPageState.UploadingFirstPage)
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        uploadDocumentPageState.postValue(KycPageState.Error(exception.identify()))
+                        Timber.d("Error caused by >>>> uploadFrontPage")
+                        Timber.e("Exception : $it")
+                    }
+                }
+                .collect {
+                    uploadDocumentPageState.postValue(KycPageState.SuccessfullyFirstPage)
+                }
+        }
+    }
+
+    fun uploadBackPage(customerKYCModel: CustomerKYCModel) {
+        viewModelScope.launch {
+            kycRepository
+                .addCustomerDetailDocument(customerKYCModel)
+                .onStart {
+                    uploadDocumentPageState.postValue(KycPageState.UploadingBackPage)
+                }
+                .catch { exception ->
+                    exception.message?.let {
+                        uploadDocumentPageState.postValue(KycPageState.Error(exception.identify()))
+                        Timber.d("Error caused by >>>> uploadBackPage")
+                        Timber.e("Exception : $it")
+                    }
+                }
+                .collect {
+                    uploadDocumentPageState.postValue(KycPageState.SuccessfullyBackPage)
                 }
         }
     }
@@ -118,4 +162,8 @@ sealed class KycPageState {
     data class PanVerified(val response: VerifyPanServiceResponse) : KycPageState()
     object PanUpdatedSuccessfully : KycPageState()
     object DocumentUpdatedSuccessfully : KycPageState()
+    object UploadingFirstPage : KycPageState()
+    object SuccessfullyFirstPage : KycPageState()
+    object UploadingBackPage : KycPageState()
+    object SuccessfullyBackPage : KycPageState()
 }

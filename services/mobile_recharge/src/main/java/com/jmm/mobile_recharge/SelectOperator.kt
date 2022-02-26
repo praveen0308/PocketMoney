@@ -33,9 +33,9 @@ class SelectOperator :
 
     override fun subscribeObservers() {
 
-        viewModel.mobileOperators.observe(viewLifecycleOwner, {
+        viewModel.mobileOperators.observe(viewLifecycleOwner) {
             operatorAdapter.setComponentList(it)
-        })
+        }
 
     }
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.UploadKycPages">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Front Page"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_marginVertical="16dp"/>
+    <include
+        android:id="@+id/layout_front_page"
+        layout="@layout/layout_document_uploader"
+        android:layout_width="match_parent"
+        android:layout_height="250dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back Page"
+        android:layout_marginVertical="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+    <include
+        android:id="@+id/layout_back_page"
+        layout="@layout/layout_document_uploader"
+        android:layout_width="match_parent"
+        android:layout_height="250dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload Documents"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp"
+        android:paddingVertical="16dp"/>
+</LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

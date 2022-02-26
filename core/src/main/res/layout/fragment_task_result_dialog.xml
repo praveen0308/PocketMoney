@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:visibility="visible"
     android:weightSum="2"
     >
 
@@ -258,7 +257,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingVertical="@dimen/dimen_16dp"
+            android:paddingVertical="16dp"
             android:text="Continue"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"

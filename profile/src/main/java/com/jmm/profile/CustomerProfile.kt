@@ -30,6 +30,10 @@ class CustomerProfile : BaseFragment<FragmentCustomerProfileBinding>(FragmentCus
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+       /* binding.cpAddressKycStatus.root.setOnClickListener {
+            val intent = Intent(requireActivity(),KycActivity::class.java)
+            startActivity(intent)
+        }*/
     }
     private fun initViews(){
 

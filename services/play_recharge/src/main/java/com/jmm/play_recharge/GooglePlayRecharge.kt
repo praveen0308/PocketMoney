@@ -117,7 +117,7 @@ class GooglePlayRecharge :
                 is PlayRechargePageState.ReceivedCheckSum -> {
                     val paytmOrder = PaytmOrder(
                         gatewayOrderId,
-                        Constants.P_MERCHANT_ID,
+                        Constants.MERCHANT_ID,
                         state.token,
                         viewModel.rechargeAmount.value.toString(),
                         Constants.PAYTM_CALLBACK_URL + gatewayOrderId

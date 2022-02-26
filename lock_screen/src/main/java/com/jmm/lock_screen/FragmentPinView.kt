@@ -90,6 +90,7 @@ class FragmentPinView : BaseFullScreenDialogFragment<FragmentPinViewBinding>(Fra
                         // on incorrect pin
                         viewModel.error.postValue("Incorrect Pin!!!")
                         binding.btnForgotPin.isVisible = true
+                        resetPin()
                     }else{
                         // on correct pin
                         startActivity(Intent(requireActivity(), Class.forName(MainDashboard)))

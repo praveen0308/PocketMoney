@@ -26,6 +26,7 @@ android {
         debug{
             buildConfigField("String", "PAN_SERVICE_BASE_URL", "\"https://kyc-api.surepass.io/api/v1/\"")
             buildConfigField("String", "PM_SERVICE_BASE_URL", "\"https://sampurnaapi.pocketmoney.net.in/api/\"")
+            buildConfigField("String", "PM_TEST_SERVICE_BASE_URL", "\"https://sampurnatestapi.pocketmoney.net.in/\"")
             buildConfigField("String", "SMS_SERVICE_BASE_URL", "\"http://login.webpayservices.in/sms-panel/api/\"")
 
             buildConfigField("String", "PAN_SERVICE_BEARER_TOKEN", "\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY0MDY5ODM0NywianRpIjoiMTdkOTM1YmEtYWJjMi00MDY0LWJhY2UtMmU4NmFhMTc2NDc2IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2Lm1hbm9qa3VtYXJwYW5maUBhYWRoYWFyYXBpLmlvIiwibmJmIjoxNjQwNjk4MzQ3LCJleHAiOjE5NTYwNTgzNDcsInVzZXJfY2xhaW1zIjp7InNjb3BlcyI6WyJyZWFkIl19fQ.1bsiquo1Fq2Ozx7mrOtGA0bfJIQoTJvppU6zSuA8-hE\"")

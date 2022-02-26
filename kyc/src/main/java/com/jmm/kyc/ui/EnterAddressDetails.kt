@@ -25,7 +25,7 @@ class EnterAddressDetails : BaseFragment<FragmentEnterAddressDetailsBinding>(Fra
                 viewModel.state = etState.text.toString().trim()
                 viewModel.city = etCity.text.toString().trim()
 
-                findNavController().navigate(EnterAddressDetailsDirections.actionEnterAddressDetailsToSelectDocument())
+                findNavController().navigate(EnterAddressDetailsDirections.actionEnterAddressDetailsToEnterAadhaarNumber())
             }
         }
 

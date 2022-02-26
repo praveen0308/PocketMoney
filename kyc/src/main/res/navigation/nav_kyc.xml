@@ -27,5 +27,22 @@
         <action
             android:id="@+id/action_enterAddressDetails_to_selectDocument"
             app:destination="@id/selectDocument" />
+        <action
+            android:id="@+id/action_enterAddressDetails_to_enterAadhaarNumber"
+            app:destination="@id/enterAadhaarNumber" />
     </fragment>
+    <fragment
+        android:id="@+id/enterAadhaarNumber"
+        android:name="com.jmm.kyc.ui.EnterAadhaarNumber"
+        android:label="Enter Aadhaar Number"
+        tools:layout="@layout/fragment_enter_aadhaar_number" >
+        <action
+            android:id="@+id/action_enterAadhaarNumber_to_uploadKycPages"
+            app:destination="@id/uploadKycPages" />
+    </fragment>
+    <fragment
+        android:id="@+id/uploadKycPages"
+        android:name="com.jmm.kyc.ui.UploadKycPages"
+        android:label="Upload Kyc"
+        tools:layout="@layout/fragment_upload_kyc_pages" />
 </navigation>

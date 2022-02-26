@@ -20,13 +20,14 @@ import javax.inject.Named
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    private const val BASE_URL = "https://sampurnaapi.pocketmoney.net.in/api/"
 
+//    private const val BASE_URL = "https://sampurnatestapi.pocketmoney.net.in/api/"
     const val PMClient = "PocketMoneyService"
     const val PanClient = "PanService"
     const val SMSClient = "SMSService"
     const val UserName = ""
     const val Password = ""
-
 
 
     @Provides
@@ -39,10 +40,10 @@ object NetworkModule {
         if (BuildConfig.DEBUG) httpClient.addInterceptor(logging)
 
         httpClient.readTimeout(60, TimeUnit.SECONDS)
-                    .connectTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
 
         httpClient.addInterceptor(ConnectivityInterceptor(context))
-        return Retrofit.Builder().baseUrl(BuildConfig.PM_SERVICE_BASE_URL)
+        return Retrofit.Builder().baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient.build())
             .build()
@@ -55,9 +56,9 @@ object NetworkModule {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
         val httpClient = OkHttpClient.Builder()
 
-            if (BuildConfig.DEBUG) httpClient.addInterceptor(logging)
+        if (BuildConfig.DEBUG) httpClient.addInterceptor(logging)
 
-            httpClient.addInterceptor(OAuthInterceptor("Bearer", BuildConfig.PAN_SERVICE_BEARER_TOKEN))
+        httpClient.addInterceptor(OAuthInterceptor("Bearer", BuildConfig.PAN_SERVICE_BEARER_TOKEN))
             .readTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
 

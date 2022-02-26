@@ -2,14 +2,10 @@ package com.jmm.mobile_recharge
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import com.jmm.brsap.dialog_builder.DialogType
 import com.jmm.core.utils.getTodayDate
 import com.jmm.core.utils.setAmount
-import com.jmm.core.utils.showActionDialog
-import com.jmm.mobile_recharge.Recharge.Companion.PENDING
 import com.jmm.mobile_recharge.databinding.FragmentRechargeStatusBinding
 import com.jmm.model.myEnums.WalletType
 import com.jmm.util.BaseFragment
@@ -37,7 +33,7 @@ class RechargeStatus :
 
     override fun subscribeObservers() {
 
-        viewModel.progressStatus.observe(viewLifecycleOwner, {
+       /* viewModel.progressStatus.observe(viewLifecycleOwner, {
             displayLoading(false)
             when (it) {
                 Recharge.LOADING -> {
@@ -63,14 +59,14 @@ class RechargeStatus :
                     populateRechargeStatusUi(Recharge.RECHARGE_SUCCESSFUL)
                 }
             }
-        })
+        })*/
     }
 
 
     private fun populateRechargeStatusUi(status:Int){
         hideLoadingDialog()
         displayLoading(false)
-        when(status){
+        /*when(status){
             PENDING -> {
                 binding.apply {
                     upperLayout.setBackgroundColor(
@@ -117,7 +113,7 @@ class RechargeStatus :
                 }
             }
         }
-
+*/
         binding.apply {
             when (viewModel.recharge.WalletTypeID) {
                 WalletType.Wallet.id -> {
@@ -134,7 +130,7 @@ class RechargeStatus :
                     tvPaidUsing.text = "Paid using gateway"
                 }
             }
-            tvCurrentBalance.text = viewModel.rechargeApiResponse.Status
+//            tvCurrentBalance.text = viewModel.rechargeApiResponse.Status
             tvCurrentBalanceOf.text = "Payment status"
             tvTransactionOf.text = "₹${viewModel.rechargeAmount.value} Recharge"
             tvAmount.setAmount(viewModel.rechargeAmount.value!!)

@@ -15,6 +15,7 @@
       <module name="Pocket_Money.dialog_builder" target="13" />
       <module name="Pocket_Money.forgot_password" target="13" />
       <module name="Pocket_Money.kyc" target="13" />
+      <module name="Pocket_Money.local" target="13" />
       <module name="Pocket_Money.lock_screen" target="13" />
       <module name="Pocket_Money.membership" target="13" />
       <module name="Pocket_Money.mlm" target="13" />

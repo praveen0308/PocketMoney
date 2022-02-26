@@ -31,3 +31,4 @@ include ':transactions'
 include ':onboarding'
 
 include ':navigation'
+include ':local'

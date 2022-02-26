@@ -5,17 +5,17 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
+import com.jmm.brsap.dialog_builder.DialogType
 import com.jmm.core.utils.Constants
 import com.jmm.core.utils.createRandomOrderId
 import com.jmm.core.utils.getTodayDate
+import com.jmm.core.utils.showActionDialog
 import com.jmm.dth.databinding.FragmentDthRechargeBinding
 import com.jmm.model.OperationResultModel
 import com.jmm.model.myEnums.PaymentEnum
 import com.jmm.model.myEnums.WalletType
 import com.jmm.model.serviceModels.MobileRechargeModel
-import com.jmm.model.serviceModels.PaymentGatewayTransactionModel
 import com.jmm.model.serviceModels.PaytmRequestData
-import com.jmm.model.serviceModels.PaytmResponseModel
 import com.jmm.payment_gateway.PaymentMethods
 import com.jmm.repository.ServiceRepository
 import com.jmm.util.BaseFragment
@@ -25,13 +25,14 @@ import com.paytm.pgsdk.PaytmOrder
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback
 import com.paytm.pgsdk.TransactionManager
 import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRechargeBinding::inflate),
     OperationResultDialog.OperationResultDialogCallback, PaytmPaymentTransactionCallback,
-    PaymentMethods.PaymentMethodsInterface {
+    PaymentMethods.PaymentMethodsInterface, DthActivityInterface {
 
     private val viewModel by activityViewModels<DTHActivityViewModel>()
     @Inject
@@ -40,6 +41,10 @@ class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRecharge
     private var roleId = 0
     private var gatewayOrderId: String = ""
 
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as DthActivity).setDthRechargeActivityListener(this)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
@@ -95,29 +100,29 @@ class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRecharge
 
     }
     override fun subscribeObservers() {
-        viewModel.userId.observe(this, {
+        viewModel.userId.observe(this) {
             userId = it
-        })
+        }
 
-        viewModel.userRoleID.observe(this, {
+        viewModel.userRoleID.observe(this) {
             roleId = it
-        })
+        }
 
-        viewModel.rechargeMobileNumber.observe(viewLifecycleOwner, {
+        viewModel.rechargeMobileNumber.observe(viewLifecycleOwner) {
             binding.etAccountId.setText(it)
-        })
+        }
 
-        viewModel.rechargeAmount.observe(viewLifecycleOwner,{
+        viewModel.rechargeAmount.observe(viewLifecycleOwner) {
             binding.etRechargeAmount.setText(it.toString())
-        })
-        viewModel.dthCustomerDetail.observe(this, { _result ->
+        }
+        viewModel.dthCustomerDetail.observe(this) { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
-                        if (it.customerName.isNullOrEmpty()){
+                        if (it.customerName.isNullOrEmpty()) {
                             binding.containerCustomerDetails.isVisible = false
-                        }else{
-                            binding.containerCustomerDetails.isVisible =true
+                        } else {
+                            binding.containerCustomerDetails.isVisible = true
                             binding.apply {
                                 tvCustomerName.text = it.customerName
                                 tvDueDate.text = it.NextRechargeDate
@@ -138,79 +143,125 @@ class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRecharge
                     }
                 }
             }
-        })
+        }
 
-        viewModel.progressStatus.observe(viewLifecycleOwner, {
-            when (it) {
-                LOADING -> {
-                    displayLoading(true)
+        viewModel.dthRechargePageState.observe(viewLifecycleOwner) {state->
+            displayLoading(false)
+            hideLoadingDialog()
+            when (state) {
+                is DthRechargePageState.Error -> showActionDialog(
+                    requireActivity(),
+                    DialogType.ERROR,
+                    "Oops !!!",
+                    "Something went wrong! Please try again.",
+                    "Okay"
+                ) {
+                    // do things here
                 }
-                ERROR -> {
-                    displayLoading(false)
-                    showToast("Something went wrong !!!")
+                DthRechargePageState.CancelledGateway -> {
+                    showToast("Cancelled!!!")
                 }
-                CHECKING_WALLET_BALANCE -> {
-                    displayLoading(true)
+                DthRechargePageState.InitiatingTransaction -> TODO()
+                DthRechargePageState.InsufficientBalance -> showActionDialog(
+                    requireActivity(),
+                    DialogType.ERROR,
+                    "Insufficient balance!!",
+                    "Your wallet balance is low.",
+                    "Okay"
+                ) {
+                    // do things here
                 }
-                INSUFFICIENT_BALANCE -> {
-                    displayLoading(false)
-                    showToast("Insufficient balance !!!")
+                DthRechargePageState.Loading -> displayLoading(true)
 
-                }
-
-                CHECKSUM_RECEIVED -> {
-                    displayLoading(false)
+                is DthRechargePageState.Processing ->showLoadingDialog(state.msg)
+                is DthRechargePageState.ReceivedChecksum -> {
                     val paytmOrder = PaytmOrder(
                         gatewayOrderId,
-                        Constants.P_MERCHANT_ID,
-                        viewModel.transactionToken,
+                        Constants.MERCHANT_ID,
+                        state.checksum,
                         viewModel.rechargeAmount.value.toString(),
                         Constants.PAYTM_CALLBACK_URL + gatewayOrderId
                     )
+                    viewModel.dthRechargePageState.postValue(DthRechargePageState.Processing("Opening gateway..."))
                     processPaytmTransaction(paytmOrder)
-                }
-                PENDING -> {
-                    displayLoading(false)
 
-                    showFullScreenDialog(
-                        OperationResultModel(
-                            title1 = "Recharge pending !!!",
-                            amount = viewModel.rechargeAmount.value.toString(),
-                            status = "Payment pending",
-                            timestamp = getTodayDate(),
-                            viewModel.recharge.RequestID!!,
-                            animationUrl = R.raw.error_animation
-                        ), operationResultDialogCallback = this
-                    )
                 }
-                RECHARGE_FAILED -> {
-                    displayLoading(false)
-                    showFullScreenDialog(
-                        OperationResultModel(
-                            title1 = "Recharge failed !!!",
-                            amount = viewModel.rechargeAmount.value.toString(),
-                            status = "Payment Failed",
-                            timestamp = getTodayDate(),
-                            viewModel.recharge.RequestID!!,
-                            animationUrl = R.raw.error_animation
-                        ), operationResultDialogCallback = this
-                    )
+                DthRechargePageState.RequestingGateway -> TODO()
+                is DthRechargePageState.ReceivedGatewayResponse ->{
+                    when (state.paytmResponseModel.STATUS) {
+                        "SUCCESS","FAILURE" -> {
+                            viewModel.recharge = MobileRechargeModel()
+                            viewModel.recharge.UserID = userId
+                            viewModel.recharge.RoleID = roleId
+                            viewModel.recharge.MobileNo = viewModel.rechargeMobileNo.value!!
+                            viewModel.recharge.ServiceTypeID = 2
+                            viewModel.recharge.WalletTypeID = WalletType.OnlinePayment.id
+                            viewModel.recharge.OperatorCode = viewModel.selectedOperator.value.toString()
+                            viewModel.recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
+                            viewModel.recharge.ServiceField1 = ""
+                            viewModel.recharge.ServiceProviderID = 3
+                            viewModel.recharge.Status = "Received"
+                            viewModel.recharge.TransTypeID = 9
+                            viewModel.callDthRechargeService(state.paytmResponseModel)
+
+                        }
+
+                        "CANCELLED" -> {
+                            showToast("Transaction Cancelled !!!")
+                        }
+                        else -> {
+                            showActionDialog(requireActivity(), DialogType.ERROR, "Oops!",
+                                "Something went wrong!! Try again later...", mListener = {
+                                    requireActivity().finish()
+                                })
+                        }
+                    }
                 }
-                RECHARGE_SUCCESSFUL -> {
-                    displayLoading(false)
-                    showFullScreenDialog(
-                        OperationResultModel(
-                            title1 = "Recharge done successfully!!",
-                            amount = viewModel.rechargeAmount.value.toString(),
-                            status = "Payment Successful",
-                            timestamp = getTodayDate(),
-                            viewModel.recharge.RequestID!!,
-                            animationUrl = R.raw.success_animation
-                        ), operationResultDialogCallback = this
-                    )
+
+                is DthRechargePageState.OnRechargeResponseReceived ->{
+                    when(state.response.Status){
+                        "SUCCESS"->{
+                            showFullScreenDialog(
+                                OperationResultModel(
+                                    title1 = "Recharge done successfully!!",
+                                    amount = viewModel.rechargeAmount.value.toString(),
+                                    status = "Payment Successful",
+                                    timestamp = getTodayDate(),
+                                    state.response.RequestID!!,
+                                    animationUrl = R.raw.success_animation
+                                ), operationResultDialogCallback = this
+                            )
+                        }
+                        "PENDING"->{
+
+                            showFullScreenDialog(
+                                OperationResultModel(
+                                    title1 = "Recharge pending !!!",
+                                    amount = viewModel.rechargeAmount.value.toString(),
+                                    status = "Payment pending",
+                                    timestamp = getTodayDate(),
+                                    state.response.RequestID!!,
+                                    animationUrl = R.raw.error_animation
+                                ), operationResultDialogCallback = this
+                            )
+                        }
+                        "FAILURE","FAILED"->{
+                            showFullScreenDialog(
+                                OperationResultModel(
+                                    title1 = "Recharge failed !!!",
+                                    amount = viewModel.rechargeAmount.value.toString(),
+                                    status = "Payment Failed",
+                                    timestamp = getTodayDate(),
+                                    state.response.RequestID!!,
+                                    animationUrl = R.raw.error_animation
+                                ), operationResultDialogCallback = this
+                            )
+                        }
+                    }
                 }
             }
-        })
+
+        }
 
     }
 
@@ -218,8 +269,34 @@ class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRecharge
         serviceRepository.selectedPaymentMethod = method
 
         when (method) {
-            PaymentEnum.WALLET -> viewModel.getWalletBalance(userId, roleId)
-            PaymentEnum.PCASH -> viewModel.getPCashBalance(userId, roleId)
+            PaymentEnum.WALLET ->{
+                viewModel.recharge = MobileRechargeModel()
+                viewModel.recharge.UserID = userId
+                viewModel.recharge.MobileNo = viewModel.rechargeMobileNo.value!!
+                viewModel.recharge.ServiceTypeID = 2
+                viewModel.recharge.WalletTypeID = WalletType.Wallet.id
+                viewModel.recharge.OperatorCode = viewModel.selectedOperator.value.toString()
+                viewModel.recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
+                viewModel.recharge.ServiceField1 = ""
+                viewModel.recharge.ServiceProviderID = 3
+                viewModel.recharge.Status = "Received"
+                viewModel.recharge.TransTypeID = 9
+                viewModel.callDthRechargeService(null)
+            }
+            PaymentEnum.PCASH -> {
+                viewModel.recharge = MobileRechargeModel()
+                viewModel.recharge.UserID = userId
+                viewModel.recharge.MobileNo = viewModel.rechargeMobileNo.value!!
+                viewModel.recharge.ServiceTypeID = 2
+                viewModel.recharge.WalletTypeID = WalletType.PCash.id
+                viewModel.recharge.OperatorCode = viewModel.selectedOperator.value.toString()
+                viewModel.recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
+                viewModel.recharge.ServiceField1 = ""
+                viewModel.recharge.ServiceProviderID = 3
+                viewModel.recharge.Status = "Received"
+                viewModel.recharge.TransTypeID = 9
+                viewModel.callDthRechargeService(null)
+            }
             PaymentEnum.PAYTM -> { startPayment() }
         }
     }
@@ -242,144 +319,68 @@ class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRecharge
         try {
             val transactionManager =
                 TransactionManager(paytmOrder, this)
-            transactionManager.setAppInvokeEnabled(false)
-            transactionManager.startTransaction(requireActivity(), 3)
+            transactionManager.setAppInvokeEnabled(true)
+//            transactionManager.startTransaction(requireActivity(), 100)
+
+            transactionManager.startTransactionAfterCheckingLoginStatus(requireActivity(),Constants.MERCHANT_ID, 100)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    interface MobileRechargeInterface {
-        fun operatorSelection()
-    }
 
     override fun onTransactionResponse(p0: Bundle?) {
         Timber.d("onTransactionResponse : ${p0.toString()}")
 
         p0?.let {
-            viewModel.paytmResponseModel = PaytmResponseModel(
-                STATUS = it.getString("STATUS")!!.substring(4),
-                ORDERID = it.getString("ORDERID"),
-                CHARGEAMOUNT = it.getString("CHARGEAMOUNT"),
-                TXNAMOUNT = it.getString("TXNAMOUNT"),
-                TXNDATE = it.getString("TXNDATE"),
-                MID = it.getString("MID"),
-                TXNID = it.getString("TXNID"),
-                RESPCODE = it.getString("RESPCODE"),
-                PAYMENTMODE = it.getString("PAYMENTMODE"),
-                BANKTXNID = it.getString("BANKTXNID"),
-                CURRENCY = it.getString("CURRENCY"),
-                GATEWAYNAME = it.getString("GATEWAYNAME"),
-                RESPMSG = it.getString("RESPMSG")
-            )
-
-
-            when (viewModel.paytmResponseModel.STATUS) {
-                "SUCCESS" -> {
-                    viewModel.recharge = MobileRechargeModel()
-                    viewModel.recharge.UserID = userId
-                    viewModel.recharge.MobileNo = viewModel.rechargeMobileNo.value!!
-                    viewModel.recharge.ServiceTypeID = 2
-                    viewModel.recharge.WalletTypeID = WalletType.OnlinePayment.id
-                    viewModel.recharge.OperatorCode = viewModel.selectedOperator.value!!.operatorCode!!
-                    viewModel.recharge.RechargeAmt = viewModel.rechargeAmount.value!!.toDouble()
-                    viewModel.recharge.ServiceField1 = ""
-                    viewModel.recharge.ServiceProviderID = 3
-                    viewModel.recharge.Status = "Received"
-                    viewModel.recharge.TransTypeID = 9
-                    viewModel.addUsedServiceDetail(viewModel.recharge)
-
-                }
-                "FAILURE" -> {
-                    showToast("Transaction Failed !!!")
-                    viewModel.addPaymentTransactionDetail(
-                        PaymentGatewayTransactionModel(
-                            UserId = userId,
-                            OrderId = viewModel.paytmResponseModel.ORDERID,
-                            ReferenceTransactionId = gatewayOrderId,
-                            ServiceTypeId = 2,
-                            WalletTypeId = WalletType.OnlinePayment.id,
-                            TxnAmount = viewModel.paytmResponseModel.TXNAMOUNT,
-                            Currency = viewModel.paytmResponseModel.CURRENCY,
-                            TransactionTypeId = 1,
-                            IsCredit = false,
-                            TxnId = viewModel.paytmResponseModel.TXNID,
-                            Status = viewModel.paytmResponseModel.STATUS,
-                            RespCode = viewModel.paytmResponseModel.RESPCODE,
-                            RespMsg = viewModel.paytmResponseModel.RESPMSG,
-                            BankTxnId = viewModel.paytmResponseModel.BANKTXNID,
-                            BankName = viewModel.paytmResponseModel.GATEWAYNAME,
-                            PaymentMode = viewModel.paytmResponseModel.PAYMENTMODE
-                        )
-                    )
-                }
-                "CANCELLED" -> {
-                    showToast("Transaction Cancelled !!!")
-                }
-                else -> {
-                    showToast("Something went wrong !!!")
-                }
-            }
-
+            val paytmResponseModel = PaymentMethods.getPaytmResponse(it)
+            viewModel.dthRechargePageState.postValue(DthRechargePageState.ReceivedGatewayResponse(paytmResponseModel))
         }
 
     }
 
     override fun networkNotAvailable() {
-
+        viewModel.dthRechargePageState.postValue(DthRechargePageState.CancelledGateway)
         Timber.d("networkNotAvailable : No Internet :(")
     }
 
     override fun onErrorProceed(p0: String?) {
-
+        viewModel.dthRechargePageState.postValue(DthRechargePageState.CancelledGateway)
         Timber.d("onErrorProceed : ${p0.toString()}")
     }
 
     override fun clientAuthenticationFailed(p0: String?) {
-
+        viewModel.dthRechargePageState.postValue(DthRechargePageState.CancelledGateway)
         Timber.d("clientAuthenticationFailed : ${p0.toString()}")
     }
 
     override fun someUIErrorOccurred(p0: String?) {
-
+        viewModel.dthRechargePageState.postValue(DthRechargePageState.CancelledGateway)
         Timber.d("someUIErrorOccurred : ${p0.toString()}")
     }
 
     override fun onErrorLoadingWebPage(p0: Int, p1: String?, p2: String?) {
-
+        viewModel.dthRechargePageState.postValue(DthRechargePageState.CancelledGateway)
         Timber.d("onErrorLoadingWebPage : $p0 \n $p1 \n $p2")
     }
 
     override fun onBackPressedCancelTransaction() {
-
+        viewModel.dthRechargePageState.postValue(DthRechargePageState.CancelledGateway)
         Timber.d("onBackPressedCancelTransaction : Back pressed :(")
     }
 
     override fun onTransactionCancel(p0: String?, p1: Bundle?) {
-
+        viewModel.dthRechargePageState.postValue(DthRechargePageState.CancelledGateway)
         Timber.d("onTransactionResponse : ${p0.toString()} \n ${p1.toString()}")
     }
 
     override fun onResultDialogDismiss() {
-        requireActivity().finish()
+
     }
 
-    companion object {
-        const val LOADING = 100
-        const val PENDING = 101
-        const val ERROR = 102
-        const val RECHARGE_FAILED = 103
-        const val RECHARGE_SUCCESSFUL = 104
-        const val CHECKING_WALLET_BALANCE = 105
-        const val INSUFFICIENT_BALANCE = 106
-        const val ADDING_USED_SERVICE_DETAIL = 107
-        const val CHECKSUM_RECEIVED = 108
-        const val START_PAYMENT_GATEWAY = 109
-
-        /*const val GETTING_REQUEST_ID=106
-        const val CALLING_SAMPURNA_RECHARGE_API=107
-        const val SUBMITTING_PAYTM_TRANSACTION=108
-        const val WALLET_CHARGE_DEDUCTED=109*/
+    override fun onAppInvokeResponse(response: JSONObject, invoke: String) {
+        val paytmResponseModel =PaymentMethods.getPaytmResponse(response)
+        viewModel.dthRechargePageState.postValue(DthRechargePageState.ReceivedGatewayResponse(paytmResponseModel))
     }
 
 }

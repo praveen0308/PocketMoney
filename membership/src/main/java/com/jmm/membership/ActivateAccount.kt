@@ -111,7 +111,7 @@ class ActivateAccount :
                 is ActivateAccountPageState.ReceivedCheckSum -> {
                     val paytmOrder = PaytmOrder(
                         gatewayOrderId,
-                        Constants.P_MERCHANT_ID,
+                        Constants.MERCHANT_ID,
                         state.token,
                         viewModel.activationCharge.toString(),
                         Constants.PAYTM_CALLBACK_URL + gatewayOrderId

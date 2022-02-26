@@ -135,39 +135,45 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp" />
-            <LinearLayout
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="100"
                 android:gravity="center_vertical"
-                android:paddingVertical="16dp">
+                android:paddingVertical="16dp"
+                android:weightSum="100">
+
                 <TextView
+                    android:id="@+id/textView13"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
                     android:text="Address Details"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
                     android:textSize="18sp"
-                    android:layout_weight="80"/>
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/cp_address_kyc_status"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <include
                     android:id="@+id/cp_address_kyc_status"
                     layout="@layout/template_chip_tag"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
                     android:visibility="gone"
-                    tools:visibility="visible"
-                    android:layout_weight="20"/>
+                    app:layout_constraintEnd_toStartOf="@+id/btn_verify_address"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/textView13"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_verify_address"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="28dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="@color/colorPrimary"
-                    android:textColor="@color/colorPrimary"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
                     android:insetRight="0dp"
@@ -175,11 +181,16 @@
                     android:padding="0dp"
                     android:text="Verify"
                     android:textAllCaps="false"
+                    android:textColor="@color/colorPrimary"
                     android:textSize="14sp"
-                    android:layout_weight="20"
-                    />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/cp_address_kyc_status"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeColor="@color/colorPrimary"
+                    app:strokeWidth="1dp" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <include
                 android:id="@+id/layout_address"

@@ -12,9 +12,11 @@ import javax.inject.Inject
 class PaytmRepository @Inject constructor(
     private val mlmApiService: MLMApiService
 ){
-    suspend fun initiateTransactionApi(paytmRequestData: PaytmRequestData): Flow<String> {
+    suspend fun initiateTransactionApi(paytmRequestData: PaytmRequestData,isStaging:Boolean=false): Flow<String> {
         return flow {
-            val response = mlmApiService.initiateTransactionApi(paytmRequestData)
+            val response = if (isStaging) mlmApiService.initiateTransactionStagingApi(paytmRequestData)
+                else mlmApiService.initiateTransactionApi(paytmRequestData)
+
             emit(response)
         }.flowOn(Dispatchers.IO)
     }

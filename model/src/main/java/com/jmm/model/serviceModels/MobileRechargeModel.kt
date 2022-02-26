@@ -16,5 +16,7 @@ data class MobileRechargeModel(
     var Status: String? = null,
     var TransTypeID: Int? = null,
     var UserID: String? = null,
-    var WalletTypeID: Int? = null
+    var WalletTypeID: Int? = null,
+    var IsValidated: Boolean=true,
+    var RoleID: Int? = null,
 )

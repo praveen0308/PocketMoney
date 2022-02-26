@@ -7,6 +7,7 @@ import com.jmm.model.mlmModels.CustomerAuthBalanceResponse
 import com.jmm.model.mlmModels.CustomerRequestModel1
 import com.jmm.model.serviceModels.PMWalletModel
 import com.jmm.model.serviceModels.PaymentGatewayTransactionModel
+import com.jmm.model.serviceModels.PaytmResponseModel
 import com.jmm.network.services.MLMApiService
 import com.jmm.network.services.RechargeAPIService
 import com.jmm.network.services.WalletService
@@ -132,6 +133,16 @@ class WalletRepository @Inject constructor(
     ): Flow<Int> {
         return flow {
             val response = rechargeAPIService.walletChargeDeduction(userId, walletId, amount, requestId, serviceId)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
+
+    suspend fun addMoneyToWallet(
+    data:PaytmResponseModel
+    ): Flow<Boolean> {
+        return flow {
+            val response = walletService.addMoneyToWallet(data)
             emit(response)
         }.flowOn(Dispatchers.IO)
     }

@@ -23,6 +23,7 @@
             <option value="$PROJECT_DIR$/dialog_builder" />
             <option value="$PROJECT_DIR$/forgot_password" />
             <option value="$PROJECT_DIR$/kyc" />
+            <option value="$PROJECT_DIR$/local" />
             <option value="$PROJECT_DIR$/lock_screen" />
             <option value="$PROJECT_DIR$/membership" />
             <option value="$PROJECT_DIR$/mlm" />

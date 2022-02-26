@@ -107,7 +107,7 @@ class GenerateCoupon : BaseFragment<FragmentGenerateCouponBinding>(FragmentGener
                     displayLoading(false)
                     val paytmOrder = PaytmOrder(
                         gatewayOrderId,
-                        Constants.P_MERCHANT_ID,
+                        Constants.MERCHANT_ID,
                         viewModel.transactionToken,
                         viewModel.amountPayable.toString(),
                         Constants.PAYTM_CALLBACK_URL + gatewayOrderId

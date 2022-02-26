@@ -186,6 +186,13 @@ interface MLMApiService {
         @Body paytmRequestData: PaytmRequestData
     ): String
 
+    @POST("Payment/InitiateTransactionStagingAPI")
+    suspend fun initiateTransactionStagingApi(
+        @Body paytmRequestData: PaytmRequestData
+    ): String
+
+
+
     @Headers("Content-Type: application/json")
     @POST("Wallet/TransferB2BBalanceWithoutEmail")
     suspend fun b2bWalletTransfer(

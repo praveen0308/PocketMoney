@@ -44,6 +44,8 @@ interface RechargeAPIService {
         @Body mobileRechargeModel: MobileRechargeModel
     ): MobileRechargeModel
 
+
+
     @GET("Recharge/GetServiceOperator")
     suspend fun getServiceOperator(
         @Query("ServiceTypeId") serviceTypeId: Int,
@@ -67,5 +69,33 @@ interface RechargeAPIService {
         @Query("serviceId") serviceId: Int
     ): Int
 
+
+    //# region New Recharge Service
+
+    @POST("Service/OnlineMobileRechargeWithWallet")
+    suspend fun onlineMobileRechargeWithWallet(
+        @Body mobileRechargeModel: MobileRechargeModel
+    ): MobileRechargeModel
+
+
+    @POST("Service/OnlineMobileRechargeWithGateway")
+    suspend fun onlineMobileRechargeWithGateway(
+        @Body onlineRechargeModel: JsonObject,
+    ): MobileRechargeModel
+
+
+    @POST("Service/OnlineDTHRechargeWithWallet")
+    suspend fun onlineDthWithWallet(
+        @Body mobileRechargeModel: MobileRechargeModel
+    ): MobileRechargeModel
+
+
+    @POST("Service/OnlineDTHRechargeWithGateway")
+    suspend fun onlineDthWithGateway(
+        @Body onlineRechargeModel: JsonObject,
+    ): MobileRechargeModel
+
+
+    //#endregion
 
 }

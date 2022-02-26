@@ -23,7 +23,7 @@
     <fragment
         android:id="@+id/mobileRechargeHost"
         android:name="com.jmm.mobile_recharge.MobileRechargeHost"
-        android:label="fragment_mobile_recharge_host"
+        android:label="Mobile Recharge"
         tools:layout="@layout/fragment_mobile_recharge_host" >
         <action
             android:id="@+id/action_mobileRechargeHost_to_selectOperator"
@@ -35,7 +35,7 @@
     <fragment
         android:id="@+id/select_operator"
         android:name="com.jmm.mobile_recharge.SelectOperator"
-        android:label="Hilt_SelectOperator" />
+        android:label="Select Operator" />
     <fragment
         android:id="@+id/rechargeStatus"
         android:name="com.jmm.mobile_recharge.RechargeStatus"

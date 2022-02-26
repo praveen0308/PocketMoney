@@ -166,9 +166,8 @@ class RechargeRepository @Inject constructor(
 
     private fun getMobileOperators(): List<ModelOperator> {
         val mobileOperatorList:MutableList<ModelOperator> = ArrayList()
-/*
 
-        mobileOperatorList.add(ModelOperator("Jio", R.drawable.ic_jio))
+    /*    mobileOperatorList.add(ModelOperator("Jio", R.drawable.ic_jio))
         mobileOperatorList.add(ModelOperator("Airtel",R.drawable.ic_airtel))
         mobileOperatorList.add(ModelOperator("VI",R.drawable.ic_vi_vodafone_idea))
         mobileOperatorList.add(ModelOperator("Idea",R.drawable.ic_vi_vodafone_idea))
@@ -182,8 +181,7 @@ class RechargeRepository @Inject constructor(
 
         mobileOperatorList.add(ModelOperator("MTNL",R.drawable.ic_mtnl))
         mobileOperatorList.add(ModelOperator("MTNL Mumbai Special",R.drawable.ic_mtnl))
-        mobileOperatorList.add(ModelOperator("MTNL Mumbai Topup",R.drawable.ic_mtnl))
-*/
+        mobileOperatorList.add(ModelOperator("MTNL Mumbai Topup",R.drawable.ic_mtnl))*/
 
         return mobileOperatorList
     }
