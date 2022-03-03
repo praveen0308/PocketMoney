@@ -19,7 +19,4 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
--keep class com.jmm.model.SMSResponseModel {*;}
--keep class com.sampurna.pocketmoney.mlm.model.** {*;}
--keep class com.sampurna.pocketmoney.shopping.model.** {*;}
+-keep class com.jmm.model.** {*;}

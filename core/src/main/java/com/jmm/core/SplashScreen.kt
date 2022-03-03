@@ -17,6 +17,7 @@ import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import com.google.firebase.ktx.Firebase
 import com.jmm.core.databinding.FragmentSplashScreenBinding
 import com.jmm.core.utils.Constants
+import com.jmm.lock_screen.FragmentPinView
 import com.jmm.navigation.NavRoute.MainDashboard
 import com.jmm.navigation.NavRoute.SignUp
 import com.jmm.util.BaseFragment
@@ -164,10 +165,10 @@ class SplashScreen :
                 }
                 Constants.LOGIN_DONE -> {
                     /*** Check for pin authorisation ***/
-                    /*val pinView = FragmentPinView()
-                    pinView.show(parentFragmentManager, pinView.tag)*/
-                    startActivity(Intent(requireActivity(), Class.forName(MainDashboard)))
-                    requireActivity().finish()
+                    val pinView = FragmentPinView()
+                    pinView.show(parentFragmentManager, pinView.tag)
+                    /*startActivity(Intent(requireActivity(), Class.forName(MainDashboard)))
+                    requireActivity().finish()*/
 
 
                 }

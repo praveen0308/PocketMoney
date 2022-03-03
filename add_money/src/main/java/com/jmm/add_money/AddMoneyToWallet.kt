@@ -161,8 +161,8 @@ class AddMoneyToWallet :
             val transactionManager =
                 TransactionManager(paytmOrder, this)
             transactionManager.setAppInvokeEnabled(true)
-//            transactionManager.startTransaction(this, 3)
-            transactionManager.startTransactionAfterCheckingLoginStatus(this,  Constants.MERCHANT_ID, mRequestCode)
+            transactionManager.startTransaction(this, mRequestCode)
+//            transactionManager.startTransactionAfterCheckingLoginStatus(this,  Constants.MERCHANT_ID, mRequestCode)
         } catch (e: Exception) {
             e.printStackTrace()
         }

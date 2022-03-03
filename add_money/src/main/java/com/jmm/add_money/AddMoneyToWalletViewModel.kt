@@ -32,7 +32,7 @@ class AddMoneyToWalletViewModel @Inject constructor(
     fun initiateTransactionApi(paytmRequestData: PaytmRequestData) {
         viewModelScope.launch {
             paytmRepository
-                .initiateTransactionApi(paytmRequestData,true)
+                .initiateTransactionApi(paytmRequestData)
                 .onStart {
                     pageState.postValue(AddMoneyToWalletPageState.Loading)
                 }

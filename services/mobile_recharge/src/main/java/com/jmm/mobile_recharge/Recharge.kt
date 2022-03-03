@@ -501,8 +501,8 @@ class Recharge(val mListener: MobileRechargeInterface) :
                 TransactionManager(paytmOrder, this)
             transactionManager.setAppInvokeEnabled(true)
 
-//            transactionManager.startTransaction(requireActivity(), 3)
-            transactionManager.startTransactionAfterCheckingLoginStatus(requireActivity(),Constants.MERCHANT_ID, mRequestCode)
+            transactionManager.startTransaction(requireActivity(), mRequestCode)
+//            transactionManager.startTransactionAfterCheckingLoginStatus(requireActivity(),Constants.MERCHANT_ID, mRequestCode)
         } catch (e: Exception) {
             e.printStackTrace()
         }

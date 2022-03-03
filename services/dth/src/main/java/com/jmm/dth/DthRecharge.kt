@@ -320,9 +320,9 @@ class DthRecharge : BaseFragment<FragmentDthRechargeBinding>(FragmentDthRecharge
             val transactionManager =
                 TransactionManager(paytmOrder, this)
             transactionManager.setAppInvokeEnabled(true)
-//            transactionManager.startTransaction(requireActivity(), 100)
+            transactionManager.startTransaction(requireActivity(), 100)
 
-            transactionManager.startTransactionAfterCheckingLoginStatus(requireActivity(),Constants.MERCHANT_ID, 100)
+//            transactionManager.startTransactionAfterCheckingLoginStatus(requireActivity(),Constants.MERCHANT_ID, 100)
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -9,6 +9,7 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.google.firebase.crashlytics'
 android {
+
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
@@ -19,6 +20,7 @@ android {
         versionName rootProject.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//        signingConfig signingConfigs.release
     }
 
     buildFeatures {
