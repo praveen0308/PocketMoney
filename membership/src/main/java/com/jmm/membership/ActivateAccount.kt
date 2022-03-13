@@ -32,7 +32,6 @@ class ActivateAccount :
     private val viewModel by viewModels<ActivateAccountViewModel>()
 
     private var selectedMethod = 1
-    private var selectedPaymentMethod = PaymentEnum.WALLET
     private var userId = ""
     private var roleId = 0
 

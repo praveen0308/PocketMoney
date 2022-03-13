@@ -36,6 +36,7 @@ android {
 dependencies {
     implementation(project(":model"))
     implementation(project(":network"))
+    implementation(project(":local"))
     implementation(project(":navigation"))
     implementation(project(":util"))
     // Dagger Hilt
@@ -52,4 +53,14 @@ dependencies {
 
     // Preference DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0-beta02"
+
+    def roomVersion = "2.4.2"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+
+    // To use Kotlin annotation processing tool (kapt)
+    kapt("androidx.room:room-compiler:$roomVersion")
+
 }

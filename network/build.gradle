@@ -61,7 +61,8 @@ dependencies {
 
     // Retrofit logging
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpLogInterceptorVersion"
-
+    //Timber
+    implementation "com.jakewharton.timber:timber:$timberVersion"
     // Dagger Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-compiler:$hiltVersion"

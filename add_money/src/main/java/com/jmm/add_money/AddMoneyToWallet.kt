@@ -39,7 +39,12 @@ class AddMoneyToWallet :
     private var requestId: String = ""
 
     private val mRequestCode = 100
+    val BHIM_UPI = "in.org.npci.upiapp"
+    val GOOGLE_PAY = "com.google.android.apps.nbu.paisa.user"
+    val PHONE_PE = "com.phonepe.app"
+    val PAYTM = "net.one97.paytm"
 
+    val upiApps = listOf<String>(PAYTM, GOOGLE_PAY, PHONE_PE, BHIM_UPI)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,6 +65,7 @@ class AddMoneyToWallet :
             if (userId.isEmpty()) {
 //                checkAuthorization()
             } else {
+
                 gatewayOrderId = createRandomOrderId()
                 mAmount = binding.etAmount.text.toString()
                 viewModel.initiateTransactionApi(
@@ -115,12 +121,15 @@ class AddMoneyToWallet :
                     processPaytmTransaction(paytmOrder)
                 }
                 is AddMoneyToWalletPageState.ReceivedGatewayResponse -> {
+
                     when (state.paytmResponseModel.STATUS) {
                         "SUCCESS" -> {
+
                             state.paytmResponseModel.MID = userId
                             viewModel.addMoneyToWallet(state.paytmResponseModel)
                         }
                         "FAILURE","FAILED" -> {
+
                             showToast("Transaction Failed !!!")
                             respondButton(LoadingButton.LoadingStates.NORMAL, "Make Payment")
                         }
@@ -138,7 +147,9 @@ class AddMoneyToWallet :
                 AddMoneyToWalletPageState.Success -> {
                     binding.etAmount.setText("")
                     binding.btnPay.isVisible = false
-                    showToast("Money added successfully!!!")
+                    val paymentArgs = PaymentStatusArgs(status = "SUCCESS", amount = mAmount.toDouble(), paymentStatus = "Transaction successful!!!", msg = "has been added into your wallet..")
+                    val dialog = PaymentStatus(paymentArgs)
+                    dialog.show(supportFragmentManager,dialog.tag)
                 }
             }
 
@@ -161,6 +172,7 @@ class AddMoneyToWallet :
             val transactionManager =
                 TransactionManager(paytmOrder, this)
             transactionManager.setAppInvokeEnabled(true)
+            transactionManager.setShowPaymentUrl("https://securegw.paytm.in/theia/api/v1/showPaymentPage");
             transactionManager.startTransaction(this, mRequestCode)
 //            transactionManager.startTransactionAfterCheckingLoginStatus(this,  Constants.MERCHANT_ID, mRequestCode)
         } catch (e: Exception) {
@@ -202,11 +214,7 @@ class AddMoneyToWallet :
         Timber.d("onTransactionResponse : ${p0.toString()}")
         p0?.let {
             viewModel.pageState.postValue(AddMoneyToWalletPageState.ReceivedGatewayResponse(PaymentMethods.getPaytmResponse(it)))
-
         }
-
-
-
     }
 
     override fun networkNotAvailable() {

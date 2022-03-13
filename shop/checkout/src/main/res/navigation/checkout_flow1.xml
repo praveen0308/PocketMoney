@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/checkout_flow"
+    app:startDestination="@id/myCart">
+
+    <fragment
+        android:id="@+id/myCart"
+        android:name="com.jmm.checkout.MyCart"
+        android:label="Your Cart"
+        tools:layout="@layout/fragment_my_cart" >
+        <action
+            android:id="@+id/action_myCart_to_finalCheckout"
+            app:destination="@id/finalCheckout" />
+    </fragment>
+    <fragment
+        android:id="@+id/finalCheckout"
+        android:name="com.jmm.checkout.FinalCheckout"
+        android:label="Checkout"
+        tools:layout="@layout/fragment_final_checkout" />
+</navigation>

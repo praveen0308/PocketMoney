@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.jmm.checkout">
+
+    <application>
+        <activity
+            android:name="com.jmm.checkout.Checkout1"
+            android:exported="false" />
+    </application>
+
+</manifest>

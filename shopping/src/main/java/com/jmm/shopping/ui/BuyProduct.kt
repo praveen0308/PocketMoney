@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.jmm.model.myEnums.MyEnums
 import com.jmm.model.shopping_models.*
+import com.jmm.navigation.NavRoute
 import com.jmm.shopping.R
 import com.jmm.shopping.adapters.ProductVariantAdapter
 import com.jmm.shopping.adapters.ProductVariantValuesAdapter
@@ -21,10 +22,7 @@ import com.jmm.util.ApplicationToolbar
 import com.jmm.util.BaseActivity
 import com.jmm.util.DataState
 import com.jmm.util.Status
-
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -82,13 +80,13 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
 
     override fun subscribeObservers() {
 
-        viewModel.userId.observe(this, {
+        viewModel.userId.observe(this) {
             if (!it.isNullOrEmpty()) {
                 userID = it
                 viewModel.getCartItemCount(userID)
             }
-        })
-        viewModel.productDetail.observe(this, { dataState ->
+        }
+        viewModel.productDetail.observe(this) { dataState ->
             when (dataState) {
                 is DataState.Success<ProductModel> -> {
                     displayLoading(false)
@@ -105,9 +103,9 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                     displayError(dataState.exception.message)
                 }
             }
-        })
+        }
 
-        viewModel.productVariantValues.observe(this, { dataState ->
+        viewModel.productVariantValues.observe(this) { dataState ->
             when (dataState) {
                 is DataState.Success<List<ProductVariantValue>> -> {
                     displayLoading(false)
@@ -123,11 +121,11 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                     displayError(dataState.exception.message)
                 }
             }
-        })
+        }
 
 
 
-        viewModel.similarProductList.observe(this, { dataState ->
+        viewModel.similarProductList.observe(this) { dataState ->
             when (dataState) {
                 is DataState.Success<List<ProductModel>> -> {
                     displayLoading(false)
@@ -142,9 +140,9 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                     displayError(dataState.exception.message)
                 }
             }
-        })
+        }
 
-        viewModel.cartItemCount.observe(this, { _result ->
+        viewModel.cartItemCount.observe(this) { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -163,9 +161,9 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                     }
                 }
             }
-        })
+        }
 
-        viewModel.addToCartOperationResult.observe(this, { _result ->
+        viewModel.addToCartOperationResult.observe(this) { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
                     _result._data?.let {
@@ -176,9 +174,9 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                         )
                         snackbar.setAction("Go to Cart") {
                             // executed when DISMISS is clicked
-                            val intent = Intent(this, YourCart::class.java)
-                            startActivity(intent)
-
+//                            val intent = Intent(this, YourCart::class.java)
+//                            startActivity(intent)
+                            startActivity(Intent(this, Class.forName(NavRoute.Checkout1)))
                         }
                         snackbar.show()
                     }
@@ -194,10 +192,10 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                     }
                 }
             }
-        })
+        }
 
 
-        viewModel.productItemIdAcVariant.observe(this, { dataState ->
+        viewModel.productItemIdAcVariant.observe(this) { dataState ->
             when (dataState) {
                 is DataState.Success<Int> -> {
                     displayLoading(false)
@@ -214,7 +212,7 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
                     displayError(dataState.exception.message)
                 }
             }
-        })
+        }
     }
 
     private fun setupProductImagePager(images: List<ProductImage>) {
@@ -348,8 +346,9 @@ class BuyProduct : BaseActivity<ActivityBuyProductBinding>(ActivityBuyProductBin
     }
 
     override fun onMenuClick() {
-        val intent = Intent(this, YourCart::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, Class.forName(NavRoute.Checkout1)))
+        /*val intent = Intent(this, YourCart::class.java)
+        startActivity(intent)*/
     }
 
     override fun onItemClick(variantValue: ProductVariantValue) {

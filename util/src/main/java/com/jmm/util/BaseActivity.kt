@@ -3,6 +3,7 @@ package com.jmm.util
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -22,6 +23,7 @@ abstract class BaseActivity<B : ViewBinding>(private val bindingFactory: (Layout
         super.onCreate(savedInstanceState)
         binding = bindingFactory(layoutInflater)
         setContentView(binding.root)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         subscribeObservers()
         progressBarHandler = ProgressBarHandler(this)
         loadingDialog = NordanLoadingDialog.createLoadingDialog(this, "Loading")

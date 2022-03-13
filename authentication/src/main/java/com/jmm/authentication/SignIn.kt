@@ -6,11 +6,8 @@ import androidx.activity.viewModels
 import com.jmm.authentication.databinding.ActivitySignInBinding
 import com.jmm.navigation.NavRoute.ForgotPassword
 import com.jmm.navigation.NavRoute.MainDashboard
-
-import com.jmm.repository.UserPreferencesRepository
 import com.jmm.util.ApplicationToolbar
 import com.jmm.util.BaseActivity
-
 import dagger.hilt.android.AndroidEntryPoint
 import dmax.dialog.SpotsDialog
 
@@ -48,6 +45,10 @@ class SignIn : BaseActivity<ActivitySignInBinding>(ActivitySignInBinding::inflat
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        dialog.dismiss()
+    }
     override fun subscribeObservers() {
         viewModel.pageState.observe(this) { state ->
             dialog.hide()
@@ -60,22 +61,12 @@ class SignIn : BaseActivity<ActivitySignInBinding>(ActivitySignInBinding::inflat
                     dialog.show()
                 }
                 is LoginPageState.LoginSuccessful -> {
-                    try {
-                        viewModel.updateWelcomeStatus(UserPreferencesRepository.LOGIN_DONE)
-                        viewModel.updateLoginId(state.userModel.LoginID!!)
-                        viewModel.updateUserId(state.userModel.UserID!!)
-                        viewModel.updateUserName(state.userModel.UserName!!)
-                        viewModel.updateUserRoleID(state.userModel.UserRoleID!!)
-                        viewModel.updateUserStatus(state.userModel.BlockedStatus!!)
+                    showToast("Login successful !!!")
 
-                    } finally {
-                        if (state.userModel.BlockedStatus!!) {
-                            showToast("You're blocked...")
-                        } else {
-                            viewModel.checkIsAccountActive(state.userModel.UserID!!)
-                        }
-
-                    }
+                }
+                is LoginPageState.UserIsBlocked->{
+                    startActivity(Intent(this,UserBlockActivity::class.java))
+                    finish()
                 }
                 is LoginPageState.GotAccountStatus -> {
                     viewModel.updateUserType(state.status)

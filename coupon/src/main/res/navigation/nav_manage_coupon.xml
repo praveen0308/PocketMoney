@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_manage_coupon"
-    app:startDestination="@id/myCoupons">
+    app:startDestination="@id/myCouponsSheet">
     <fragment
-        android:id="@+id/myCoupons"
+        android:id="@+id/myCouponsSheet"
         android:name="com.jmm.coupon.MyCoupons"
         android:label="fragment_my_coupons"
         tools:layout="@layout/fragment_my_coupons" >

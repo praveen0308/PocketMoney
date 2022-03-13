@@ -27,6 +27,7 @@ object NavRoute {
     private const val transactionsModule = "com.$developer.transactions"
     private const val transferMoneyModule = "com.$developer.transfer_money"
     private const val utilModule = "com.$developer.util"
+    private const val shopCheckoutModule = "com.$developer.checkout"
 
     // Activities
     const val ForgotPassword = "$forgotPasswordModule.ForgotPassword"
@@ -37,6 +38,7 @@ object NavRoute {
 
     const val SignIn = "$authenticationModule.SignIn"
     const val SignUp = "$authenticationModule.SignUp"
+    const val UserBlockActivity = "$authenticationModule.UserBlockActivity"
 
 
     const val CustomerProfile = "$profileModule.CustomerProfile"
@@ -61,5 +63,6 @@ object NavRoute {
     const val NewRechargeActivity = "$mobileRechargeModule.NewRechargeActivity"
     const val DthActivity = "$dthModule.DthActivity"
     const val GooglePlayRecharge = "$playRechargeModule.GooglePlayRecharge"
+    const val Checkout1 = "$shopCheckoutModule.Checkout1"
 
 }

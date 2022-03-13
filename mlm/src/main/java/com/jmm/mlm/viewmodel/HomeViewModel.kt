@@ -1,18 +1,13 @@
 package com.jmm.mlm.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.jmm.mlm.R
-import com.jmm.model.HomeParentModel
-import com.jmm.model.ModelServiceCategory
-import com.jmm.model.ModelServiceView
-import com.jmm.model.RechargeEnum
+import com.jmm.model.*
 import com.jmm.model.mlmModels.CustomerAuthBalanceResponse
 import com.jmm.model.myEnums.MyEnums
 import com.jmm.model.shopping_models.BannerModel
 import com.jmm.repository.AccountRepository
+import com.jmm.repository.IResource
 import com.jmm.repository.UserPreferencesRepository
 import com.jmm.repository.WalletRepository
 import com.jmm.repository.shopping_repo.StoreRepository
@@ -40,6 +35,7 @@ class HomeViewModel @Inject constructor(
     val userType = userPreferencesRepository.isActive.asLiveData()
     val userName = userPreferencesRepository.userName.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
+    val storeBanners = storeRepository.getBanners().asLiveData()
 
     init {
         connectionLiveData.hasActiveObservers()
@@ -67,27 +63,27 @@ class HomeViewModel @Inject constructor(
                 }
         }
     }
-
-    fun getBanners() {
+    private val _accountData: MutableLiveData<IResource<CustomerDashboardDataModel>> =
+        MutableLiveData<IResource<CustomerDashboardDataModel>>()
+    val accountData: LiveData<IResource<CustomerDashboardDataModel>> = _accountData
+    fun getDashboardData(userId: String, roleId: Int) {
         viewModelScope.launch {
-            storeRepository
-                .getStoreBanners()
+            accountRepository
+                .getDashboardData(userId, roleId)
                 .onStart {
-                    homePageState.postValue(HomePageState.Loading)
+                    _accountData.postValue(IResource.Loading())
                 }
-                .catch { exception ->
-                    exception.message?.let {
-                        homePageState.postValue(HomePageState.Error(exception.identify()))
-                        Timber.e("Error caused by >>> getBanners")
-                        Timber.e("Exception >>> ${exception.message}")
-
-                    }
+                .catch {exception->
+                    _accountData.postValue(IResource.Error(exception))
                 }
-                .collect { response ->
-                    homePageState.postValue(HomePageState.ReceivedBanners(response))
+                .collect {
+                    _accountData.postValue(IResource.Success(it.data!!))
                 }
         }
+
     }
+
+
     fun prepareHomeData(banners:MutableList<BannerModel>): List<HomeParentModel> {
 
         val itemList= mutableListOf<HomeParentModel>()

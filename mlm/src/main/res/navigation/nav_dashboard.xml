@@ -46,7 +46,7 @@
     </fragment>
     <fragment
         android:id="@+id/manageAddress"
-        android:name="com.jmm.shopping.ui.checkoutorder.ManageAddress"
+        android:name="com.jmm.manage_address.ManageAddress"
         android:label="fragment_manage_address"
         tools:layout="@layout/fragment_manage_address" />
     <fragment

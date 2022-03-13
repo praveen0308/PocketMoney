@@ -22,6 +22,7 @@ class SplashScreenViewModel @Inject constructor(
     val userName = userPreferencesRepository.userName.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
     val welcomeStatus = userPreferencesRepository.welcomeStatus.asLiveData()
+    val blockedStatus = userPreferencesRepository.isBlocked.asLiveData()
 
     fun updateSponsorId(sponsorId: String) = viewModelScope.launch {
         userPreferencesRepository.updateSponsorId(sponsorId)

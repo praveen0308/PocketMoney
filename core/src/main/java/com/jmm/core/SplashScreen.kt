@@ -20,6 +20,7 @@ import com.jmm.core.utils.Constants
 import com.jmm.lock_screen.FragmentPinView
 import com.jmm.navigation.NavRoute.MainDashboard
 import com.jmm.navigation.NavRoute.SignUp
+import com.jmm.navigation.NavRoute.UserBlockActivity
 import com.jmm.util.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -31,7 +32,7 @@ class SplashScreen :
     BaseFragment<FragmentSplashScreenBinding>(FragmentSplashScreenBinding::inflate) {
 
     private val viewModel by viewModels<SplashScreenViewModel>()
-
+    private var isUserBlocked = false
     private lateinit var navController: NavController
     private val myRequestCode: Int = 100
     private lateinit var appUpdateManager: AppUpdateManager
@@ -40,6 +41,7 @@ class SplashScreen :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
+
         checkForNewUpdate()
     }
 
@@ -153,27 +155,35 @@ class SplashScreen :
     }
 
     private fun performNavigation() {
-
+        viewModel.blockedStatus.observe(viewLifecycleOwner){
+           isUserBlocked = it
+        }
         viewModel.welcomeStatus.observe(viewLifecycleOwner) {
-
-            when (it) {
-                Constants.NEW_USER -> navController.navigate(SplashScreenDirections.actionSplashScreenToOnboardingFlow())
-                Constants.ONBOARDING_DONE -> {
-                    startActivity(Intent(requireActivity(), Class.forName(MainDashboard)))
-                    requireActivity().finish()
-
-                }
-                Constants.LOGIN_DONE -> {
-                    /*** Check for pin authorisation ***/
-                    val pinView = FragmentPinView()
-                    pinView.show(parentFragmentManager, pinView.tag)
-                    /*startActivity(Intent(requireActivity(), Class.forName(MainDashboard)))
-                    requireActivity().finish()*/
-
-
-                }
-
+            if (isUserBlocked){
+                startActivity(Intent(requireActivity(), Class.forName(UserBlockActivity)))
+                requireActivity().finish()
             }
+            else{
+                when (it) {
+                    Constants.NEW_USER -> navController.navigate(SplashScreenDirections.actionSplashScreenToOnboardingFlow())
+                    Constants.ONBOARDING_DONE -> {
+                        startActivity(Intent(requireActivity(), Class.forName(MainDashboard)))
+                        requireActivity().finish()
+
+                    }
+                    Constants.LOGIN_DONE -> {
+                        /*** Check for pin authorisation ***/
+                        val pinView = FragmentPinView()
+                        pinView.show(parentFragmentManager, pinView.tag)
+                        /*startActivity(Intent(requireActivity(), Class.forName(MainDashboard)))
+                        requireActivity().finish()*/
+
+
+                    }
+
+                }
+            }
+
 
         }
     }

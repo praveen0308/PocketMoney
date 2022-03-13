@@ -4,17 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jmm.core.utils.ModelOrderAmountSummary
-import com.jmm.model.shopping_models.CartModel
 import com.jmm.repository.shopping_repo.CheckoutRepository
 import com.jmm.shopping.adapters.CartItemListAdapter
 import com.jmm.shopping.databinding.ActivityYourCartBinding
 import com.jmm.shopping.ui.checkoutorder.NewCheckout
+import com.jmm.shopping.viewmodel.CartPageState
 import com.jmm.shopping.viewmodel.CartViewModel
 import com.jmm.util.ApplicationToolbar
 import com.jmm.util.BaseActivity
-import com.jmm.util.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -62,67 +62,35 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
             }
 
         }
+        viewModel.pageState.observe(this){state->
+            displayLoading(false)
+            when(state){
+                CartPageState.EmptyCart ->{
+                    binding.root.children.forEach {
+                        it.isVisible = false
+                    }
+                    binding.emptyView.isVisible =true
+                }
+                is CartPageState.Error -> {
+                    showToast(state.msg)
+                }
+                CartPageState.Idle -> {
 
-        viewModel.cartItems.observe(this) { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        cartIsEmpty(it)
-                    }
-                    displayLoading(false)
                 }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
+                CartPageState.Loading ->displayLoading(true)
+                is CartPageState.ReceivedCartItems -> {
+                    cartItemListAdapter.setCartItemList(state.cartItems)
                 }
             }
+
         }
 
-        viewModel.cartItemQuantity.observe(this) { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
-                        viewModel.getCartItems(userID)
-                    }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
-                }
-            }
-        }
-
-    }
-
-    private fun cartIsEmpty(cartList: List<CartModel>) {
-        if (cartList.isEmpty()) {
-            binding.btnCheckout.visibility = View.GONE
-            binding.emptyView.visibility = View.VISIBLE
-            cartItemListAdapter.setCartItemList(cartList)
-            binding.layoutCartSummary.visibility = View.GONE
-        } else {
-            binding.btnCheckout.visibility = View.VISIBLE
-            populateValues(cartList)
-            cartItemListAdapter.setCartItemList(cartList)
-        }
     }
 
     private fun initialUiState() {
         binding.btnCheckout.visibility = View.GONE
         binding.emptyView.visibility = View.GONE
-//        binding.progressBar.visibility = View.GONE
-        binding.layoutCartSummary.visibility = View.GONE
+
     }
 
 
@@ -137,7 +105,7 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
         }
     }
 
-    private fun populateValues(cartList: List<CartModel>) {
+   /* private fun populateValues(cartList: List<CartModel>) {
 
         binding.layoutCartSummary.visibility = View.VISIBLE
         var itemQuantity = 0
@@ -175,7 +143,7 @@ class YourCart : BaseActivity<ActivityYourCartBinding>(ActivityYourCartBinding::
         )
         binding.layoutCartSummary.setVisibilityStatus(1)
 
-    }
+    }*/
 
     override fun onItemQuantityIncrease(itemID: Int) {
         viewModel.changeCartItemQuantity(1, itemID, userID)

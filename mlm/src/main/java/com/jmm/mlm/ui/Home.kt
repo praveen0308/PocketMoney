@@ -24,10 +24,13 @@ import com.jmm.navigation.NavRoute.DthActivity
 import com.jmm.navigation.NavRoute.GooglePlayRecharge
 import com.jmm.navigation.NavRoute.NewPayout
 import com.jmm.navigation.NavRoute.NewRechargeActivity
+import com.jmm.repository.IResource
 import com.jmm.repository.WalletRepository
 import com.jmm.util.BaseFragment
 import com.jmm.util.connection.ConnectionLiveData
+import com.jmm.util.identify
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -66,7 +69,7 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
         super.onViewCreated(view, savedInstanceState)
 
         setupRvDashboardItems()
-        viewModel.getBanners()
+//        viewModel.getStoreBanners()
         binding.topLayout.layoutWalletBalanceView.setOnClickListener {
             walletDetailVisibility = if (walletDetailVisibility) {
                 binding.root.transitionToStart()
@@ -83,11 +86,10 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
         }
 
         binding.topLayout.ivUserActivation.setOnClickListener {
-            if (isAccountActive){
+            if (isAccountActive) {
                 val bottomSheet = MembershipPlanDetails()
                 bottomSheet.show(parentFragmentManager, bottomSheet.tag)
-            }
-            else{
+            } else {
                 val bottomSheet = UpgradeToPro()
                 bottomSheet.show(parentFragmentManager, bottomSheet.tag)
             }
@@ -96,8 +98,8 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
 
     }
 
-    private fun setupRvDashboardItems(){
-        homeParentAdapter =HomeParentAdapter( this, requireActivity())
+    private fun setupRvDashboardItems() {
+        homeParentAdapter = HomeParentAdapter(this, requireActivity())
         binding.bottomLayout.mainDashboardParentRecyclerView.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
@@ -121,6 +123,10 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
             }
         })
 */
+        viewModel.storeBanners.observe(viewLifecycleOwner) {
+            homeParentAdapter.setHomeParentItems(viewModel.prepareHomeData(it.data!!.toMutableList()))
+        }
+
         viewModel.userId.observe(viewLifecycleOwner) {
             if (it.isNullOrEmpty()) {
                 checkAuthorization()
@@ -142,19 +148,42 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
         viewModel.userRoleID.observe(viewLifecycleOwner) {
             roleID = it
             if (userID != "" && roleID != 0) {
-                viewModel.getCustomerBalanceWithAuth(userID, roleID)
+                viewModel.getDashboardData(userID,roleID)
+//                viewModel.getCustomerBalanceWithAuth(userID, roleID)
 
             }
 
         }
 
+        viewModel.accountData.observe(viewLifecycleOwner) { result ->
+            displayLoading(false)
+            when (result) {
+                is IResource.Error -> {
+                    showToast(result.error!!.identify())
+                    Timber.e(result.error)
+                }
+                is IResource.Loading -> displayLoading(true)
+                is IResource.Success -> {
+                    result.data?.let {
+
+
+                        binding.walletDetailView.tvWalletBalance.setAmount(it.BusinessWallet)
+                        binding.walletDetailView.tvPCash.setAmount(it.IncomeWallet)
+                        binding.topLayout.walletBalanceView.tvWalletBalance.setAmount(it.BusinessWallet)
+
+                    }
+
+                }
+            }
+
+        }
         viewModel.homePageState.observe(viewLifecycleOwner) { state ->
             displayLoading(false)
             when (state) {
                 HomePageState.Loading -> displayLoading(true)
                 is HomePageState.Error -> showToast(state.msg)
                 is HomePageState.ReceivedUserData -> {
-                    state.data.BusinessWallet?.let {
+                   /* state.data.BusinessWallet?.let {
                         binding.walletDetailView.tvWalletBalance.setAmount(
                             it
                         )
@@ -168,10 +197,10 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
                         binding.walletDetailView.tvPCash.setAmount(
                             it
                         )
-                    }
+                    }*/
 
                 }
-                is HomePageState.ReceivedBanners ->{
+                is HomePageState.ReceivedBanners -> {
                     homeParentAdapter.setHomeParentItems(viewModel.prepareHomeData(state.banners.toMutableList()))
                 }
 
@@ -183,8 +212,6 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
     }
 
 
-
-
     override fun onItemClick(viewType: MyEnums, action: RechargeEnum) {
         when (viewType) {
             MyEnums.SERVICES -> performActionForServices(action)
@@ -193,11 +220,11 @@ class Home : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate),
 
     private fun performActionForServices(action: RechargeEnum) {
         when (action) {
-            RechargeEnum.PREPAID, RechargeEnum.POSTPAID ->{
+            RechargeEnum.PREPAID, RechargeEnum.POSTPAID -> {
 //                findNavController().navigate(R.id.action_home_to_mobileRechargeActivity)
                 startActivity(Intent(requireActivity(), Class.forName(NewRechargeActivity)))
             }
-            RechargeEnum.DTH ->{
+            RechargeEnum.DTH -> {
 //                findNavController().navigate(R.id.action_home_to_dthActivity)
                 startActivity(Intent(requireActivity(), Class.forName(DthActivity)))
             }

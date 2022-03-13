@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jmm.core.utils.ModelOrderAmountSummary
-import com.jmm.model.shopping_models.CartModel
 import com.jmm.repository.shopping_repo.CheckoutRepository
 import com.jmm.shopping.adapters.CartItemListAdapter
 import com.jmm.shopping.databinding.FragmentCheckoutItemsBinding
@@ -53,9 +51,9 @@ class CheckoutItems : BaseFragment<FragmentCheckoutItemsBinding>(FragmentCheckou
 
         }
 
-        checkoutRepository.appliedCouponCode.observe(viewLifecycleOwner) {
-            populateValues(viewModel.mCartItemList)
-        }
+       /* checkoutRepository.appliedCouponCode.observe(viewLifecycleOwner) {
+//            populateValues(viewModel.mCartItemList)
+        }*/
 
         viewModel.shippingCharge.observe(viewLifecycleOwner) { _result ->
             when (_result.status) {
@@ -86,7 +84,7 @@ class CheckoutItems : BaseFragment<FragmentCheckoutItemsBinding>(FragmentCheckou
                         cartItemListAdapter.setCartItemList(it)
                         viewModel.mCartItemList.clear()
                         viewModel.mCartItemList.addAll(it)
-                        populateValues(viewModel.mCartItemList)
+//                        populateValues(viewModel.mCartItemList)
                     }
                     displayLoading(false)
                 }
@@ -125,48 +123,48 @@ class CheckoutItems : BaseFragment<FragmentCheckoutItemsBinding>(FragmentCheckou
     }
 
 
-    private fun populateValues(cartList:List<CartModel>){
-        binding.orderAmountSummary.visibility=View.VISIBLE
-        viewModel.itemQuantity =0
-        viewModel.productOldPrice =0.0
-        viewModel.totalAmount =0.0
-
-        for (item in cartList){
-            viewModel.itemQuantity+=item.Quantity
-            viewModel.productOldPrice+=item.Old_Price*item.Quantity
-            viewModel.totalAmount+=item.Price*item.Quantity
-        }
-
-        if (!checkoutRepository.appliedCouponCode.value.isNullOrEmpty()){
-            if (checkoutRepository.isFixed.value==true){
-                viewModel.discountAmount =checkoutRepository.appliedDiscount.value!!
-            }else{
-                viewModel.discountAmount = (checkoutRepository.appliedDiscount.value!!*viewModel.totalAmount)/100
-
-            }
-        }
-
-        viewModel.saving = viewModel.productOldPrice - viewModel.totalAmount
-        viewModel.grandTotal = (viewModel.totalAmount + viewModel.mShippingCharge + viewModel.tax) - viewModel.discountAmount
-
-        binding.orderAmountSummary.setAmountSummary(
-            ModelOrderAmountSummary(
-                viewModel.itemQuantity,
-                viewModel.productOldPrice,
-                viewModel.saving,
-                viewModel.totalAmount,
-                viewModel.mShippingCharge,
-                viewModel.discountAmount,
-                viewModel.tax,
-                viewModel.grandTotal
-
-            )
-        )
-        binding.orderAmountSummary.setVisibilityStatus(1)
-        viewModel.amountPayable.postValue(viewModel.grandTotal)
-
-
-    }
+//    private fun populateValues(cartList:List<CartModel>){
+//        binding.orderAmountSummary.visibility=View.VISIBLE
+//        viewModel.itemQuantity =0
+//        viewModel.productOldPrice =0.0
+//        viewModel.totalAmount =0.0
+//
+//        for (item in cartList){
+//            viewModel.itemQuantity+=item.Quantity
+//            viewModel.productOldPrice+=item.Old_Price*item.Quantity
+//            viewModel.totalAmount+=item.Price*item.Quantity
+//        }
+//
+//        if (!checkoutRepository.appliedCouponCode.value.isNullOrEmpty()){
+//            if (checkoutRepository.isFixed.value==true){
+//                viewModel.discountAmount =checkoutRepository.appliedDiscount.value!!
+//            }else{
+//                viewModel.discountAmount = (checkoutRepository.appliedDiscount.value!!*viewModel.totalAmount)/100
+//
+//            }
+//        }
+//
+//        viewModel.saving = viewModel.productOldPrice - viewModel.totalAmount
+//        viewModel.grandTotal = (viewModel.totalAmount + viewModel.mShippingCharge + viewModel.tax) - viewModel.discountAmount
+//
+//        binding.orderAmountSummary.setAmountSummary(
+//            ModelOrderAmountSummary(
+//                viewModel.itemQuantity,
+//                viewModel.productOldPrice,
+//                viewModel.saving,
+//                viewModel.totalAmount,
+//                viewModel.mShippingCharge,
+//                viewModel.discountAmount,
+//                viewModel.tax,
+//                viewModel.grandTotal
+//
+//            )
+//        )
+//        binding.orderAmountSummary.setVisibilityStatus(1)
+//        viewModel.amountPayable.postValue(viewModel.grandTotal)
+//
+//
+//    }
     private fun setUpCartItemRecyclerView() {
         cartItemListAdapter = CartItemListAdapter(this)
         binding.apply {

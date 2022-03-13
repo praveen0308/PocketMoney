@@ -27,11 +27,12 @@ class ShopViewModel @Inject constructor(
     val userId = userPreferencesRepository.userId.asLiveData()
     val userName = userPreferencesRepository.userName.asLiveData()
     val userRoleID = userPreferencesRepository.userRoleId.asLiveData()
+    val products = productRepository.getProducts().asLiveData()
 
     private val _productList: MutableLiveData<Resource<List<ProductModel>>> = MutableLiveData()
     val productList: LiveData<Resource<List<ProductModel>>> = _productList
 
-    fun getProductList(shoppingHomeEvent: com.jmm.shopping.viewmodel.ShoppingHomeEvent){
+    fun getProductList(shoppingHomeEvent: ShoppingHomeEvent){
         viewModelScope.launch {
             productRepository
                 .getHomeProductList()

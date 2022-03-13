@@ -15,6 +15,10 @@ class AccountActivity : BaseActivity<ActivityAccountBinding>(ActivityAccountBind
         val source  = intent.getSerializableExtra("SOURCE") as NavigationEnum
         binding.toolbarAccountActivity.setApplicationToolbarListener(this)
         when(source){
+            NavigationEnum.HELP_CENTRE->{
+                showFragment(CustomerSupportPage())
+                binding.toolbarAccountActivity.setToolbarTitle("Support")
+            }
             NavigationEnum.ABOUT->{
                 showFragment(AboutUs())
                 binding.toolbarAccountActivity.setToolbarTitle("About Us")

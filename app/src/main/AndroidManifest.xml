@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.sampurna.pocketmoney">
+    package="com.jmm.pocketmoney">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".BaseApplication"
+        android:name="com.jmm.pocketmoney.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -70,7 +70,7 @@
         <activity android:name="com.jmm.mlm.ui.AccountActivity" android:exported="true"/>
 
         <activity android:name="com.jmm.commission.CustomerGrowthNCommission" android:exported="true"/>
-        <activity android:name="com.jmm.shopping.ui.AddNewAddress" android:exported="true"/>
+        <activity android:name="com.jmm.manage_address.AddNewAddress" android:exported="true"/>
         <activity android:name="com.jmm.complaint_report.ComplaintList" android:exported="true"/>
         <activity android:name="com.jmm.mlm.ui.CustomerWalletActivity" android:exported="true"/>
 <!--        <activity android:name="com.jmm.profile.CustomerProfile" android:exported="true"/>-->
@@ -117,7 +117,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.sampurna.pocketmoney.fileProvider"
+            android:authorities="com.jmm.pocketmoney.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

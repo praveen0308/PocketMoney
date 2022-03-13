@@ -13,17 +13,19 @@ import com.jmm.mlm.databinding.FragmentShopBinding
 import com.jmm.model.myEnums.MyEnums
 import com.jmm.model.shopping_models.HomeContentMaster
 import com.jmm.model.shopping_models.ProductModel
+import com.jmm.navigation.NavRoute.Checkout1
+import com.jmm.repository.IResource
 import com.jmm.shopping.adapters.ShoppingHomeCategoriesAdapter
 import com.jmm.shopping.adapters.ShoppingHomeMasterAdapter
 import com.jmm.shopping.ui.BuyProduct
 import com.jmm.shopping.ui.SearchProductActivity
-import com.jmm.shopping.ui.YourCart
 import com.jmm.shopping.viewmodel.ShopViewModel
-import com.jmm.shopping.viewmodel.ShoppingHomeEvent
 import com.jmm.util.ApplicationToolbar
 import com.jmm.util.BaseFragment
 import com.jmm.util.Status
+import com.jmm.util.identify
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 
 @AndroidEntryPoint
@@ -73,10 +75,24 @@ class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate),
 
         setupRecyclerView()
         binding.fragmentShopToolbar.setApplicationToolbarListener(this)
-        viewModel.getProductList(ShoppingHomeEvent.GetProductList)
+//        viewModel.getProductList(ShoppingHomeEvent.GetProductList)
     }
 
     override fun subscribeObservers() {
+        viewModel.products.observe(viewLifecycleOwner){result->
+            result.data?.let { populateRecyclerView(it) }
+            displayLoading(false)
+            when(result){
+
+                is IResource.Error -> {
+                    showToast(result.error!!.identify())
+                    Timber.e(result.error)
+                }
+                is IResource.Loading -> displayLoading(true)
+                is IResource.Success ->result.data?.let { populateRecyclerView(it) }
+            }
+
+        }
         viewModel.productList.observe(viewLifecycleOwner) { _result ->
             when (_result.status) {
                 Status.SUCCESS -> {
@@ -208,7 +224,7 @@ class Shop : BaseFragment<FragmentShopBinding>(FragmentShopBinding::inflate),
     }
 
     override fun onMenuClick() {
-        startActivity(Intent(requireActivity(),YourCart::class.java))
+        startActivity(Intent(requireActivity(), Class.forName(Checkout1)))
     }
 
     override fun onDestroyView() {

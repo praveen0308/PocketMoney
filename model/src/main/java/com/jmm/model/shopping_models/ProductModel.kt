@@ -5,7 +5,7 @@ data class ProductModel(
 
     val CategoryId: Int,
     val CategoryName: String,
-    val Description: Any,
+    val Description: String?,
     val FeaturedProductInd: Boolean,
     val ItemId: Int,
     val MainPageInd: Boolean,

@@ -14,7 +14,6 @@ import androidmads.library.qrgenearator.QRGEncoder
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.JsonObject
 import com.google.zxing.WriterException
 import com.jmm.core.MainActivity
 import com.jmm.core.adapters.SocialItemAdapter
@@ -25,19 +24,18 @@ import com.jmm.mlm.adapters.AccountSettingParentAdapter
 import com.jmm.mlm.adapters.DashboardItemAdapter
 import com.jmm.mlm.databinding.FragmentAccountBinding
 import com.jmm.mlm.viewmodel.AccountViewModel
-import com.jmm.model.ModelMenuItem
-import com.jmm.model.ModelParentMenu
-import com.jmm.model.ModelTitleValue
-import com.jmm.model.SocialLinkModel
+import com.jmm.model.*
 import com.jmm.model.myEnums.NavigationEnum
 import com.jmm.navigation.NavRoute.ChangePassword
 import com.jmm.navigation.NavRoute.ComplaintList
 import com.jmm.navigation.NavRoute.CustomerGrowthNCommission
 import com.jmm.navigation.NavRoute.ManageCoupon
 import com.jmm.navigation.NavRoute.NewCustomerProfile
+import com.jmm.repository.IResource
 import com.jmm.util.BaseFragment
-import com.jmm.util.Status
+import com.jmm.util.identify
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inflate),
@@ -240,9 +238,9 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
         helpMenuItemList.add(
             ModelMenuItem(
                 NavigationEnum.HELP_CENTRE,
-                "Call Us",
+                "Support",
                 "",
-                R.drawable.ic_phone
+                R.drawable.ic_person
             )
         )
         helpMenuItemList.add(
@@ -315,6 +313,11 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
                 startActivity(intent)
 //                findNavController().navigate(AccountDirections.actionAccountToAboutUs())
             }
+            NavigationEnum.HELP_CENTRE -> {
+                val intent = Intent(requireActivity(), AccountActivity::class.java)
+                intent.putExtra("SOURCE", NavigationEnum.HELP_CENTRE)
+                startActivity(intent)
+            }
             NavigationEnum.SHARE -> {
                 val intent = Intent(requireActivity(), AccountActivity::class.java)
                 intent.putExtra("SOURCE", NavigationEnum.SHARE)
@@ -347,12 +350,7 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
 
 
             }
-            NavigationEnum.HELP_CENTRE -> {
-                val i = Intent(Intent.ACTION_DIAL)
-                val p = "tel:" + "8767404060"
-                i.data = Uri.parse(p)
-                startActivity(i)
-            }
+
             else -> {
 //                val intent = Intent(requireActivity(), AccountActivity::class.java)
 //                intent.putExtra("SOURCE", menu.id)
@@ -364,50 +362,46 @@ class Account : BaseFragment<FragmentAccountBinding>(FragmentAccountBinding::inf
     }
 
     override fun subscribeObservers() {
-        viewModel.userName.observe(viewLifecycleOwner, {
+        viewModel.userName.observe(viewLifecycleOwner) {
             userName = it
             binding.tvUserName.text = userName
-        })
-        viewModel.userId.observe(viewLifecycleOwner, {
+        }
+        viewModel.userId.observe(viewLifecycleOwner) {
             userId = it
             binding.tvUserId.text = userId
             setUpRecyclerView()
-        })
-        viewModel.userRoleID.observe(viewLifecycleOwner, {
+        }
+        viewModel.userRoleID.observe(viewLifecycleOwner) {
             roleID = it
-            if (userId!="" && roleID!=0){
+            if (userId != "" && roleID != 0) {
                 viewModel.getDashboardData(userId,roleID)
             }
 
-        })
-
-        viewModel.dashboardData.observe(this, { _result ->
-            when (_result.status) {
-                Status.SUCCESS -> {
-                    _result._data?.let {
+        }
+        viewModel.accountData.observe(viewLifecycleOwner){result->
+            displayLoading(false)
+            when(result){
+                is IResource.Error -> {showToast(result.error!!.identify())
+                Timber.e(result.error)}
+                is IResource.Loading -> displayLoading(true)
+                is IResource.Success -> {
+                    result.data?.let {
                         populateDashboardItems(it)
                     }
-                    displayLoading(false)
-                }
-                Status.LOADING -> {
-                    displayLoading(true)
-                }
-                Status.ERROR -> {
-                    displayLoading(false)
-                    _result.message?.let {
-                        displayError(it)
-                    }
+
                 }
             }
-        })
+
+        }
+
     }
 
-    private fun populateDashboardItems(it: JsonObject) {
+    private fun populateDashboardItems(it: CustomerDashboardDataModel) {
         val dashboardItems = mutableListOf<ModelTitleValue>()
-        dashboardItems.add(ModelTitleValue("Wallet",it.get("BusinessWallet").toString(),NavigationEnum.WALLET))
-        dashboardItems.add(ModelTitleValue("PCash",it.get("IncomeWallet").toString(),NavigationEnum.P_CASH))
-        dashboardItems.add(ModelTitleValue("Downline",it.get("DownlineTeamCount").toString(),NavigationEnum.DOWNLINE))
-        dashboardItems.add(ModelTitleValue("Direct Team",it.get("DirectTeamCount").toString(),NavigationEnum.DOWNLINE))
+        dashboardItems.add(ModelTitleValue("Wallet",it.BusinessWallet.toString(),NavigationEnum.WALLET))
+        dashboardItems.add(ModelTitleValue("PCash",it.IncomeWallet.toString(),NavigationEnum.P_CASH))
+        dashboardItems.add(ModelTitleValue("Downline",it.DownlineTeamCount.toString(),NavigationEnum.DOWNLINE))
+        dashboardItems.add(ModelTitleValue("Direct Team",it.DirectTeamCount.toString(),NavigationEnum.DOWNLINE))
 
         dashboardItemAdapter.setModelTitleValueList(dashboardItems)
 

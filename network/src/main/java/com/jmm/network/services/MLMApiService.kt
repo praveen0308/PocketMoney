@@ -239,7 +239,7 @@ interface MLMApiService {
     suspend fun getDashboardData(
         @Query("userId") userId: String,
         @Query("roleId") roleId: Int
-    ): JsonObject
+    ): CustomerDashboardDataModel
 
 }
 

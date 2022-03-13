@@ -45,6 +45,7 @@ dependencies {
     implementation(project(":util"))
     implementation(project(":navigation"))
     implementation(project(":core"))
+    implementation(project(":shop:checkout"))
 
     // Non-UI Modules
     implementation(project(":model"))

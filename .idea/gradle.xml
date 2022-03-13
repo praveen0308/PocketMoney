@@ -40,6 +40,9 @@
             <option value="$PROJECT_DIR$/services/electricity" />
             <option value="$PROJECT_DIR$/services/mobile_recharge" />
             <option value="$PROJECT_DIR$/services/play_recharge" />
+            <option value="$PROJECT_DIR$/shop" />
+            <option value="$PROJECT_DIR$/shop/checkout" />
+            <option value="$PROJECT_DIR$/shop/manage_address" />
             <option value="$PROJECT_DIR$/shopping" />
             <option value="$PROJECT_DIR$/transactions" />
             <option value="$PROJECT_DIR$/transfer_money" />

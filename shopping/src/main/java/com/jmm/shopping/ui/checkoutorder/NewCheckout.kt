@@ -138,59 +138,6 @@ class NewCheckout : BaseActivity<ActivityNewCheckoutBinding>(ActivityNewCheckout
 
     }
 
-/*
-
-    override fun onPaymentResultReceived(
-        method: PaymentEnum,
-        result: Boolean,
-        message: String,
-        paytmResponseModel: PaytmResponseModel?
-    ) {
-        viewModel.customerOrder = CustomerOrder(
-            ShippingAddressId = viewModel.selectedAddressId.value,
-            UserID = userId,
-            Total = viewModel.grandTotal,
-            Discount = viewModel.discountAmount,
-            Shipping = viewModel.mShippingCharge,
-            Tax = viewModel.tax,
-            GrandTotal = viewModel.grandTotal,
-            Promo = viewModel.discountCoupon,
-        )
-        if (result) {
-            when (method) {
-                PaymentEnum.WALLET -> {
-                    viewModel.customerOrder.PaymentStatusId = PaymentStatus.Paid.id // paid
-                    viewModel.customerOrder.WalletTypeId = WalletType.Wallet.id  // wallet
-                    viewModel.customerOrder.PaymentMode = PaymentModes.Wallet.id   // wallet
-                }
-                PaymentEnum.PCASH -> {
-                    viewModel.customerOrder.PaymentStatusId = PaymentStatus.Paid.id // paid
-                    viewModel.customerOrder.WalletTypeId = WalletType.PCash.id
-                    viewModel.customerOrder.PaymentMode = PaymentModes.PCash.id
-                }
-                PaymentEnum.PAYTM -> {
-                    viewModel.customerOrder.PaymentStatusId = PaymentStatus.Pending.id
-                    viewModel.customerOrder.WalletTypeId = WalletType.OnlinePayment.id
-                    viewModel.customerOrder.PaymentMode = PaymentModes.Online.id
-
-                    checkoutRepository.selectedPaymentMethod = PaymentEnum.PAYTM
-
-                    if (paytmResponseModel != null) {
-                        viewModel.paytmResponseModel = paytmResponseModel
-                    }
-                }
-                PaymentEnum.COD -> {
-                    viewModel.customerOrder.PaymentStatusId = PaymentStatus.Pending.id
-                    viewModel.customerOrder.WalletTypeId = WalletType.CashOnDelivery.id
-                    viewModel.customerOrder.PaymentMode = PaymentModes.CashOnDelivery.id
-                }
-            }
-            viewModel.createCustomerOrder(viewModel.customerOrder)
-        }
-    }
-*/
-
-
 
     override fun onPaymentMethodSelected(method: PaymentEnum) {
         when (method) {

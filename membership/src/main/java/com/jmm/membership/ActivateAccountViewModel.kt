@@ -4,11 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.jmm.repository.*
-import com.jmm.repository.MailMessagingRepository
 import com.jmm.model.serviceModels.PaymentGatewayTransactionModel
 import com.jmm.model.serviceModels.PaytmRequestData
 import com.jmm.model.serviceModels.PaytmResponseModel
+import com.jmm.repository.*
 import com.jmm.util.identify
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
@@ -127,8 +126,6 @@ class ActivateAccountViewModel @Inject constructor(
         }
 
     }
-
-
     fun activateAccountUsingCoupon(userId: String,pin:String,pinSerial:String) {
         viewModelScope.launch {
             customerRepository

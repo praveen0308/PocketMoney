@@ -133,8 +133,10 @@ class SignUp : BaseActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflat
                 RegisterPageState.Loading -> displayLoading(true)
                 RegisterPageState.MessageSent -> {
                     showToast("Registered successfully!!!")
-                    startActivity(Intent(this,SignIn::class.java))
-                    finish()
+                    val sheet = RegistrationSuccessful()
+                    sheet.show(supportFragmentManager,sheet.tag)
+
+
                 }
                 is RegisterPageState.OnRegistrationComplete -> {
                     viewModel.sendRegistrationSms(
@@ -145,6 +147,7 @@ class SignUp : BaseActivity<ActivitySignUpBinding>(ActivitySignUpBinding::inflat
                 }
                 is RegisterPageState.Processing -> {
                     dialog.setMessage(state.msg)
+                    dialog.show()
                 }
                 is RegisterPageState.ReceivedSponsorName -> {
                     if (state.name.isEmpty())

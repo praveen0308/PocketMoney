@@ -31,4 +31,8 @@ include ':transactions'
 include ':onboarding'
 
 include ':navigation'
+
+
+include ':shop:checkout'
+include ':shop:manage_address'
 include ':local'

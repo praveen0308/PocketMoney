@@ -33,7 +33,7 @@
                 android:id="@+id/address_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:name="com.jmm.shopping.ui.checkoutorder.CheckoutShippingAddress"
+                android:name="com.jmm.checkout.CheckoutShippingAddress"
                 tools:layout="@layout/fragment_checkout_shipping_address"/>
             <fragment
                 android:id="@+id/order_summary_fragment"
@@ -41,6 +41,15 @@
                 android:layout_height="wrap_content"
                 android:name="com.jmm.shopping.ui.checkoutorder.CheckoutItems"
                 tools:layout="@layout/fragment_checkout_items"/>
+
+            <fragment
+                android:id="@+id/order_calculation_summary"
+                android:name="com.jmm.checkout.OrderCalculationSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:layout="@layout/fragment_order_calculation_summary" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -2,7 +2,6 @@ package com.jmm.repository
 
 
 
-import com.google.gson.JsonObject
 import com.jmm.model.ModelCustomerDetail
 import com.jmm.model.UserMenu
 import com.jmm.model.UserModel
@@ -10,14 +9,18 @@ import com.jmm.network.services.CustomerService
 import com.jmm.network.services.MLMApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AccountRepository @Inject constructor(
     private val mlmApiService: MLMApiService,
-    private val customerService: CustomerService
+    private val customerService: CustomerService,
+    private val userAccountData: UserAccountData,
+    userPreferencesRepository: UserPreferencesRepository
 ) {
 
     suspend fun doLogin(userId:String,password:String): Flow<UserModel?> {
@@ -91,16 +94,27 @@ class AccountRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getDashboardData(
+  /*  suspend fun getDashboardData(
         userId: String,
         roleId: Int
     ): Flow<JsonObject> {
         return flow {
             val response = mlmApiService.getDashboardData(userId,roleId)
-            emit(response)
+//            emit(response)
         }.flowOn(Dispatchers.IO)
-    }
-
+    }*/
+    suspend fun getDashboardData(userId: String,roleId:Int) = networkBoundResource(
+        query = {
+            flowOf(userAccountData.getCustomerDashboardData())
+        },
+        fetch = {
+            mlmApiService.getDashboardData(userId, roleId)
+        },
+        saveFetchResult = { data ->
+            userAccountData.updateCustomerAccountData(data)
+            userAccountData.getCustomerDashboardData()
+        }
+    )
     suspend fun resetPassword(
         userId: String,
         loginId: Int,

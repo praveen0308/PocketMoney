@@ -1,6 +1,7 @@
 package com.jmm.network.di
 
 import android.content.Context
+import com.jmm.network.di.NetworkModule.NoAuthClient
 import com.jmm.network.di.NetworkModule.PMClient
 import com.jmm.network.di.NetworkModule.PanClient
 import com.jmm.network.di.NetworkModule.SMSClient
@@ -22,6 +23,11 @@ object ServiceModule {
 
 
     /***** Pocket Money Services ****/
+    @Provides
+    fun provideAuthService(@Named(NoAuthClient) retrofitClient: Retrofit): AuthService {
+        return retrofitClient.create(AuthService::class.java)
+    }
+
     @Provides
     fun provideKycService(@Named(PMClient) retrofitClient: Retrofit): KYCService {
         return retrofitClient.create(KYCService::class.java)
@@ -70,6 +76,11 @@ object ServiceModule {
     @Provides
     fun provideStoreApiService(@Named(PMClient) retrofit: Retrofit): StoreApiService {
         return retrofit.create(StoreApiService::class.java)
+    }
+
+    @Provides
+    fun provideCheckoutApiService(@Named(PMClient) retrofit: Retrofit): CheckoutService {
+        return retrofit.create(CheckoutService::class.java)
     }
     @Provides
     fun provideShoppingApiService(@Named(PMClient) retrofit: Retrofit): ShoppingApiService {

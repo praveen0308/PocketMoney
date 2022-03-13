@@ -5,13 +5,13 @@ import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
@@ -43,11 +43,11 @@ class UploadKycPages : BaseFragment<FragmentUploadKycPagesBinding>(FragmentUploa
             if(data!=null){
                 binding.layoutFrontPage.apply {
                     textView6.isVisible = false
-                    val file = File(getRealPathFromURI(data.getStringExtra("uri")!!.toUri()))
+                    /*val file = File(getRealPathFromURI(data.getStringExtra("uri")!!.toUri()))
                     val d = Drawable.createFromPath(file.absolutePath)
                     bgImage.background = d
-
-                    val frontPageStr = setNGetImage(data.getStringExtra("uri")!!.toUri())
+*/
+                    val frontPageStr = setNGetImage(data.getStringExtra("uri")!!.toUri(),binding.layoutFrontPage.ivBackground)
                     if(frontPageStr!=null) viewModel.frontPageImage = frontPageStr
                 }
             }
@@ -62,10 +62,10 @@ class UploadKycPages : BaseFragment<FragmentUploadKycPagesBinding>(FragmentUploa
             if(data!=null){
                 binding.layoutBackPage.apply {
                     textView6.isVisible = false
-                    val file = File(getRealPathFromURI(data.getStringExtra("uri")!!.toUri()))
+                    /*val file = File(getRealPathFromURI(data.getStringExtra("uri")!!.toUri()))
                     val d = Drawable.createFromPath(file.absolutePath)
-                    bgImage.background = d
-                    val backPageStr = setNGetImage(data.getStringExtra("uri")!!.toUri())
+                    bgImage.background = d*/
+                    val backPageStr = setNGetImage(data.getStringExtra("uri")!!.toUri(),binding.layoutBackPage.ivBackground)
                     if(backPageStr!=null) viewModel.backPageImage = backPageStr
 
                 }
@@ -74,7 +74,7 @@ class UploadKycPages : BaseFragment<FragmentUploadKycPagesBinding>(FragmentUploa
     }
 
 
-    private fun setNGetImage(uri: Uri):String?{
+    private fun setNGetImage(uri: Uri,imageView:ImageView):String?{
 
         try {
             val bitmap : Bitmap = if(Build.VERSION.SDK_INT >= 29) {
@@ -92,6 +92,7 @@ class UploadKycPages : BaseFragment<FragmentUploadKycPagesBinding>(FragmentUploa
             }
 
             Timber.d("Base64 String >>>>>> ")
+            imageView.setImageBitmap(bitmap)
             return convertBitmapToEncodedString(bitmap)
 
 

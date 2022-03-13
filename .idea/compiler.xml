@@ -31,6 +31,8 @@
       <module name="Pocket_Money.services.electricity" target="13" />
       <module name="Pocket_Money.services.mobile_recharge" target="13" />
       <module name="Pocket_Money.services.play_recharge" target="13" />
+      <module name="Pocket_Money.shop.checkout" target="13" />
+      <module name="Pocket_Money.shop.manage_address" target="13" />
       <module name="Pocket_Money.shopping" target="13" />
       <module name="Pocket_Money.transactions" target="13" />
       <module name="Pocket_Money.transfer_money" target="13" />
